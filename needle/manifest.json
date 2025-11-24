@@ -58,7 +58,12 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["music", "audio", "entertainment", "utilities"],
+  "categories": [
+    "music",
+    "audio",
+    "entertainment",
+    "utilities"
+  ],
   "screenshots": [
     {
       "src": "/assets/screenshots/desktop.png",

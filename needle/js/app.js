@@ -44,6 +44,9 @@ class VinylApp {
     this.isMetadataEditMode = false;
     this.uploadedArtwork = null;
 
+    // Cache update modal flag (session-based)
+    this.cacheModalDismissed = sessionStorage.getItem('cacheModalDismissed') === 'true';
+
     this.init();
   }
 
@@ -163,6 +166,12 @@ class VinylApp {
    */
   async checkCacheVersion() {
     try {
+      // Don't show modal if already dismissed this session
+      if (this.cacheModalDismissed) {
+        console.log('ℹ️ Cache modal already dismissed this session');
+        return;
+      }
+
       // Get API version
       const health = await api.checkHealth();
       const serverVersion = health.version || 'unknown';
@@ -209,6 +218,9 @@ class VinylApp {
 
       await this.clearAllCaches();
 
+      // Mark as dismissed BEFORE reloading to prevent infinite loop
+      sessionStorage.setItem('cacheModalDismissed', 'true');
+
       // Force reload
       window.location.reload(true);
     };
@@ -216,12 +228,20 @@ class VinylApp {
     // Dismiss button
     dismissBtn.onclick = () => {
       modal.classList.add('hidden');
+      // Mark as dismissed for this session
+      this.cacheModalDismissed = true;
+      sessionStorage.setItem('cacheModalDismissed', 'true');
+      console.log('ℹ️ Cache modal dismissed for this session');
     };
 
     // Close on overlay click
     const overlay = modal.querySelector('.modal-overlay');
     overlay.onclick = () => {
       modal.classList.add('hidden');
+      // Mark as dismissed for this session
+      this.cacheModalDismissed = true;
+      sessionStorage.setItem('cacheModalDismissed', 'true');
+      console.log('ℹ️ Cache modal dismissed for this session');
     };
   }
 
@@ -736,6 +756,11 @@ class VinylApp {
   setupPresetSelector() {
     const presetSelector = document.getElementById('presetSelector');
 
+    if (!presetSelector) {
+      console.warn('⚠️ Preset selector not found, skipping setup');
+      return;
+    }
+
     presetSelector.addEventListener('change', (e) => {
       this.currentPreset = e.target.value;
       this.loadPresetValues(e.target.value);
@@ -913,18 +938,13 @@ class VinylApp {
     const surfaceNoiseToggle = document.getElementById('surfaceNoise');
     const noiseIntensity = document.getElementById('noiseIntensity');
     const noiseIntensityValue = document.getElementById('noiseIntensityValue');
-    const noiseIntensityGroup = document.getElementById('noiseIntensityGroup');
     const popIntensity = document.getElementById('popIntensity');
     const popIntensityValue = document.getElementById('popIntensityValue');
-    const popIntensityGroup = document.getElementById('popIntensityGroup');
 
-    // Surface noise taggle listener
+    // Surface noise toggle listener
     surfaceNoiseToggle.addEventListener('change', (e) => {
       this.customSettings.surface_noise = e.target.checked;
       e.target.setAttribute('aria-checked', e.target.checked);
-      // Hide/show slider groups instead of disabling
-      noiseIntensityGroup.style.display = e.target.checked ? 'block' : 'none';
-      popIntensityGroup.style.display = e.target.checked ? 'block' : 'none';
       this.switchToCustomPreset();
     });
 
@@ -951,19 +971,9 @@ class VinylApp {
       this.switchToCustomPreset();
     });
 
-    // Wow/Flutter toggle and intensity
-    const wowFlutterToggle = document.getElementById('wowFlutter');
+    // Wow/Flutter intensity
     const wowFlutterIntensity = document.getElementById('wowFlutterIntensity');
     const wowFlutterValue = document.getElementById('wowFlutterValue');
-    const wowFlutterIntensityGroup = document.getElementById('wowFlutterIntensityGroup');
-
-    wowFlutterToggle.addEventListener('change', (e) => {
-      this.customSettings.wow_flutter = e.target.checked;
-      e.target.setAttribute('aria-checked', e.target.checked);
-      // Hide/show slider group instead of disabling
-      wowFlutterIntensityGroup.style.display = e.target.checked ? 'block' : 'none';
-      this.switchToCustomPreset();
-    });
 
     wowFlutterIntensity.addEventListener('input', (e) => {
       const value = parseFloat(e.target.value);
@@ -976,19 +986,9 @@ class VinylApp {
       this.switchToCustomPreset();
     });
 
-    // Harmonic distortion toggle and amount
-    const harmonicDistortionToggle = document.getElementById('harmonicDistortion');
+    // Harmonic distortion amount
     const distortionAmount = document.getElementById('distortionAmount');
     const distortionValue = document.getElementById('distortionValue');
-    const distortionAmountGroup = document.getElementById('distortionAmountGroup');
-
-    harmonicDistortionToggle.addEventListener('change', (e) => {
-      this.customSettings.harmonic_distortion = e.target.checked;
-      e.target.setAttribute('aria-checked', e.target.checked);
-      // Hide/show slider group instead of disabling
-      distortionAmountGroup.style.display = e.target.checked ? 'block' : 'none';
-      this.switchToCustomPreset();
-    });
 
     distortionAmount.addEventListener('input', (e) => {
       const value = parseFloat(e.target.value);
@@ -1007,24 +1007,37 @@ class VinylApp {
     const stereoWidthValue = document.getElementById('stereoWidthValue');
     const stereoWidthGroup = document.getElementById('stereoWidthGroup');
 
-    stereoReductionToggle.addEventListener('change', (e) => {
-      this.customSettings.stereo_reduction = e.target.checked;
-      e.target.setAttribute('aria-checked', e.target.checked);
-      // Hide/show slider group instead of disabling
-      stereoWidthGroup.style.display = e.target.checked ? 'block' : 'none';
-      this.switchToCustomPreset();
-    });
+    console.log('🔍 Stereo Elements:', { stereoReductionToggle, stereoWidth, stereoWidthValue, stereoWidthGroup });
 
-    stereoWidth.addEventListener('input', (e) => {
-      const value = parseFloat(e.target.value);
-      this.customSettings.stereo_width = value;
-      const valueText = value.toFixed(2);
-      stereoWidthValue.textContent = valueText;
-      // Update ARIA attributes
-      e.target.setAttribute('aria-valuenow', value);
-      e.target.setAttribute('aria-valuetext', valueText);
-      this.switchToCustomPreset();
-    });
+    if (stereoReductionToggle && stereoWidthGroup) {
+      const stereoLED = document.querySelector('.switch-led[data-switch="stereoReduction"]');
+      stereoReductionToggle.addEventListener('change', (e) => {
+        console.log('🎚️ Stereo Toggle changed:', e.target.checked);
+        this.customSettings.stereo_reduction = e.target.checked;
+        e.target.setAttribute('aria-checked', e.target.checked);
+        // Disable slider instead of hiding
+        if (stereoWidth) stereoWidth.disabled = !e.target.checked;
+        console.log('🎚️ Stereo Width disabled:', !e.target.checked);
+        // Update LED
+        if (stereoLED) this.updateLEDState(stereoLED, e.target.checked);
+        this.switchToCustomPreset();
+      });
+    } else {
+      console.error('❌ Stereo Toggle or Group not found!');
+    }
+
+    if (stereoWidth && stereoWidthValue) {
+      stereoWidth.addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        this.customSettings.stereo_width = value;
+        const valueText = value.toFixed(2);
+        stereoWidthValue.textContent = valueText;
+        // Update ARIA attributes
+        e.target.setAttribute('aria-valuenow', value);
+        e.target.setAttribute('aria-valuetext', valueText);
+        this.switchToCustomPreset();
+      });
+    }
 
     // Bass EQ
     const bassSlider = document.getElementById('bass');
@@ -1074,22 +1087,36 @@ class VinylApp {
     const hpfCutoffValue = document.getElementById('hpfCutoffValue');
     const hpfCutoffGroup = document.getElementById('hpfCutoffGroup');
 
-    hpfToggle.addEventListener('change', (e) => {
-      this.customSettings.hpf_enabled = e.target.checked;
-      e.target.setAttribute('aria-checked', e.target.checked);
-      hpfCutoffGroup.style.display = e.target.checked ? 'block' : 'none';
-      this.switchToCustomPreset();
-    });
+    console.log('🔍 HPF Elements:', { hpfToggle, hpfCutoff, hpfCutoffValue, hpfCutoffGroup });
 
-    hpfCutoff.addEventListener('input', (e) => {
-      const value = parseInt(e.target.value);
-      this.customSettings.hpf_cutoff = value;
-      const valueText = this.formatFrequency(value);
-      hpfCutoffValue.textContent = valueText;
-      e.target.setAttribute('aria-valuenow', value);
-      e.target.setAttribute('aria-valuetext', valueText);
-      this.switchToCustomPreset();
-    });
+    if (hpfToggle && hpfCutoffGroup) {
+      const hpfLED = document.querySelector('.switch-led[data-switch="hpfEnabled"]');
+      hpfToggle.addEventListener('change', (e) => {
+        console.log('🎚️ HPF Toggle changed:', e.target.checked);
+        this.customSettings.hpf_enabled = e.target.checked;
+        e.target.setAttribute('aria-checked', e.target.checked);
+        // Disable slider instead of hiding
+        if (hpfCutoff) hpfCutoff.disabled = !e.target.checked;
+        console.log('🎚️ HPF Cutoff disabled:', !e.target.checked);
+        // Update LED
+        if (hpfLED) this.updateLEDState(hpfLED, e.target.checked);
+        this.switchToCustomPreset();
+      });
+    } else {
+      console.error('❌ HPF Toggle or Group not found!');
+    }
+
+    if (hpfCutoff && hpfCutoffValue) {
+      hpfCutoff.addEventListener('input', (e) => {
+        const value = parseInt(e.target.value);
+        this.customSettings.hpf_cutoff = value;
+        const valueText = this.formatFrequency(value);
+        hpfCutoffValue.textContent = valueText;
+        e.target.setAttribute('aria-valuenow', value);
+        e.target.setAttribute('aria-valuetext', valueText);
+        this.switchToCustomPreset();
+      });
+    }
 
     // Low-Pass Filter
     const lpfToggle = document.getElementById('lpfEnabled');
@@ -1097,22 +1124,36 @@ class VinylApp {
     const lpfCutoffValue = document.getElementById('lpfCutoffValue');
     const lpfCutoffGroup = document.getElementById('lpfCutoffGroup');
 
-    lpfToggle.addEventListener('change', (e) => {
-      this.customSettings.lpf_enabled = e.target.checked;
-      e.target.setAttribute('aria-checked', e.target.checked);
-      lpfCutoffGroup.style.display = e.target.checked ? 'block' : 'none';
-      this.switchToCustomPreset();
-    });
+    console.log('🔍 LPF Elements:', { lpfToggle, lpfCutoff, lpfCutoffValue, lpfCutoffGroup });
 
-    lpfCutoff.addEventListener('input', (e) => {
-      const value = parseInt(e.target.value);
-      this.customSettings.lpf_cutoff = value;
-      const valueText = this.formatFrequency(value);
-      lpfCutoffValue.textContent = valueText;
-      e.target.setAttribute('aria-valuenow', value);
-      e.target.setAttribute('aria-valuetext', valueText);
-      this.switchToCustomPreset();
-    });
+    if (lpfToggle && lpfCutoffGroup) {
+      const lpfLED = document.querySelector('.switch-led[data-switch="lpfEnabled"]');
+      lpfToggle.addEventListener('change', (e) => {
+        console.log('🎚️ LPF Toggle changed:', e.target.checked);
+        this.customSettings.lpf_enabled = e.target.checked;
+        e.target.setAttribute('aria-checked', e.target.checked);
+        // Disable slider instead of hiding
+        if (lpfCutoff) lpfCutoff.disabled = !e.target.checked;
+        console.log('🎚️ LPF Cutoff disabled:', !e.target.checked);
+        // Update LED
+        if (lpfLED) this.updateLEDState(lpfLED, e.target.checked);
+        this.switchToCustomPreset();
+      });
+    } else {
+      console.error('❌ LPF Toggle or Group not found!');
+    }
+
+    if (lpfCutoff && lpfCutoffValue) {
+      lpfCutoff.addEventListener('input', (e) => {
+        const value = parseInt(e.target.value);
+        this.customSettings.lpf_cutoff = value;
+        const valueText = this.formatFrequency(value);
+        lpfCutoffValue.textContent = valueText;
+        e.target.setAttribute('aria-valuenow', value);
+        e.target.setAttribute('aria-valuetext', valueText);
+        this.switchToCustomPreset();
+      });
+    }
   }
 
   /**
@@ -1121,10 +1162,13 @@ class VinylApp {
   setupLEDIndicators() {
     // Get all LED elements
     const leds = document.querySelectorAll('.switch-led');
+    console.log('💡 Setting up LED indicators, found:', leds.length);
 
     leds.forEach(led => {
       const switchId = led.dataset.switch;
       const switchElement = document.getElementById(switchId);
+
+      console.log(`💡 LED for ${switchId}:`, { led, switchElement, checked: switchElement?.checked });
 
       if (switchElement) {
         // Set initial state
@@ -1132,8 +1176,11 @@ class VinylApp {
 
         // Listen for changes
         switchElement.addEventListener('change', (e) => {
+          console.log(`💡 ${switchId} changed to:`, e.target.checked);
           this.updateLEDState(led, e.target.checked);
         });
+      } else {
+        console.error(`❌ Switch element not found for LED: ${switchId}`);
       }
     });
   }
@@ -1142,11 +1189,13 @@ class VinylApp {
    * Update LED state based on toggle state
    */
   updateLEDState(led, isOn) {
+    console.log('💡 Updating LED state:', { led, isOn, currentClasses: led.className });
     if (isOn) {
       led.classList.add('active');
     } else {
       led.classList.remove('active');
     }
+    console.log('💡 LED classes after update:', led.className);
   }
 
   /**
@@ -2652,27 +2701,19 @@ class VinylApp {
     popIntensity.setAttribute('aria-valuenow', this.customSettings.pop_intensity);
     popIntensity.setAttribute('aria-valuetext', this.customSettings.pop_intensity.toFixed(2));
 
-    // Hide/show slider groups based on toggle state
-    document.getElementById('noiseIntensityGroup').style.display = this.customSettings.surface_noise ? 'block' : 'none';
-    document.getElementById('popIntensityGroup').style.display = this.customSettings.surface_noise ? 'block' : 'none';
 
-    document.getElementById('wowFlutter').checked = this.customSettings.wow_flutter;
     wowFlutterIntensity.value = this.customSettings.wow_flutter_intensity;
     document.getElementById('wowFlutterValue').textContent = this.customSettings.wow_flutter_intensity.toFixed(4);
     // Update ARIA attributes
     wowFlutterIntensity.setAttribute('aria-valuenow', this.customSettings.wow_flutter_intensity);
     wowFlutterIntensity.setAttribute('aria-valuetext', this.customSettings.wow_flutter_intensity.toFixed(4));
-    // Hide/show slider group based on toggle state
-    document.getElementById('wowFlutterIntensityGroup').style.display = this.customSettings.wow_flutter ? 'block' : 'none';
 
-    document.getElementById('harmonicDistortion').checked = this.customSettings.harmonic_distortion;
     distortionAmount.value = this.customSettings.distortion_amount;
     document.getElementById('distortionValue').textContent = this.customSettings.distortion_amount.toFixed(2);
     // Update ARIA attributes
     distortionAmount.setAttribute('aria-valuenow', this.customSettings.distortion_amount);
     distortionAmount.setAttribute('aria-valuetext', this.customSettings.distortion_amount.toFixed(2));
-    // Hide/show slider group based on toggle state
-    document.getElementById('distortionAmountGroup').style.display = this.customSettings.harmonic_distortion ? 'block' : 'none';
+
 
     document.getElementById('stereoReduction').checked = this.customSettings.stereo_reduction;
     stereoWidth.value = this.customSettings.stereo_width;
@@ -2680,8 +2721,8 @@ class VinylApp {
     // Update ARIA attributes
     stereoWidth.setAttribute('aria-valuenow', this.customSettings.stereo_width);
     stereoWidth.setAttribute('aria-valuetext', this.customSettings.stereo_width.toFixed(2));
-    // Hide/show slider group based on toggle state
-    document.getElementById('stereoWidthGroup').style.display = this.customSettings.stereo_reduction ? 'block' : 'none';
+    // Disable slider based on toggle state
+    stereoWidth.disabled = !this.customSettings.stereo_reduction;
 
     // Bass EQ
     const bassSlider = document.getElementById('bass');
@@ -2717,7 +2758,8 @@ class VinylApp {
     document.getElementById('hpfCutoffValue').textContent = hpfValueText;
     hpfCutoff.setAttribute('aria-valuenow', this.customSettings.hpf_cutoff || 30);
     hpfCutoff.setAttribute('aria-valuetext', hpfValueText);
-    document.getElementById('hpfCutoffGroup').style.display = (this.customSettings.hpf_enabled || false) ? 'block' : 'none';
+    // Disable slider based on toggle state
+    hpfCutoff.disabled = !(this.customSettings.hpf_enabled || false);
 
     // Low-Pass Filter
     const lpfToggle = document.getElementById('lpfEnabled');
@@ -2729,13 +2771,19 @@ class VinylApp {
     document.getElementById('lpfCutoffValue').textContent = lpfValueText;
     lpfCutoff.setAttribute('aria-valuenow', this.customSettings.lpf_cutoff || 15000);
     lpfCutoff.setAttribute('aria-valuetext', lpfValueText);
-    document.getElementById('lpfCutoffGroup').style.display = (this.customSettings.lpf_enabled || false) ? 'block' : 'none';
+    // Disable slider based on toggle state
+    lpfCutoff.disabled = !(this.customSettings.lpf_enabled || false);
   }
 
   /**
    * Trap focus within modal for keyboard navigation
    */
   trapFocus(modal) {
+    if (!modal || !modal.querySelectorAll) {
+      console.warn('⚠️ Invalid modal element passed to trapFocus');
+      return;
+    }
+
     const focusableElements = modal.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
