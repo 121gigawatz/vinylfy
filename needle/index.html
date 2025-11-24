@@ -9,31 +9,34 @@
   <meta name="theme-color" content="#d4a574">
 
   <!-- PWA Meta Tags -->
-  <link rel="manifest" href="/manifest.json">
+  <link rel="manifest" href="manifest.json">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Vinylfy">
 
   <!-- Icons -->
-  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
-  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
-  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 
   <!-- Preconnect for performance -->
   <link rel="preconnect" href="/api">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 
   <title>Vinylfy</title>
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="/css/variables.css?v=beta4.1.1">
-  <link rel="stylesheet" href="/css/base.css?v=beta4.1.1">
-  <link rel="stylesheet" href="/css/components.css?v=beta4.1.1">
-  <link rel="stylesheet" href="/css/responsive.css?v=beta4.1.1">
+  <link rel="stylesheet" href="css/variables.css?v=beta4.1.7">
+  <link rel="stylesheet" href="css/base.css?v=beta4.1.7">
+  <link rel="stylesheet" href="css/components.css?v=beta4.1.7">
+  <link rel="stylesheet" href="css/responsive.css?v=beta4.1.7">
 
   <!-- Driver.js for product tours -->
-  <link rel="stylesheet" href="/css/vendor/driver.css?v=beta4.1.1">
-  <script src="/js/vendor/driver.js?v=beta4.1.1"></script>
+  <link rel="stylesheet" href="css/vendor/driver.css?v=beta4.1.1">
+  <script src="js/vendor/driver.js?v=beta4.1.1"></script>
 </head>
 
 <body>
@@ -46,8 +49,8 @@
     <div class="flex-between mobile-flex-col gap-md">
       <div>
         <h1 style="margin-bottom: var(--space-xs); display: flex; align-items: center; gap: var(--space-sm);">
-          <img src="assets/icons/favicon-96x96.png" alt="Vinylfy icon" style="width: 48px; height: 48px;">
-          <span style="color: var(--color-primary);">Vinylfy</span>
+          <img src="assets/icons/favicon-96x96.png" alt="Vinylfy icon" style="width: 96px; height: 96px;">
+          <span class="brand-text" style="color: var(--color-primary);">Vinylfy</span>
         </h1>
       </div>
       <div class="flex gap-sm" style="align-items: center;">
@@ -74,7 +77,6 @@
           <button id="themeAuto" class="theme-toggle-btn active" data-theme="auto" aria-label="Auto mode"
             title="Auto mode">Auto</button>
         </div>
-        <span id="healthStatus" class="badge badge-secondary">Checking...</span>
         <button id="installBtn" class="btn btn-ghost btn-sm hidden"
           aria-label="Install Vinylfy as a progressive web app">
           <span aria-hidden="true">📲</span> Install
@@ -86,417 +88,192 @@
   <!-- Main Content -->
   <main id="main-content" class="container" style="padding-bottom: var(--space-xs);">
 
-    <!-- Hero Section -->
-    <section class="hero animate-fadeIn">
-      <div class="hero-content">
-        <h1 class="hero-title">Give Your Digital Music That Vinyl Sound</h1>
-        <p class="hero-subtitle">Transform digital audio into warm, nostalgic vinyl records</p>
-        <div class="hero-features">
-          <span class="hero-feature"><span aria-hidden="true">🎧</span> Authentic Sound</span>
-          <span class="hero-feature"><span aria-hidden="true">⚡</span> Fast Processing</span>
-          <span class="hero-feature"><span aria-hidden="true">📱</span> Any Device</span>
-          <span class="hero-feature"><span aria-hidden="true">🎵</span> Multiple Formats</span>
+    <!-- Preset Shelf (Moved to Top) -->
+    <div class="preset-shelf-container animate-fadeIn" style="animation-delay: 0.2s;">
+      <h3 class="shelf-title">Choose your sound from our Preset Collections, or "Go Your Own Way" and customize your
+        sound</h3>
+      <div id="presetShelf" class="preset-shelf">
+        <!-- Presets will be injected here by JS -->
+      </div>
+    </div>
+
+    <!-- Record Player Console -->
+    <div class="record-player-console animate-fadeIn">
+
+      <!-- Left: Turntable Unit -->
+      <div class="console-turntable-section">
+        <div class="turntable-unit large-turntable">
+          <div class="turntable-platter">
+            <div class="turntable-label"></div>
+          </div>
+          <div class="turntable-arm"></div>
+          <!-- Status Light (API Health) -->
+          <div id="healthStatus" class="turntable-light" title="Turntable Status" aria-label="Turntable Status"></div>
         </div>
       </div>
-    </section>
 
-    <!-- Step 1: Upload Your Audio -->
-    <section class="section animate-slideUp">
-      <div class="card card-glow gradient-border">
-        <div class="card-header">
-          <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-            <div style="display: flex; align-items: center; gap: var(--space-xs);">
-              <span class="step-indicator">1</span>
-              <div>
-                <h2 class="card-title" style="margin-bottom: var(--space-xs);">Upload Your Audio</h2>
-                <p class="card-subtitle">Select an audio file to vinylfy</p>
+      <!-- Right: Control Deck -->
+      <div class="console-deck">
+
+        <!-- Top: Digital Display / Upload Area -->
+        <div class="console-display-container">
+          <div id="consoleDisplay" class="console-display" role="button" tabindex="0" aria-label="Upload audio file">
+            <div class="display-content default-state">
+              <span class="display-icon">INSERT RECORD</span>
+              <span class="display-text">Click or Drop Audio File Here</span>
+            </div>
+            <div class="display-content loaded-state hidden">
+              <span class="display-label">NOW PLAYING</span>
+              <span class="display-filename" id="displayFilename">-</span>
+              <div class="display-meta">
+                <span id="displayFormat">-</span> • <span id="displaySize">-</span>
               </div>
             </div>
-            <button class="help-btn" data-tour="upload" title="Learn about uploading audio files"
-              aria-label="Help: Learn about uploading audio files">
-              ?
+            <div class="display-content processing-state hidden">
+              <span class="display-label">STATUS</span>
+              <span class="display-text blink">PROCESSING...</span>
+              <div class="display-progress-bar">
+                <div id="displayProgressFill" class="display-progress-fill" style="width: 0%"></div>
+              </div>
+            </div>
+            <input type="file" id="audioFile" accept="audio/*,.wav,.mp3,.flac,.ogg,.m4a,.aac" class="hidden-file-input">
+          </div>
+
+          <!-- Output Format Knob (Visual representation using radio buttons styled as a knob or selector) -->
+          <div class="format-selector-container">
+            <label class="console-label-small">OUTPUT FORMAT</label>
+            <div class="format-toggles">
+              <label class="format-option">
+                <input type="radio" name="outputFormat" value="mp3" checked>
+                <span>MP3</span>
+              </label>
+              <label class="format-option">
+                <input type="radio" name="outputFormat" value="wav">
+                <span>WAV</span>
+              </label>
+              <label class="format-option">
+                <input type="radio" name="outputFormat" value="flac">
+                <span>FLAC</span>
+              </label>
+              <label class="format-option">
+                <input type="radio" name="outputFormat" value="aac">
+                <span>AAC</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Middle: Faders Bank -->
+        <div class="faders-bank">
+          <!-- Noise -->
+          <div class="fader-group">
+            <div class="fader-track">
+              <input type="range" id="noiseIntensity" class="vertical-fader" min="0" max="0.1" step="0.001"
+                value="0.02">
+            </div>
+            <label for="noiseIntensity" class="console-label">NOISE</label>
+          </div>
+
+          <!-- Pop -->
+          <div class="fader-group">
+            <div class="fader-track">
+              <input type="range" id="popIntensity" class="vertical-fader" min="0" max="1.0" step="0.05" value="0.6">
+            </div>
+            <label for="popIntensity" class="console-label">POP</label>
+          </div>
+
+          <!-- Flutter -->
+          <div class="fader-group">
+            <div class="fader-track">
+              <input type="range" id="wowFlutterIntensity" class="vertical-fader" min="0" max="0.01" step="0.0001"
+                value="0.001">
+            </div>
+            <label for="wowFlutterIntensity" class="console-label">FLUTTER</label>
+          </div>
+
+          <!-- Distortion -->
+          <div class="fader-group">
+            <div class="fader-track">
+              <input type="range" id="distortionAmount" class="vertical-fader" min="0" max="1" step="0.01" value="0.15">
+            </div>
+            <label for="distortionAmount" class="console-label">DISTORT</label>
+          </div>
+
+          <!-- EQ Section -->
+          <div class="fader-separator"></div>
+
+          <!-- Bass -->
+          <div class="fader-group">
+            <div class="fader-track">
+              <input type="range" id="bass" class="vertical-fader" min="-5" max="5" step="0.1" value="0">
+            </div>
+            <label for="bass" class="console-label">BASS</label>
+          </div>
+
+          <!-- Mid -->
+          <div class="fader-group">
+            <div class="fader-track">
+              <input type="range" id="mid" class="vertical-fader" min="-5" max="5" step="0.1" value="0">
+            </div>
+            <label for="mid" class="console-label">MID</label>
+          </div>
+
+          <!-- Treble -->
+          <div class="fader-group">
+            <div class="fader-track">
+              <input type="range" id="treble" class="vertical-fader" min="-5" max="5" step="0.1" value="0">
+            </div>
+            <label for="treble" class="console-label">TREBLE</label>
+          </div>
+        </div>
+
+        <!-- Bottom: Switches & Actions -->
+        <div class="console-bottom-row">
+          <div class="switches-group">
+            <div class="switch-unit">
+              <div class="switch-led" data-switch="frequencyResponse"></div>
+              <label class="switch-label">RIAA</label>
+              <label class="toggle-switch-metal">
+                <input type="checkbox" id="frequencyResponse" checked>
+                <span class="switch-lever"></span>
+              </label>
+            </div>
+            <div class="switch-unit">
+              <div class="switch-led" data-switch="surfaceNoise"></div>
+              <label class="switch-label">CRACKLE</label>
+              <label class="toggle-switch-metal">
+                <input type="checkbox" id="surfaceNoise" checked>
+                <span class="switch-lever"></span>
+              </label>
+            </div>
+            <div class="switch-unit">
+              <div class="switch-led" data-switch="stereoReduction"></div>
+              <label class="switch-label">STEREO</label>
+              <label class="toggle-switch-metal">
+                <input type="checkbox" id="stereoReduction" checked>
+                <!-- Note: Logic might need inversion if label is Stereo but ID is Reduction -->
+                <span class="switch-lever"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="action-group" style="display: flex; gap: var(--space-sm); align-items: center;">
+            <button id="metadataBtn" class="btn-console-icon" title="Metadata Manager"
+              aria-label="Open Metadata Manager">
+              <span aria-hidden="true">🏷️</span>
+            </button>
+            <button id="processBtn" class="btn-console-start" disabled>
+              <span class="btn-text">START</span>
+              <span class="btn-led"></span>
+            </button>
+            <button id="downloadBtn" class="btn-console-download hidden">
+              SAVE
             </button>
           </div>
         </div>
 
-        <div class="card-body">
-          <div class="file-upload">
-            <input type="file" id="audioFile" accept="audio/*,.wav,.mp3,.flac,.ogg,.m4a,.aac"
-              aria-label="Upload audio file">
-            <label for="audioFile" class="file-upload-label" id="fileUploadLabel">
-              <div class="file-upload-icon"><span aria-hidden="true">🎧</span></div>
-              <div class="file-upload-text">Click or drag audio file here</div>
-              <div class="file-upload-hint" id="fileUploadHint">Supports: WAV, MP3, FLAC, OGG, M4A, AAC (Max 25MB)</div>
-            </label>
-          </div>
-
-          <!-- File Info -->
-          <div id="fileInfo" class="hidden" style="margin-top: var(--space-xs);">
-            <div class="alert alert-success">
-              <strong>File loaded:</strong> <span id="fileName"></span>
-              <br>
-              <strong>Size:</strong> <span id="fileSize"></span>
-            </div>
-          </div>
-        </div>
       </div>
-    </section>
-
-    <!-- Step 2: Configure Settings -->
-    <section class="section animate-slideUp" style="animation-delay: 0.1s;">
-      <div class="card card-glow gradient-border">
-        <div class="card-header">
-          <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-            <div style="display: flex; align-items: center; gap: var(--space-xs);">
-              <span class="step-indicator">2</span>
-              <div>
-                <h2 class="card-title" style="margin-bottom: var(--space-sm);">Choose Your Vinyl Effect</h2>
-                <p class="card-subtitle">Select a preset or customize your own</p>
-              </div>
-            </div>
-            <button class="help-btn" data-tour="vinyl-effects" title="Learn about vinyl effects and settings"
-              aria-label="Help: Learn about vinyl effects and settings">
-              ?
-            </button>
-          </div>
-        </div>
-
-        <div class="card-body">
-          <!-- Preset and Format Selectors -->
-          <div class="form-row" style="margin-bottom: var(--space-xs);">
-            <div class="form-group">
-              <label for="presetSelector" class="form-label">Vinyl Preset</label>
-              <select id="presetSelector" class="form-select">
-                <option value="AJW Recommended" selected>AJW Recommended</option>
-                <option value="1920's Jazz">1920's Jazz</option>
-                <option value="1930's Swing">1930's Swing</option>
-                <option value="1940's Big Band">1940's Big Band</option>
-                <option value="1950's Rock & Roll">1950's Rock & Roll</option>
-                <option value="1950's Rhythm & Blues">1950's Rhythm & Blues</option>
-                <option value="1960's Pop">1960's Pop</option>
-                <option value="1960's Psychedelic">1960's Psychedelic</option>
-                <option value="1970's Rock">1970's Rock</option>
-                <option value="1970's Disco">1970's Disco</option>
-                <option value="1970's Funk">1970's Funk</option>
-                <option value="1980's New Wave">1980's New Wave</option>
-                <option value="1980's Metal">1980's Metal</option>
-                <option value="1990's Alternative">1990's Alternative</option>
-                <option value="1990's Hip-Hop">1990's Hip-Hop</option>
-                <option value="2000's Pop">2000's Pop</option>
-                <option value="2000's Indie">2000's Indie</option>
-                <option value="2010's Pop">2010's Pop</option>
-                <option value="2010's Electronic">2010's Electronic</option>
-                <option value="2020's Modern Vinyl">2020's Modern Vinyl</option>
-                <option value="custom">Custom - Full control</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="formatSelector" class="form-label">Output Format</label>
-              <select id="formatSelector" class="form-select">
-                <option value="aac">AAC (High Quality, Smaller)</option>
-                <option value="mp3" selected>MP3 (Most Compatible)</option>
-                <option value="flac">FLAC (Lossless)</option>
-                <option value="ogg">OGG (Compressed)</option>
-                <option value="wav">WAV (Highest Quality)</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Custom Controls in Two Columns -->
-          <div id="customControls" style="padding-top: var(--space-xs); border-top: 1px solid var(--color-border);">
-            <h3 id="customSettingsHeader"
-              style="margin-bottom: var(--space-xs); color: var(--color-primary); font-size: var(--font-size-lg);">
-              Custom Settings</h3>
-
-            <div class="two-column-layout">
-              <!-- Left Column Controls -->
-              <div>
-                <!-- Frequency Response -->
-                <div class="form-group">
-                  <label class="toggle" id="frequencyResponseLabel">
-                    <input type="checkbox" id="frequencyResponse" class="toggle-input" role="switch" aria-checked="true"
-                      aria-label="Enable frequency reponse with RIAA curve" checked>
-                    <span class="toggle-switch" aria-hidden="true"></span>
-                    <span>Frequency Response (RIAA curve)</span>
-                  </label>
-                </div>
-
-                <!-- Surface Noise -->
-                <div class="form-group" id="surfaceNoiseToggle">
-                  <label class="toggle" id="surfaceNoiseLabel">
-                    <input type="checkbox" id="surfaceNoise" class="toggle-input" role="switch" aria-checked="true"
-                      aria-label="Enable surface noise with crackles and pops" checked>
-                    <span class="toggle-switch" aria-hidden="true"></span>
-                    <span>Surface Noise (crackles & pops)</span>
-                  </label>
-                </div>
-
-                <!-- Noise Intensity -->
-                <div class="range-group" id="noiseIntensityGroup">
-                  <div class="range-label">
-                    <label for="noiseIntensity">Noise Intensity</label>
-                    <span class="range-value" id="noiseIntensityValue" aria-live="polite">0.020</span>
-                  </div>
-                  <input type="range" id="noiseIntensity" class="range-input" min="0" max="0.1" step="0.001"
-                    value="0.02" aria-label="Noise intensity level" aria-valuemin="0" aria-valuemax="0.1"
-                    aria-valuenow="0.02" aria-valuetext="0.020">
-                </div>
-
-                <div class="range-group" id="popIntensityGroup">
-                  <div class="range-label">
-                    <label for="popIntensity">Pop Intensity</label>
-                    <span class="range-value" id="popIntensityValue" aria-live="polite">0.60</span>
-                  </div>
-                  <input type="range" id="popIntensity" class="range-input" min="0" max="1.0" step="0.05" value="0.6"
-                    aria-label="Pop and crackle intensity level" aria-valuemin="0" aria-valuemax="1.0"
-                    aria-valuenow="0.6" aria-valuetext="0.60">
-                </div>
-
-                <!-- Wow & Flutter -->
-                <div class="form-group">
-                  <label class="toggle" id="wowFlutterLabel">
-                    <input type="checkbox" id="wowFlutter" class="toggle-input" role="switch" aria-checked="true"
-                      aria-label="Enable wow and flutter pitch variations" checked>
-                    <span class="toggle-switch" aria-hidden="true"></span>
-                    <span>Wow & Flutter (pitch variations)</span>
-                  </label>
-                </div>
-
-                <div class="range-group" id="wowFlutterIntensityGroup">
-                  <div class="range-label">
-                    <label for="wowFlutterIntensity">Wow/Flutter Intensity</label>
-                    <span class="range-value" id="wowFlutterValue" aria-live="polite">0.0010</span>
-                  </div>
-                  <input type="range" id="wowFlutterIntensity" class="range-input" min="0" max="0.01" step="0.0001"
-                    value="0.001" aria-label="Wow and flutter pitch variation intensity" aria-valuemin="0"
-                    aria-valuemax="0.01" aria-valuenow="0.001" aria-valuetext="0.0010">
-                </div>
-
-                <!-- Harmonic Distortion -->
-                <div class="form-group">
-                  <label class="toggle" id="harmonicDistortionLabel">
-                    <input type="checkbox" id="harmonicDistortion" class="toggle-input" role="switch"
-                      aria-checked="true" aria-label="Enable harmonic distortion for analog warmth" checked>
-                    <span class="toggle-switch" aria-hidden="true"></span>
-                    <span>Harmonic Distortion (analog warmth)</span>
-                  </label>
-                </div>
-
-                <div class="range-group" id="distortionAmountGroup">
-                  <div class="range-label">
-                    <label for="distortionAmount">Distortion Amount</label>
-                    <span class="range-value" id="distortionValue" aria-live="polite">0.15</span>
-                  </div>
-                  <input type="range" id="distortionAmount" class="range-input" min="0" max="1" step="0.01" value="0.15"
-                    aria-label="Harmonic distortion amount for analog warmth" aria-valuemin="0" aria-valuemax="1"
-                    aria-valuenow="0.15" aria-valuetext="0.15">
-                </div>
-
-                <!-- Stereo Reduction -->
-                <div class="form-group">
-                  <label class="toggle" id="stereoReductionLabel">
-                    <input type="checkbox" id="stereoReduction" class="toggle-input" role="switch" aria-checked="true"
-                      aria-label="Enable stereo reduction for limited separation" checked>
-                    <span class="toggle-switch" aria-hidden="true"></span>
-                    <span>Stereo Reduction (limited separation)</span>
-                  </label>
-                </div>
-
-                <div class="range-group" id="stereoWidthGroup">
-                  <div class="range-label">
-                    <label for="stereoWidth">Stereo Width</label>
-                    <span class="range-value" id="stereoWidthValue" aria-live="polite">0.70</span>
-                  </div>
-                  <input type="range" id="stereoWidth" class="range-input" min="0" max="1" step="0.01" value="0.7"
-                    aria-label="Stereo field width and separation (0=mono, 1=full stereo)" aria-valuemin="0"
-                    aria-valuemax="1" aria-valuenow="0.7" aria-valuetext="0.70">
-                </div>
-              </div>
-
-              <!-- Right Column Controls -->
-              <div>
-                <h4
-                  style="margin-bottom: var(--space-sm); color: var(--color-text-secondary); font-size: var(--font-size-md); font-weight: var(--font-weight-medium);">
-                  EQ & Filters</h4>
-
-                <!-- Bass -->
-                <div class="range-group">
-                  <div class="range-label">
-                    <label for="bass">Bass (100 Hz)</label>
-                    <span class="range-value" id="bassValue" aria-live="polite">0.0 dB</span>
-                  </div>
-                  <input type="range" id="bass" class="range-input" min="-5" max="5" step="0.1" value="0"
-                    aria-label="Bass EQ adjustment in decibels" aria-valuemin="-5" aria-valuemax="5" aria-valuenow="0"
-                    aria-valuetext="0.0 dB">
-                </div>
-
-                <!-- Mid -->
-                <div class="range-group">
-                  <div class="range-label">
-                    <label for="mid">Mid (1000 Hz)</label>
-                    <span class="range-value" id="midValue" aria-live="polite">0.0 dB</span>
-                  </div>
-                  <input type="range" id="mid" class="range-input" min="-5" max="5" step="0.1" value="0"
-                    aria-label="Mid EQ adjustment in decibels" aria-valuemin="-5" aria-valuemax="5" aria-valuenow="0"
-                    aria-valuetext="0.0 dB">
-                </div>
-
-                <!-- Treble -->
-                <div class="range-group">
-                  <div class="range-label">
-                    <label for="treble">Treble (8000 Hz)</label>
-                    <span class="range-value" id="trebleValue" aria-live="polite">0.0 dB</span>
-                  </div>
-                  <input type="range" id="treble" class="range-input" min="-5" max="5" step="0.1" value="0"
-                    aria-label="Treble EQ adjustment in decibels" aria-valuemin="-5" aria-valuemax="5" aria-valuenow="0"
-                    aria-valuetext="0.0 dB">
-                </div>
-
-                <!-- High-Pass Filter -->
-                <div class="form-group">
-                  <label class="toggle" id="hpfLabel">
-                    <input type="checkbox" id="hpfEnabled" class="toggle-input" role="switch" aria-checked="false"
-                      aria-label="Enable high-pass filter to remove low rumble">
-                    <span class="toggle-switch" aria-hidden="true"></span>
-                    <span>High-Pass Filter (remove rumble)</span>
-                  </label>
-                </div>
-
-                <div class="range-group" id="hpfCutoffGroup">
-                  <div class="range-label">
-                    <label for="hpfCutoff">HPF Cutoff</label>
-                    <span class="range-value" id="hpfCutoffValue" aria-live="polite">30 Hz</span>
-                  </div>
-                  <input type="range" id="hpfCutoff" class="range-input" min="20" max="500" step="5" value="30"
-                    aria-label="High-pass filter cutoff frequency in hertz" aria-valuemin="20" aria-valuemax="500"
-                    aria-valuenow="30" aria-valuetext="30 Hz">
-                </div>
-
-                <!-- Low-Pass Filter -->
-                <div class="form-group">
-                  <label class="toggle" id="lpfLabel">
-                    <input type="checkbox" id="lpfEnabled" class="toggle-input" role="switch" aria-checked="false"
-                      aria-label="Enable low-pass filter for vintage warmth">
-                    <span class="toggle-switch" aria-hidden="true"></span>
-                    <span>Low-Pass Filter (vintage warmth)</span>
-                  </label>
-                </div>
-
-                <div class="range-group" id="lpfCutoffGroup">
-                  <div class="range-label">
-                    <label for="lpfCutoff">LPF Cutoff</label>
-                    <span class="range-value" id="lpfCutoffValue" aria-live="polite">15000 Hz</span>
-                  </div>
-                  <input type="range" id="lpfCutoff" class="range-input" min="5000" max="20000" step="100" value="15000"
-                    aria-label="Low-pass filter cutoff frequency in hertz" aria-valuemin="5000" aria-valuemax="20000"
-                    aria-valuenow="15000" aria-valuetext="15000 Hz">
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Process Button -->
-        <div class="card-footer">
-          <button id="processBtn" class="btn btn-primary btn-lg btn-full" disabled
-            aria-label="Process audio with vinyl effects">
-            Process Audio
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              style="margin-left: 8px; vertical-align: middle;" aria-hidden="true">
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Processing Indicator -->
-    <section id="processingIndicator" class="section hidden animate-fadeIn" role="status" aria-live="polite"
-      aria-atomic="true">
-      <div class="card card-elevated text-center">
-        <h3 id="processingStatus" style="color: var(--color-primary); margin-bottom: var(--space-md);">Analyzing your
-          audio...</h3>
-        <div class="progress-bar-container" style="margin: 0 auto var(--space-md); max-width: 400px;">
-          <div class="progress-bar-bg">
-            <div id="progressBar" class="progress-bar-fill" style="width: 0%;"></div>
-          </div>
-          <p id="progressPercent" class="text-secondary"
-            style="margin-top: var(--space-sm); font-size: var(--font-size-sm);">0%</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Results Section -->
-    <section id="resultsSection" class="section hidden animate-slideUp">
-      <div class="card card-elevated card-glow gradient-border">
-        <div class="card-header">
-          <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-            <div style="display: flex; align-items: center; gap: var(--space-xs);">
-              <span class="step-indicator">3</span>
-              <div>
-                <h2 class="card-title" style="margin-bottom: var(--space-xs);">Preview & Download</h2>
-                <p class="card-subtitle">Your vinylified audio is ready! 🎉</p>
-              </div>
-            </div>
-            <button class="help-btn" data-tour="results" title="Learn about previewing and downloading"
-              aria-label="Help: Learn about previewing and downloading">
-              ?
-            </button>
-          </div>
-        </div>
-
-        <div class="card-body">
-          <!-- File Details -->
-          <div
-            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-md); margin-bottom: var(--space-lg);">
-            <div>
-              <div class="text-muted" style="font-size: var(--font-size-sm);">Filename</div>
-              <div id="resultFileName" style="font-weight: var(--font-weight-medium); word-break: break-all;">-</div>
-            </div>
-            <div>
-              <div class="text-muted" style="font-size: var(--font-size-sm);">Size</div>
-              <div id="resultFileSize" style="font-weight: var(--font-weight-medium);">-</div>
-            </div>
-            <div>
-              <div class="text-muted" style="font-size: var(--font-size-sm);">Preset</div>
-              <div id="resultPreset" style="font-weight: var(--font-weight-medium);">-</div>
-            </div>
-            <div>
-              <div class="text-muted" style="font-size: var(--font-size-sm);">Format</div>
-              <div id="resultFormat" style="font-weight: var(--font-weight-medium);">-</div>
-            </div>
-          </div>
-
-          <div class="alert alert-info">
-            <span aria-hidden="true">⏱️</span> This file will expire in <strong id="expiresIn">-</strong>
-          </div>
-
-          <!-- Audio Player -->
-          <div id="audioPlayerContainer" class="hidden" role="region"
-            aria-label="Audio player to preview processed file"></div>
-
-          <!-- Action Buttons -->
-          <div class="btn-group" style="margin-top: var(--space-xs);">
-            <button id="previewBtn" class="btn btn-secondary btn-lg" aria-label="Preview processed audio file">
-              <span aria-hidden="true">🎧</span> Preview
-            </button>
-            <button id="metadataBtn" class="btn btn-secondary btn-lg" title="View and edit audio metadata (MP3 only)"
-              aria-label="Manage audio file metadata">
-              <span aria-hidden="true">🏷️</span> Metadata
-            </button>
-            <button id="downloadBtn" class="btn btn-primary btn-lg" aria-label="Download processed file">
-              <span aria-hidden="true">⬇</span> Download
-            </button>
-            <button id="discardBtn" class="btn btn-ghost btn-lg" style="border: 1px solid var(--color-border);"
-              aria-label="Discard audio file and start over">
-              <span aria-hidden="true">🗑️</span> Discard
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
+    </div>
 
   </main>
 
@@ -518,13 +295,14 @@
       </p>
       <div
         style="display: flex; gap: var(--space-xs); justify-content: center; flex-wrap: wrap; font-size: var(--font-size-sm); color: var(--color-text-secondary);">
-        <span><span aria-hidden="true">🎵</span> Authentic Sound</span>
+        <span><span aria-hidden="true">💽</span> Authentic Sound</span>
         <span><span aria-hidden="true">⚡</span> Fast Processing</span>
         <span><span aria-hidden="true">🔒</span> Privacy First</span>
         <span><span aria-hidden="true">📱</span> PWA Ready</span>
+        <span><span aria-hidden="true">♿</span> Accessibility Ready</span>
       </div>
       <p class="text-muted" style="font-size: var(--font-size-xs); margin-top: var(--space-xs);">
-        Made with ❤️ for AJW and vinyl enthusiasts • <span id="fileTTL">Files auto-delete after 1 hour</span>
+        Made with ❤️ for AJW and vinyl enthusiasts
       </p>
     </div>
   </footer>
@@ -689,7 +467,7 @@
   </div>
 
   <!-- Scripts -->
-  <script type="module" src="/js/app.js?v=beta4.1.1"></script>
+  <script type="module" src="/js/app.js?v=beta4.1.7"></script>
 </body>
 
 </html>

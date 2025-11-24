@@ -11,7 +11,7 @@ services:
     environment:
       # Backend config
       - FLASK_ENV=${FLASK_ENV:-production}
-      - DEBUG_MODE=${DEBUG_MODE:-false}
+      - DEBUG_MODE=${DEBUG_MODE:-true}
       - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
 
       # File upload settings
@@ -51,7 +51,7 @@ services:
     
     labels:
       - "com.vinylfy.description=Vinylfy application"
-      - "com.vinylfy.version=beta"
+      - "com.vinylfy.version=development"
 
 volumes:
   vinylfy-data:

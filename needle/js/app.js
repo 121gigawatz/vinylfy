@@ -3,10 +3,10 @@
  */
 
 // App Configuration
-const APP_VERSION = 'v1.0.0 Beta 4.1.1';
+const APP_VERSION = 'v1.0.0 Beta 4.1.7';
 
-import api from './api.js?v=beta4.1.1';
-import AudioPlayer from './audio-player.js?v=beta4.1.1';
+import api from './api.js?v=beta4.1.7';
+import AudioPlayer from './audio-player.js?v=beta4.1.7';
 import {
   formatFileSize,
   isValidAudioFile,
@@ -16,13 +16,13 @@ import {
   formatPresetName,
   parseErrorMessage,
   isPWAInstalled
-} from './utils.js?v=beta4.1.1';
+} from './utils.js?v=beta4.1.7';
 import {
   extractMetadata,
   writeMetadata,
   getEmptyMetadata,
   supportsMetadataWriting
-} from './metadata.js?v=beta4.1.1';
+} from './metadata.js?v=beta4.1.7';
 
 class VinylApp {
   constructor() {
@@ -73,11 +73,20 @@ class VinylApp {
     this.setupPresetSelector();
     this.setupFormatSelector();
     this.setupCustomControls();
+    this.setupLEDIndicators(); // Setup LED indicators for toggle switches
     this.setupProcessButton();
     this.setupThemeToggle();
     this.setupGitHubStars();
     this.setupMetadataModal();
     this.setupHelpButtons(); // Setup contextual help tours
+
+    // Wire up Metadata Button in Console
+    const metadataBtn = document.getElementById('metadataBtn');
+    if (metadataBtn) {
+      metadataBtn.addEventListener('click', () => {
+        this.openMetadataModal();
+      });
+    }
 
     // Initialize audio player
     this.audioPlayer = new AudioPlayer('audioPlayerContainer');
@@ -360,8 +369,23 @@ class VinylApp {
     try {
       const health = await api.checkHealth();
       if (health.healthy) {
-        healthStatus.textContent = '🟢 Turntable Spinning';
-        healthStatus.className = 'badge badge-success';
+        // Update turntable animation
+        const turntableUnit = document.querySelector('.turntable-unit');
+        const turntablePlatter = document.querySelector('.turntable-platter');
+        const turntableLight = document.querySelector('.turntable-light');
+
+        if (turntableUnit && turntablePlatter && turntableLight) {
+          turntableUnit.classList.add('playing');
+          turntablePlatter.classList.add('spinning');
+          turntableLight.classList.remove('status-red');
+          turntableLight.classList.add('status-green');
+
+          // Update title for accessibility
+          if (healthStatus) {
+            healthStatus.setAttribute('title', 'Turntable Spinning');
+            healthStatus.setAttribute('aria-label', 'Turntable Spinning');
+          }
+        }
 
         // Update app info from API
         if (health.config) {
@@ -378,8 +402,23 @@ class VinylApp {
         throw new Error('API unhealthy');
       }
     } catch (error) {
-      healthStatus.textContent = '🔴 Turntable Stopped';
-      healthStatus.className = 'badge badge-error';
+      // Update turntable animation for stopped state
+      const turntableUnit = document.querySelector('.turntable-unit');
+      const turntablePlatter = document.querySelector('.turntable-platter');
+      const turntableLight = document.querySelector('.turntable-light');
+
+      if (turntableUnit && turntablePlatter && turntableLight) {
+        turntableUnit.classList.remove('playing');
+        turntablePlatter.classList.remove('spinning');
+        turntableLight.classList.remove('status-green');
+        turntableLight.classList.add('status-red');
+
+        // Update title for accessibility
+        if (healthStatus) {
+          healthStatus.setAttribute('title', 'Turntable Stopped');
+          healthStatus.setAttribute('aria-label', 'Turntable Stopped');
+        }
+      }
       showToast('Cannot connect to server. Please check if the table is running.', 'error', 5000);
 
       // Still update footer and upload hint with defaults
@@ -508,11 +547,28 @@ class VinylApp {
   /**
    * Setup file upload
    */
+  /**
+   * Setup file upload
+   */
   setupFileUpload() {
     const fileInput = document.getElementById('audioFile');
-    const fileLabel = document.getElementById('fileUploadLabel');
-    const fileName = document.getElementById('fileName');
-    const fileSize = document.getElementById('fileSize');
+    const consoleDisplay = document.getElementById('consoleDisplay');
+
+    // Click to upload
+    consoleDisplay.addEventListener('click', (e) => {
+      // Don't trigger if clicking on the file input itself (bubbling)
+      if (e.target !== fileInput) {
+        fileInput.click();
+      }
+    });
+
+    // Keyboard support
+    consoleDisplay.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        fileInput.click();
+      }
+    });
 
     // File input change
     fileInput.addEventListener('change', (e) => {
@@ -523,45 +579,60 @@ class VinylApp {
     });
 
     // Drag and drop
-    fileLabel.addEventListener('dragover', (e) => {
+    consoleDisplay.addEventListener('dragover', (e) => {
       e.preventDefault();
-      fileLabel.classList.add('drag-over');
+      consoleDisplay.classList.add('drag-over');
+      consoleDisplay.style.borderColor = 'var(--color-primary)';
     });
 
-    fileLabel.addEventListener('dragleave', () => {
-      fileLabel.classList.remove('drag-over');
+    consoleDisplay.addEventListener('dragleave', () => {
+      consoleDisplay.classList.remove('drag-over');
+      consoleDisplay.style.borderColor = '';
     });
 
-    fileLabel.addEventListener('drop', (e) => {
+    consoleDisplay.addEventListener('drop', (e) => {
       e.preventDefault();
-      fileLabel.classList.remove('drag-over');
+      consoleDisplay.classList.remove('drag-over');
+      consoleDisplay.style.borderColor = '';
 
       const file = e.dataTransfer.files[0];
       if (file) {
         this.handleFileSelect(file);
       }
     });
-
-    // How It Works button removed - replaced with contextual help tours
   }
 
   /**
    * Handle file selection
    */
+  /**
+   * Handle file selection
+   */
   async handleFileSelect(file) {
-    const fileName = document.getElementById('fileName');
-    const fileSize = document.getElementById('fileSize');
-    const fileInfo = document.getElementById('fileInfo');
-
     if (!isValidAudioFile(file)) {
       showToast('Invalid file type. Please select an audio file.', 'error');
       return;
     }
 
     this.selectedFile = file;
-    fileName.textContent = file.name;
-    fileSize.textContent = formatFileSize(file.size);
-    fileInfo.classList.remove('hidden');
+
+    // Update Console Display
+    const display = document.getElementById('consoleDisplay');
+    const defaultState = display.querySelector('.default-state');
+    const loadedState = display.querySelector('.loaded-state');
+    const processingState = display.querySelector('.processing-state');
+
+    const displayFilename = document.getElementById('displayFilename');
+    const displayFormat = document.getElementById('displayFormat');
+    const displaySize = document.getElementById('displaySize');
+
+    displayFilename.textContent = file.name;
+    displaySize.textContent = formatFileSize(file.size);
+    displayFormat.textContent = file.type.split('/')[1].toUpperCase();
+
+    defaultState.classList.add('hidden');
+    processingState.classList.add('hidden');
+    loadedState.classList.remove('hidden');
 
     // Reset metadata when new file is selected
     this.originalMetadata = null;
@@ -573,7 +644,7 @@ class VinylApp {
 
     document.getElementById('processBtn').disabled = false;
 
-    showToast('File loaded successfully!', 'success');
+    showToast('Record loaded!', 'success');
   }
 
   /**
@@ -674,24 +745,23 @@ class VinylApp {
   }
 
   /**
-   * Populate preset selector with options
+   * Populate preset selector and shelf
    */
   populatePresetSelector() {
     const presetSelector = document.getElementById('presetSelector');
-    presetSelector.innerHTML = '';
+    const presetShelf = document.getElementById('presetShelf');
+
+    if (presetSelector) presetSelector.innerHTML = '';
+    if (presetShelf) presetShelf.innerHTML = '';
 
     // Preset descriptions for better UX
     const presetDescriptions = {
       'AJW Recommended': 'AJW Recommended - Perfect balance',
-      'light': 'Light - Subtle vinyl character',
-      'medium': 'Medium - Classic vinyl sound',
-      'heavy': 'Heavy - Well-worn record',
-      'vintage': 'Vintage - Old, heavily-played',
       'custom': 'Custom - Full control'
     };
 
     // Define preset order
-    const presetOrder = ['AJW Recommended', 'light', 'medium', 'heavy', 'vintage', 'custom'];
+    const presetOrder = ['AJW Recommended', 'custom'];
 
     // Get all available presets from API response
     const availablePresets = Object.keys(this.presets);
@@ -701,17 +771,72 @@ class VinylApp {
 
     // Add presets
     uniquePresets.forEach(preset => {
-      if (this.presets[preset]) {
-        const option = document.createElement('option');
-        option.value = preset;
-        option.textContent = presetDescriptions[preset] || formatPresetName(preset);
-        presetSelector.appendChild(option);
+      if (this.presets[preset] || preset === 'custom') {
+        // Add to dropdown (hidden but functional)
+        if (presetSelector) {
+          const option = document.createElement('option');
+          option.value = preset;
+          option.textContent = presetDescriptions[preset] || formatPresetName(preset);
+          presetSelector.appendChild(option);
+        }
+
+        // Add to shelf
+        if (presetShelf) {
+          const album = document.createElement('div');
+          album.className = `preset-album ${this.currentPreset === preset ? 'active' : ''}`;
+          album.dataset.preset = preset;
+          album.onclick = () => this.selectPreset(preset);
+
+          // Generate filename from preset name (lowercase, spaces to hyphens)
+          // Collapse multiple non-alphanumeric chars to single hyphen and trim
+          const coverName = preset.toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+          const coverSrc = `assets/covers/${coverName}.png`;
+
+          // Fallback to placeholder if image fails (handled via error event)
+
+          album.innerHTML = `
+            <div class="album-cover-wrapper">
+              <div class="album-record"></div>
+              <img src="${coverSrc}" alt="${preset}" class="album-cover" onerror="this.src='assets/covers/placeholder.jpg'">
+            </div>
+            <div class="album-label">${formatPresetName(preset)}</div>
+          `;
+
+          presetShelf.appendChild(album);
+        }
       }
     });
 
-    presetSelector.value = this.currentPreset;
+    if (presetSelector) presetSelector.value = this.currentPreset;
     this.loadPresetValues(this.currentPreset);
     this.updateCustomControlsVisibility();
+  }
+
+  /**
+   * Select a preset from the shelf
+   */
+  selectPreset(presetName) {
+    this.currentPreset = presetName;
+
+    // Update dropdown
+    const presetSelector = document.getElementById('presetSelector');
+    if (presetSelector) presetSelector.value = presetName;
+
+    // Update shelf active state
+    const albums = document.querySelectorAll('.preset-album');
+    albums.forEach(album => {
+      if (album.dataset.preset === presetName) {
+        album.classList.add('active');
+      } else {
+        album.classList.remove('active');
+      }
+    });
+
+    this.loadPresetValues(presetName);
+    this.updateCustomControlsVisibility();
+    this.savePreferences();
   }
 
   /**
@@ -741,13 +866,18 @@ class VinylApp {
   /**
    * Setup output format selector
    */
+  /**
+   * Setup output format selector
+   */
   setupFormatSelector() {
-    const formatSelector = document.getElementById('formatSelector');
+    const formatInputs = document.querySelectorAll('input[name="outputFormat"]');
 
-    formatSelector.addEventListener('change', (e) => {
-      this.outputFormat = e.target.value;
-      this.updateMetadataButtonState();
-      this.savePreferences();
+    formatInputs.forEach(input => {
+      input.addEventListener('change', (e) => {
+        this.outputFormat = e.target.value;
+        this.updateMetadataButtonState();
+        this.savePreferences();
+      });
     });
   }
 
@@ -954,7 +1084,7 @@ class VinylApp {
     hpfCutoff.addEventListener('input', (e) => {
       const value = parseInt(e.target.value);
       this.customSettings.hpf_cutoff = value;
-      const valueText = `${value} Hz`;
+      const valueText = this.formatFrequency(value);
       hpfCutoffValue.textContent = valueText;
       e.target.setAttribute('aria-valuenow', value);
       e.target.setAttribute('aria-valuetext', valueText);
@@ -977,12 +1107,46 @@ class VinylApp {
     lpfCutoff.addEventListener('input', (e) => {
       const value = parseInt(e.target.value);
       this.customSettings.lpf_cutoff = value;
-      const valueText = `${value} Hz`;
+      const valueText = this.formatFrequency(value);
       lpfCutoffValue.textContent = valueText;
       e.target.setAttribute('aria-valuenow', value);
       e.target.setAttribute('aria-valuetext', valueText);
       this.switchToCustomPreset();
     });
+  }
+
+  /**
+   * Setup LED indicators for toggle switches
+   */
+  setupLEDIndicators() {
+    // Get all LED elements
+    const leds = document.querySelectorAll('.switch-led');
+
+    leds.forEach(led => {
+      const switchId = led.dataset.switch;
+      const switchElement = document.getElementById(switchId);
+
+      if (switchElement) {
+        // Set initial state
+        this.updateLEDState(led, switchElement.checked);
+
+        // Listen for changes
+        switchElement.addEventListener('change', (e) => {
+          this.updateLEDState(led, e.target.checked);
+        });
+      }
+    });
+  }
+
+  /**
+   * Update LED state based on toggle state
+   */
+  updateLEDState(led, isOn) {
+    if (isOn) {
+      led.classList.add('active');
+    } else {
+      led.classList.remove('active');
+    }
   }
 
   /**
@@ -1144,6 +1308,16 @@ class VinylApp {
       return (count / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
     }
     return count.toString();
+  }
+
+  /**
+   * Format frequency for display (Hz or kHz)
+   */
+  formatFrequency(hz) {
+    if (hz >= 1000) {
+      return `${(hz / 1000).toFixed(1).replace(/\.0$/, '')} kHz`;
+    }
+    return `${hz} Hz`;
   }
 
   /**
@@ -2047,15 +2221,6 @@ class VinylApp {
             }
           },
           {
-            element: '#harmonicDistortionLabel',
-            popover: {
-              title: 'Harmonic Distortion (Color/Warmth)',
-              description: 'Toggle this switch to enable or bypass the deliberate introduction of harmonic distortion (sometimes called "saturation"). This is an effect used to simulate the sound of analog gear, adding a subjective sense of "warmth," "color," or "grit" to the sound.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
             element: '#wowFlutterLabel',
             popover: {
               title: 'Wow & Flutter',
@@ -2074,10 +2239,10 @@ class VinylApp {
             }
           },
           {
-            element: '#processBtn',
+            element: '#harmonicDistortionLabel',
             popover: {
-              title: 'Process Audio Button',
-              description: 'Click here to process your uploaded audio file with Vinylfy. Vinylfy will apply its algorithm based on the settings above.',
+              title: 'Harmonic Distortion (Color/Warmth)',
+              description: 'Toggle this switch to enable or bypass the deliberate introduction of harmonic distortion (sometimes called "saturation"). This is an effect used to simulate the sound of analog gear, adding a subjective sense of "warmth," "color," or "grit" to the sound.',
               side: 'top',
               align: 'center'
             }
@@ -2171,7 +2336,16 @@ class VinylApp {
               side: 'top',
               align: 'center'
             }
-          }
+          },
+          {
+            element: '#processBtn',
+            popover: {
+              title: 'Begin Vinylification',
+              description: 'Click here to begin vinylifying your uploaded audio file with Vinylfy. Vinylfy will apply its algorithm based on the settings above.',
+              side: 'top',
+              align: 'center'
+            }
+          },
         ]
       },
       results: {
@@ -2539,7 +2713,7 @@ class VinylApp {
     hpfToggle.checked = this.customSettings.hpf_enabled || false;
     hpfToggle.setAttribute('aria-checked', this.customSettings.hpf_enabled || false);
     hpfCutoff.value = this.customSettings.hpf_cutoff || 30;
-    const hpfValueText = `${this.customSettings.hpf_cutoff || 30} Hz`;
+    const hpfValueText = this.formatFrequency(this.customSettings.hpf_cutoff || 30);
     document.getElementById('hpfCutoffValue').textContent = hpfValueText;
     hpfCutoff.setAttribute('aria-valuenow', this.customSettings.hpf_cutoff || 30);
     hpfCutoff.setAttribute('aria-valuetext', hpfValueText);
@@ -2551,7 +2725,7 @@ class VinylApp {
     lpfToggle.checked = this.customSettings.lpf_enabled || false;
     lpfToggle.setAttribute('aria-checked', this.customSettings.lpf_enabled || false);
     lpfCutoff.value = this.customSettings.lpf_cutoff || 15000;
-    const lpfValueText = `${this.customSettings.lpf_cutoff || 15000} Hz`;
+    const lpfValueText = this.formatFrequency(this.customSettings.lpf_cutoff || 15000);
     document.getElementById('lpfCutoffValue').textContent = lpfValueText;
     lpfCutoff.setAttribute('aria-valuenow', this.customSettings.lpf_cutoff || 15000);
     lpfCutoff.setAttribute('aria-valuetext', lpfValueText);

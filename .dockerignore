@@ -2,6 +2,7 @@
 docs/
 *.md
 !README.md
+tests/
 
 # Git
 .git/

@@ -4,8 +4,8 @@
  */
 
 // API Configuration
-// Always use relative path so requests go through nginx proxy
-const API_BASE_URL = '/api';
+// Point to backend server on port 5001 for local dev
+const API_BASE_URL = 'http://localhost:5001/api';
 
 // API Client Class
 class VinylAPI {
@@ -18,7 +18,7 @@ class VinylAPI {
    */
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
-    
+
     try {
       const response = await fetch(url, {
         ...options,
@@ -31,11 +31,11 @@ class VinylAPI {
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
         const data = await response.json();
-        
+
         if (!response.ok) {
           throw new Error(data.error || `HTTP error! status: ${response.status}`);
         }
-        
+
         return data;
       }
 
@@ -43,7 +43,7 @@ class VinylAPI {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       return response;
     } catch (error) {
       console.error('API request failed:', error);
@@ -141,17 +141,17 @@ class VinylAPI {
   async processAudio(file, options = {}) {
     const formData = new FormData();
     formData.append('audio', file);
-    
+
     // Add preset
     if (options.preset) {
       formData.append('preset', options.preset);
     }
-    
+
     // Add output format
     if (options.outputFormat) {
       formData.append('output_format', options.outputFormat);
     }
-    
+
     // Add custom settings if preset is 'custom'
     if (options.preset === 'custom' && options.settings) {
       const settings = options.settings;
@@ -167,7 +167,7 @@ class VinylAPI {
       formData.append('stereo_reduction', settings.stereo_reduction);
       formData.append('stereo_width', settings.stereo_width);
     }
-    
+
     return this.postFormData('/process', formData);
   }
 
@@ -206,18 +206,18 @@ class VinylAPI {
     const response = await this.request(`/download/${fileId}`, {
       method: 'GET',
     });
-    
+
     // Get filename from Content-Disposition header
     const contentDisposition = response.headers.get('content-disposition');
     let filename = 'vinylfy_audio.wav';
-    
+
     if (contentDisposition) {
       const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(contentDisposition);
       if (matches != null && matches[1]) {
         filename = matches[1].replace(/['"]/g, '');
       }
     }
-    
+
     const blob = await response.blob();
     return { blob, filename };
   }

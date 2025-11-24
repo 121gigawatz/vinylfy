@@ -223,7 +223,7 @@ class Config:
             'lpf_enabled': True,
             'lpf_cutoff': 20000,
         },
-        '1970\s Funk': {
+        '1970\'s Funk': {
             'frequency_response': True,
             'surface_noise': True,
             'noise_intensity': 0.035,
