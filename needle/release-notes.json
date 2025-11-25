@@ -1,4 +1,15 @@
 {
+  "v1.0.0 Beta 4.1.7": {
+    "date": "2025-11-24",
+    "highlights": [
+      "Visual refinements to console deck and turntable.",
+      "Added Model No. and Manufacturing Date display."
+    ],
+    "bugfixes": [
+      "Fixed backend connection issues.",
+      "Fixed preset loading error."
+    ]
+  },
   "v1.0.0 Beta 4.1.1": {
     "date": "2025-11-22",
     "bugfixes": [

@@ -90,8 +90,7 @@
 
     <!-- Preset Shelf (Moved to Top) -->
     <div class="preset-shelf-container animate-fadeIn" style="animation-delay: 0.2s;">
-      <h3 class="shelf-title">Choose your sound from our Preset Collections, or "Go Your Own Way" and customize your
-        sound</h3>
+      <h3 class="shelf-title">Choose from our Preset Collections, or "Go Your Own Way" and customize your sound</h3>
       <div id="presetShelf" class="preset-shelf">
         <!-- Presets will be injected here by JS -->
       </div>
@@ -100,16 +99,20 @@
     <!-- Record Player Console -->
     <div class="record-player-console animate-fadeIn">
 
-      <!-- Left: Turntable Unit -->
-      <div class="console-turntable-section">
-        <div class="turntable-unit large-turntable">
-          <div class="turntable-platter">
-            <div class="turntable-label"></div>
+      <!-- Left Column: Turntable + Model No -->
+      <div class="console-left-col">
+        <div class="console-turntable-section">
+          <div class="turntable-unit large-turntable">
+            <div class="turntable-platter">
+              <div class="turntable-label"></div>
+            </div>
+            <div class="turntable-arm"></div>
+            <!-- Status Light (API Health) -->
+            <div id="healthStatus" class="turntable-light" title="Turntable Status" aria-label="Turntable Status"></div>
           </div>
-          <div class="turntable-arm"></div>
-          <!-- Status Light (API Health) -->
-          <div id="healthStatus" class="turntable-light" title="Turntable Status" aria-label="Turntable Status"></div>
         </div>
+        <div id="modelNumber" class="model-number">Model No. v...</div>
+        <div id="mfgDate" class="model-number">MFG ...</div>
       </div>
 
       <!-- Right: Control Deck -->
@@ -124,7 +127,11 @@
             </div>
             <div class="display-content loaded-state hidden">
               <span class="display-label">NOW PLAYING</span>
-              <span class="display-filename" id="displayFilename">-</span>
+              <div class="marquee-container">
+                <div class="marquee-content" id="displayFilename">
+                  <span>-</span>
+                </div>
+              </div>
               <div class="display-meta">
                 <span id="displayFormat">-</span> • <span id="displaySize">-</span>
               </div>
@@ -139,8 +146,8 @@
                 <span id="progressPercent" class="display-meta">0%</span>
               </div>
             </div>
-            <input type="file" id="audioFile" accept="audio/*,.wav,.mp3,.flac,.ogg,.m4a,.aac" class="hidden-file-input">
           </div>
+          <input type="file" id="audioFile" accept="audio/*,.wav,.mp3,.flac,.ogg,.m4a,.aac" class="hidden-file-input">
 
           <!-- Output Format Knob (Visual representation using radio buttons styled as a knob or selector) -->
           <div class="format-selector-container">
@@ -166,44 +173,53 @@
           </div>
         </div>
 
+
         <!-- Middle: Faders Bank -->
         <div class="faders-bank">
           <!-- Noise -->
           <div class="fader-group">
+            <div class="value-window">
+              <span id="noiseIntensityValue">0.020</span>
+            </div>
             <div class="fader-track">
               <input type="range" id="noiseIntensity" class="vertical-fader" min="0" max="0.1" step="0.001"
                 value="0.02">
             </div>
-            <label for="noiseIntensity" class="console-label">NOISE<span id="noiseIntensityValue"
-                class="value-display">0.020</span></label>
+            <label for="noiseIntensity" class="console-label">NOISE</label>
           </div>
 
           <!-- Pop -->
           <div class="fader-group">
+            <div class="value-window">
+              <span id="popIntensityValue">0.60</span>
+            </div>
             <div class="fader-track">
               <input type="range" id="popIntensity" class="vertical-fader" min="0" max="1.0" step="0.05" value="0.6">
             </div>
-            <label for="popIntensity" class="console-label">POP<span id="popIntensityValue"
-                class="value-display">0.60</span></label>
+            <label for="popIntensity" class="console-label">POP</label>
           </div>
 
           <!-- Flutter -->
           <div class="fader-group">
+            <div class="value-window">
+              <span id="wowFlutterValue">0.0010</span>
+            </div>
             <div class="fader-track">
               <input type="range" id="wowFlutterIntensity" class="vertical-fader" min="0" max="0.01" step="0.0001"
                 value="0.001">
             </div>
-            <label for="wowFlutterIntensity" class="console-label">FLUTTER<span id="wowFlutterValue"
-                class="value-display">0.0010</span></label>
+            <label for="wowFlutterIntensity" class="console-label">FLUTTER</label>
           </div>
 
           <!-- Distortion -->
           <div class="fader-group">
+            <div class="value-window">
+              <span id="distortionValue">0.15</span>
+            </div>
             <div class="fader-track">
               <input type="range" id="distortionAmount" class="vertical-fader" min="0" max="1" step="0.01" value="0.15">
             </div>
-            <label for="distortionAmount" class="console-label">DISTORT<span id="distortionValue"
-                class="value-display">0.15</span></label>
+            <label for="distortionAmount" class="console-label">DISTORT</label>
           </div>
 
           <!-- EQ Section -->
@@ -211,169 +227,174 @@
 
           <!-- Bass -->
           <div class="fader-group">
+            <div class="value-window">
+              <span id="bassValue">0.0 dB</span>
+            </div>
             <div class="fader-track">
               <input type="range" id="bass" class="vertical-fader" min="-5" max="5" step="0.1" value="0">
             </div>
-            <label for="bass" class="console-label">BASS<span id="bassValue" class="value-display">0.0 dB</span></label>
+            <label for="bass" class="console-label">BASS</label>
           </div>
 
           <!-- Mid -->
           <div class="fader-group">
+            <div class="value-window">
+              <span id="midValue">0.0 dB</span>
+            </div>
             <div class="fader-track">
               <input type="range" id="mid" class="vertical-fader" min="-5" max="5" step="0.1" value="0">
             </div>
-            <label for="mid" class="console-label">MID<span id="midValue" class="value-display">0.0 dB</span></label>
+            <label for="mid" class="console-label">MID</label>
           </div>
 
           <!-- Treble -->
           <div class="fader-group">
+            <div class="value-window">
+              <span id="trebleValue">0.0 dB</span>
+            </div>
             <div class="fader-track">
               <input type="range" id="treble" class="vertical-fader" min="-5" max="5" step="0.1" value="0">
             </div>
-            <label for="treble" class="console-label">TREBLE<span id="trebleValue" class="value-display">0.0
-                dB</span></label>
+            <label for="treble" class="console-label">TREBLE</label>
           </div>
           <!-- HPF Slider (Small) -->
           <div class="fader-group" id="hpfCutoffGroup">
+            <div class="value-window">
+              <span id="hpfCutoffValue">30 Hz</span>
+            </div>
             <div class="fader-track">
               <input type="range" id="hpfCutoff" class="vertical-fader" min="20" max="500" step="10" value="30">
             </div>
-            <label for="hpfCutoff" class="console-label">HPF<span id="hpfCutoffValue" class="value-display">30
-                Hz</span></label>
+            <label for="hpfCutoff" class="console-label">HPF</label>
           </div>
 
           <!-- LPF Slider (Small) -->
           <div class="fader-group" id="lpfCutoffGroup">
+            <div class="value-window">
+              <span id="lpfCutoffValue">15.0 kHz</span>
+            </div>
             <div class="fader-track">
               <input type="range" id="lpfCutoff" class="vertical-fader" min="1000" max="20000" step="100" value="15000">
             </div>
-            <label for="lpfCutoff" class="console-label">LPF<span id="lpfCutoffValue" class="value-display">15.0
-                kHz</span></label>
+            <label for="lpfCutoff" class="console-label">LPF</label>
           </div>
 
           <!-- Stereo Width Slider (Small) -->
           <div class="fader-group" id="stereoWidthGroup">
+            <div class="value-window">
+              <span id="stereoWidthValue">0.70</span>
+            </div>
             <div class="fader-track">
               <input type="range" id="stereoWidth" class="vertical-fader" min="0" max="1" step="0.05" value="0.7">
             </div>
-            <label for="stereoWidth" class="console-label">WIDTH<span id="stereoWidthValue"
-                class="value-display">0.70</span></label>
+            <label for="stereoWidth" class="console-label">WIDTH</label>
           </div>
         </div>
 
         <!-- Bottom: Switches & Actions -->
-        <div class="console-bottom-row">
-          <div class="switches-group">
-            <div class="switch-unit">
-              <div class="switch-led" data-switch="frequencyResponse"></div>
-              <label class="switch-label">RIAA</label>
-              <label class="toggle-switch-metal">
-                <input type="checkbox" id="frequencyResponse" checked>
-                <span class="switch-lever"></span>
-              </label>
-            </div>
-            <div class="switch-unit">
-              <div class="switch-led" data-switch="surfaceNoise"></div>
-              <label class="switch-label">CRACKLE</label>
-              <label class="toggle-switch-metal">
-                <input type="checkbox" id="surfaceNoise" checked>
-                <span class="switch-lever"></span>
-              </label>
-            </div>
-            <div class="switch-unit">
-              <div class="switch-led" data-switch="hpfEnabled"></div>
-              <label class="switch-label">HPF</label>
-              <label class="toggle-switch-metal">
-                <input type="checkbox" id="hpfEnabled">
-                <span class="switch-lever"></span>
-              </label>
-            </div>
-            <div class="switch-unit">
-              <div class="switch-led" data-switch="lpfEnabled"></div>
-              <label class="switch-label">LPF</label>
-              <label class="toggle-switch-metal">
-                <input type="checkbox" id="lpfEnabled">
-                <span class="switch-lever"></span>
-              </label>
-            </div>
-            <div class="switch-unit">
-              <div class="switch-led" data-switch="stereoReduction"></div>
-              <label class="switch-label">STEREO</label>
-              <label class="toggle-switch-metal">
-                <input type="checkbox" id="stereoReduction" checked>
-                <!-- Note: Logic might need inversion if label is Stereo but ID is Reduction -->
-                <span class="switch-lever"></span>
-              </label>
-            </div>
-          </div>
+        <div class="action-group"
+          style="display: flex; gap: var(--space-md); align-items: center; width: 100%; justify-content: space-between;">
+          <!-- RIAA Button -->
+          <button id="riaaBtn" class="btn-console-start active" style="flex: 1;">
+            <span class="btn-text">RIAA</span>
+            <span class="btn-led"></span>
+          </button>
 
-          <div class="action-group" style="display: flex; gap: var(--space-sm); align-items: center;">
-            <button id="metadataBtn" class="btn-console-icon" title="Metadata Manager"
-              aria-label="Open Metadata Manager">
-              <span aria-hidden="true">🏷️</span>
-            </button>
-            <button id="processBtn" class="btn-console-start" disabled>
-              <span class="btn-text">START</span>
-              <span class="btn-led"></span>
-            </button>
-            <button id="downloadBtn" class="btn-console-download hidden">
-              SAVE
-            </button>
-          </div>
+          <!-- Metadata Button -->
+          <button id="metadataBtn" class="btn-console-start" title="Metadata Manager" aria-label="Open Metadata Manager"
+            style="flex: 1;">
+            <span class="btn-text">METADATA</span>
+          </button>
+
+          <!-- Process Button -->
+          <button id="processBtn" class="btn-console-start" disabled style="flex: 1;">
+            <span class="btn-text">START</span>
+            <span class="btn-led"></span>
+          </button>
         </div>
-
+        <button id="downloadBtn" class="btn-console-download hidden">
+          SAVE
+        </button>
       </div>
+    </div>
+
+    </div>
     </div>
 
     <!-- Results Section -->
     <div id="resultsSection" class="results-section hidden animate-fadeIn" style="margin-top: var(--space-xl);">
-      <div class="card" style="background: var(--color-bg-secondary); border: 1px solid var(--color-border);">
-        <div class="card-header" style="border-bottom: 1px solid var(--color-border); padding: var(--space-md);">
-          <h3 style="margin: 0; color: var(--color-primary); display: flex; align-items: center; gap: var(--space-sm);">
-            <span aria-hidden="true">✨</span> Vinyl Ready!
-          </h3>
+      <div class="results-card">
+        <div class="speaker-grill"></div>
+
+        <!-- Results Display Window -->
+        <div class="results-display-window">
+          <div class="results-display-content">
+            <div class="marquee-container">
+              <div class="marquee-content" id="resultFileNameMarquee">
+                <span id="resultFileName">filename.mp3</span>
+              </div>
+            </div>
+            <div class="results-info-row">
+              <div class="results-metadata">
+                <div class="results-display-line">
+                  <span id="resultPreset">Custom</span>
+                </div>
+                <div class="results-display-line">
+                  <span id="resultFileSize">5.2 MB</span>
+                </div>
+              </div>
+              <div class="results-audio-section">
+                <!-- Audio Timeline with Visualizer -->
+                <div class="audio-timeline-container">
+                  <span class="audio-time" id="currentTime">0:00</span>
+                  <div class="timeline-wrapper">
+                    <!-- Audio Visualizer positioned over timeline -->
+                    <div class="audio-visualizer" id="audioVisualizer">
+                      <div class="visualizer-bar"></div>
+                      <div class="visualizer-bar"></div>
+                      <div class="visualizer-bar"></div>
+                      <div class="visualizer-bar"></div>
+                      <div class="visualizer-bar"></div>
+                      <div class="visualizer-bar"></div>
+                      <div class="visualizer-bar"></div>
+                      <div class="visualizer-bar"></div>
+                      <div class="visualizer-bar"></div>
+                      <div class="visualizer-bar"></div>
+                      <div class="visualizer-bar"></div>
+                      <div class="visualizer-bar"></div>
+                    </div>
+                    <input type="range" class="audio-timeline" id="audioTimeline" min="0" max="100" value="0"
+                      step="0.1">
+                  </div>
+                  <span class="audio-time" id="totalTime">0:00</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results Actions Container -->
+        <div class="results-actions-container">
+          <button id="rewindBtn" class="btn-metal-control" title="Rewind 30s" aria-label="Rewind 30 seconds">
+            ◀◀
+          </button>
+          <button id="playPauseBtn" class="btn-metal-control" title="Play/Pause" aria-label="Play or pause preview">
+            ▶
+          </button>
+          <button id="fastForwardBtn" class="btn-metal-control" title="Fast Forward 30s"
+            aria-label="Fast forward 30 seconds">
+            ▶▶
+          </button>
+          <button id="downloadBtn" class="btn-metal-control" title="Download" aria-label="Download processed file">
+            ⬇
+          </button>
+          <button id="discardBtn" class="btn-metal-control" title="Discard" aria-label="Discard processed file">
+            ⏏
+          </button>
         </div>
 
         <div class="card-body" style="padding: var(--space-md);">
-          <div class="results-meta"
-            style="display: flex; flex-wrap: wrap; gap: var(--space-md); margin-bottom: var(--space-lg); align-items: center;">
-            <span id="resultFileName" class="filename"
-              style="font-weight: bold; color: var(--color-text-primary); font-size: var(--font-size-lg);">filename.mp3</span>
-            <span class="separator" style="color: var(--color-text-secondary);">•</span>
-            <span id="resultFileSize" style="color: var(--color-text-secondary);">5.2 MB</span>
-            <span class="separator" style="color: var(--color-text-secondary);">•</span>
-            <span id="resultFormat" style="color: var(--color-primary); font-weight: bold;">MP3</span>
-          </div>
-
-          <div class="results-details"
-            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-md); margin-bottom: var(--space-lg); background: var(--color-bg-tertiary); padding: var(--space-md); border-radius: var(--radius-md);">
-            <div class="detail-item">
-              <span class="label"
-                style="display: block; font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-bottom: 4px;">PRESET
-                USED</span>
-              <span id="resultPreset" class="value"
-                style="color: var(--color-text-primary); font-weight: 500;">Custom</span>
-            </div>
-            <div class="detail-item">
-              <span class="label"
-                style="display: block; font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-bottom: 4px;">EXPIRES
-                IN</span>
-              <span id="expiresIn" class="value" style="color: var(--color-text-primary); font-weight: 500;">10
-                minutes</span>
-            </div>
-          </div>
-
-          <div class="results-actions" style="display: flex; gap: var(--space-md); flex-wrap: wrap;">
-            <button id="previewBtn" class="btn btn-secondary" style="flex: 1;">
-              <span aria-hidden="true">▶️</span> Preview
-            </button>
-            <button id="downloadBtn" class="btn btn-primary" style="flex: 2;">
-              <span aria-hidden="true">⬇️</span> Download
-            </button>
-            <button id="discardBtn" class="btn btn-ghost" style="flex: 0;">
-              <span aria-hidden="true">🗑️</span>
-            </button>
-          </div>
+          <div id="audioPlayerContainer" class="hidden"></div>
         </div>
       </div>
     </div>

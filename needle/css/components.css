@@ -201,6 +201,383 @@
   transition: all var(--transition-base);
 }
 
+/* Results Card with Wooden Background */
+.results-card {
+  position: relative;
+  background-color: #8d6e63;
+  background-image: url('../assets/textures/wood.png');
+  background-size: cover;
+  background-blend-mode: multiply;
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.6),
+    inset 0 2px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 40px rgba(0, 0, 0, 0.6);
+  border: 1px solid #3e2723;
+  overflow: hidden;
+}
+
+/* Speaker Grill Overlay */
+.speaker-grill {
+  position: absolute;
+  top: var(--space-lg);
+  left: var(--space-lg);
+  right: var(--space-lg);
+  height: 150px;
+  background-color: #999;
+  background-image: url('../assets/textures/speaker-grill.png');
+  background-size: cover;
+  background-position: center;
+  border-radius: var(--radius-lg);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.5),
+    inset 0 -2px 4px rgba(255, 255, 255, 0.1),
+    0 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 0;
+}
+
+.results-card .card-body {
+  position: relative;
+  z-index: 1;
+  margin-top: calc(150px + var(--space-xl));
+  /* Push content below speaker grill */
+}
+
+/* Results Display Window */
+.results-display-window {
+  position: absolute;
+  top: calc(var(--space-lg) + 150px + var(--space-md));
+  /* Below speaker grill */
+  left: var(--space-lg);
+  width: calc(50% - var(--space-lg));
+  /* Extend to middle of speaker grill */
+  /* Layered backgrounds: solid black base + VFD glow on top */
+  background:
+    radial-gradient(ellipse at center,
+      rgba(255, 102, 0, 0.15) 0%,
+      rgba(255, 68, 0, 0.08) 50%,
+      rgba(0, 0, 0, 0) 100%),
+    #000;
+  border: 2px solid #333;
+  border-radius: 4px;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow:
+    inset 0 0 40px rgba(255, 102, 0, 0.2),
+    inset 0 0 20px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+  z-index: 1;
+}
+
+.results-display-window::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.02) 0%,
+      transparent 15%,
+      transparent 85%,
+      rgba(0, 0, 0, 0.3) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.results-display-content {
+  text-align: left;
+  color: #ff8833;
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-weight: 500;
+  text-shadow:
+    0 0 10px rgba(255, 102, 0, 0.8),
+    0 0 20px rgba(255, 102, 0, 0.4),
+    0 0 2px rgba(255, 136, 51, 1);
+  letter-spacing: 0.5px;
+  z-index: 2;
+  position: relative;
+}
+
+.results-display-content .marquee-container {
+  margin-bottom: var(--space-xs);
+  font-size: var(--font-size-md);
+  font-weight: bold;
+}
+
+.results-display-line {
+  font-size: var(--font-size-sm);
+  opacity: 0.9;
+  margin-bottom: var(--space-xs);
+  line-height: 1.4;
+}
+
+/* Results Info Row - Split layout for metadata and audio */
+.results-info-row {
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-end;
+  /* Align to bottom so timeline aligns with file size */
+  margin-top: var(--space-xs);
+}
+
+.results-metadata {
+  flex: 0 0 auto;
+}
+
+.results-audio-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-items: flex-end;
+}
+
+/* Audio Timeline */
+.audio-timeline-container {
+  display: flex;
+  align-items: flex-end;
+  /* Align times with the bar, not visualizer */
+  gap: var(--space-xs);
+  width: 100%;
+}
+
+.timeline-wrapper {
+  flex: 1;
+  position: relative;
+  height: 40px;
+  /* Increased height for more visualizer room */
+  display: flex;
+  align-items: flex-end;
+}
+
+/* Audio Visualizer - positioned above timeline */
+.audio-visualizer {
+  position: absolute;
+  bottom: 6px;
+  /* Position above the timeline */
+  left: 0;
+  right: 0;
+  height: 32px;
+  /* Increased height for taller bars */
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.visualizer-bar {
+  flex: 1;
+  /* Create dotted/segmented effect with repeating gradient */
+  background: repeating-linear-gradient(to top,
+      transparent 0px,
+      transparent 1px,
+      rgba(255, 136, 51, 0.3) 1px,
+      rgba(255, 136, 51, 0.4) 2px,
+      transparent 2px,
+      transparent 3px,
+      rgba(255, 136, 51, 0.5) 3px,
+      rgba(255, 136, 51, 0.6) 4px,
+      transparent 4px,
+      transparent 5px,
+      rgba(255, 136, 51, 0.7) 5px,
+      rgba(255, 136, 51, 0.8) 6px,
+      transparent 6px,
+      transparent 7px,
+      rgba(255, 102, 0, 0.9) 7px,
+      rgba(255, 102, 0, 1) 8px);
+  border-radius: 1px 1px 0 0;
+  transition: height 0.1s ease;
+  box-shadow:
+    0 0 6px rgba(255, 102, 0, 0.4),
+    0 0 3px rgba(255, 136, 51, 0.6);
+  height: 8px;
+}
+
+.audio-time {
+  font-size: 10px;
+  opacity: 0.9;
+  /* Increased from 0.8 to match file size */
+  font-weight: 500;
+  /* Make bolder */
+  min-width: 30px;
+  text-align: center;
+  line-height: 1.4;
+  /* Match file size line height */
+  padding-bottom: 1px;
+  /* Fine-tune alignment */
+}
+
+.audio-timeline {
+  width: 100%;
+  height: 20px;
+  /* Larger hit area for clicking */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  cursor: pointer;
+  position: absolute;
+  bottom: -8px;
+  /* Center on the orange line */
+  left: 0;
+  right: 0;
+  z-index: 2;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  /* Make completely invisible */
+}
+
+/* Timeline track styling - COMPLETELY INVISIBLE */
+.audio-timeline::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 3px;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  cursor: pointer;
+  box-shadow: none !important;
+  -webkit-appearance: none;
+  opacity: 0;
+}
+
+.audio-timeline::-moz-range-track {
+  width: 100%;
+  height: 3px;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  cursor: pointer;
+  box-shadow: none !important;
+  -moz-appearance: none;
+  opacity: 0;
+}
+
+/* Create the orange line using a pseudo-element */
+.timeline-wrapper::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #ff8833;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Timeline thumb (dot) styling - MAKE VISIBLE */
+.audio-timeline::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ff8833;
+  cursor: pointer;
+  opacity: 1 !important;
+  /* Force visible */
+  box-shadow:
+    0 0 16px rgba(255, 102, 0, 1),
+    0 0 10px rgba(255, 136, 51, 1),
+    0 0 6px rgba(255, 200, 100, 1),
+    inset 0 0 4px rgba(255, 255, 255, 0.3);
+  border: 2px solid #ff6600;
+}
+
+.audio-timeline::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ff8833;
+  cursor: pointer;
+  opacity: 1 !important;
+  /* Force visible */
+  border: 2px solid #ff6600;
+  box-shadow:
+    0 0 16px rgba(255, 102, 0, 1),
+    0 0 10px rgba(255, 136, 51, 1),
+    0 0 6px rgba(255, 200, 100, 1),
+    inset 0 0 4px rgba(255, 255, 255, 0.3);
+}
+
+/* Results Actions Container */
+.results-actions-container {
+  position: absolute;
+  /* Position at vertical center of display window */
+  top: calc(var(--space-lg) + 150px + var(--space-md) + 50px);
+  /* Window top + offset for centering */
+  left: 50%;
+  /* Start at midpoint */
+  right: var(--space-lg);
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  justify-content: center;
+  /* Center buttons horizontally in the space */
+  z-index: 1;
+}
+
+/* Metal Control Buttons */
+.btn-metal-control {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #999;
+  background-image: url('../assets/textures/metal.png');
+  background-size: cover;
+  background-blend-mode: overlay;
+  border: 2px solid #666;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.btn-metal-control:hover {
+  background-color: #aaa;
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 12px rgba(0, 0, 0, 0.5),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.btn-metal-control:active {
+  transform: translateY(0);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.btn-metal-control:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
 
 .card-elevated {
   background: var(--color-bg-elevated);
@@ -476,6 +853,11 @@
 /* ========================================
    AUDIO PLAYER
    ======================================== */
+
+#audioPlayerContainer {
+  width: 100%;
+  margin-top: var(--space-md);
+}
 
 .audio-player {
   background: var(--vinyl-gradient);
@@ -816,7 +1198,10 @@
   position: relative;
   width: 420px;
   height: 420px;
-  background: #222;
+  background-color: #999;
+  background-image: url('../assets/textures/metal.png');
+  background-size: cover;
+  background-blend-mode: overlay;
   border-radius: 8px;
   box-shadow:
     0 10px 20px rgba(0, 0, 0, 0.5),
@@ -827,8 +1212,8 @@
   justify-content: center;
 }
 
-/* Metal texture for turntable base */
-.turntable-unit::before {
+/* Metal texture for turntable base - REMOVED (applied directly to .turntable-unit) */
+/* .turntable-unit::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -837,7 +1222,7 @@
   opacity: 0.6;
   border-radius: 8px;
   pointer-events: none;
-}
+} */
 
 .turntable-platter {
   position: absolute;
@@ -904,7 +1289,7 @@
   height: 200px;
   background: #ccc;
   transform-origin: top center;
-  transform: rotate(-30deg);
+  transform: rotate(0deg);
   transition: transform 0.5s ease;
   z-index: 3;
   border-radius: 5px;
@@ -1290,12 +1675,12 @@ a:focus-visible {
 .record-player-console {
   display: flex;
   flex-direction: row;
-  gap: var(--space-lg);
+  gap: var(--space-sm);
   /* Wood casing effect with real texture - Lighter base for visibility */
   background-color: #8d6e63;
   background-image: url('../assets/textures/wood.png');
   background-size: cover;
-  background-blend-mode: overlay;
+  background-blend-mode: multiply;
   border-radius: var(--radius-xl);
   padding: var(--space-xl);
   box-shadow:
@@ -1317,7 +1702,9 @@ a:focus-visible {
   position: relative;
   z-index: 1;
   flex: 1;
-  background-color: var(--color-bg-tertiary);
+  min-width: 0;
+  /* Prevent flex item expansion */
+  background-color: #999;
   background-image: url('../assets/textures/metal.png');
   background-size: cover;
   background-blend-mode: overlay;
@@ -1329,14 +1716,37 @@ a:focus-visible {
   border: 1px solid #000;
 }
 
+/* Left Column for Turntable and Model No */
+.console-left-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  align-items: center;
+  flex: 0 0 45%;
+}
+
+.model-number {
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 900;
+  color: rgba(0, 0, 0, 0.9);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+  font-size: 24px;
+  letter-spacing: 2px;
+  margin-top: var(--space-md);
+  text-transform: uppercase;
+}
+
 .console-turntable-section {
   display: flex;
   justify-content: center;
   align-items: center;
   padding: var(--space-xl);
-  flex: 0 0 45%;
+  width: 100%;
   /* Recessed area for turntable */
-  background: rgba(0, 0, 0, 0.2);
+  background-color: #999;
+  background-image: url('../assets/textures/metal.png');
+  background-size: cover;
+  background-blend-mode: overlay;
   border-radius: var(--radius-lg);
   box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.5);
   position: relative;
@@ -1358,6 +1768,8 @@ a:focus-visible {
 
 .console-display {
   flex: 1;
+  min-width: 0;
+  /* Critical for preventing flex item expansion */
   /* Orange VFD glow background */
   background: radial-gradient(ellipse at center,
       rgba(255, 102, 0, 0.15) 0%,
@@ -1417,6 +1829,8 @@ a:focus-visible {
     0 0 2px rgba(255, 136, 51, 1);
   z-index: 2;
   letter-spacing: 0.5px;
+  width: 100%;
+  overflow: hidden;
 }
 
 .display-icon {
@@ -1577,6 +1991,8 @@ a:focus-visible {
     inset 0 2px 5px rgba(0, 0, 0, 0.8),
     0 1px 0 rgba(255, 255, 255, 0.05);
   overflow-x: auto;
+  min-height: 260px;
+  /* Increased height for value windows */
 }
 
 .fader-group {
@@ -2191,8 +2607,9 @@ a:focus-visible {
   padding: var(--space-md);
   padding-bottom: var(--space-xl);
   /* Space for hover lift */
-  justify-content: flex-start;
+  justify-content: center;
   align-items: flex-start;
+  margin-bottom: var(--space-xl);
 }
 
 .preset-album {
@@ -2278,4 +2695,87 @@ a:focus-visible {
 .preset-album:hover .album-label,
 .preset-album.active .album-label {
   color: var(--color-primary);
+}
+
+/* ========================================
+   MARQUEE (Scrolling Text)
+   ======================================== */
+
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  /* Ensure it doesn't exceed parent */
+  mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+}
+
+.marquee-content {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.marquee-content.scrolling {
+  animation: marquee-scroll 15s linear infinite;
+}
+
+.marquee-content span {
+  display: inline-block;
+  padding-right: 50px;
+  /* Space between duplicates */
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+    /* Move by half because we duplicated the content */
+  }
+}
+
+/* Active state for console buttons (like RIAA) */
+.btn-console-start.active .btn-led {
+  background: radial-gradient(circle, #44ff44, #00aa00);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    0 0 12px rgba(68, 255, 68, 0.8),
+    0 0 6px rgba(0, 255, 0, 1);
+  border-color: #006600;
+}
+
+/* Slider Value Window */
+.value-window {
+  /* Orange VFD glow background - matching .console-display */
+  background: radial-gradient(ellipse at center,
+      rgba(255, 102, 0, 0.15) 0%,
+      rgba(255, 68, 0, 0.08) 50%,
+      #000 100%);
+  border: 1px solid #333;
+  border-radius: 2px;
+  padding: 2px 4px;
+  margin-bottom: var(--space-xs);
+  width: 100%;
+  height: 24px;
+  /* Fixed height for uniformity */
+  text-align: center;
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 10px;
+  /* Orange VFD text color - bright orange/gold */
+  color: #ffcc00;
+  text-shadow:
+    0 0 5px rgba(255, 102, 0, 1),
+    0 0 10px rgba(255, 102, 0, 0.8);
+  box-shadow:
+    inset 0 0 10px rgba(255, 102, 0, 0.2),
+    inset 0 0 5px rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
 }

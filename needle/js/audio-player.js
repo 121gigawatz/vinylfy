@@ -12,7 +12,7 @@ export class AudioPlayer {
     this.isPlaying = false;
     this.currentTime = 0;
     this.duration = 0;
-    
+
     this.render();
     this.attachEventListeners();
   }
@@ -22,7 +22,7 @@ export class AudioPlayer {
    */
   render() {
     this.container.innerHTML = `
-      <div class="audio-player" id="audioPlayerContainer">
+      <div class="audio-player">
         <div class="audio-controls">
           <button class="audio-play-btn" id="playBtn" aria-label="Play audio" aria-pressed="false">
             ▶
@@ -44,7 +44,7 @@ export class AudioPlayer {
     this.progress = document.getElementById('progress');
     this.currentTimeEl = document.getElementById('currentTime');
     this.durationEl = document.getElementById('duration');
-    this.playerContainer = document.getElementById('audioPlayerContainer');
+    this.playerContainer = this.container.querySelector('.audio-player');
   }
 
   /**
@@ -64,7 +64,7 @@ export class AudioPlayer {
       const step = 5; // 5% increments
       let newPercent = parseFloat(this.timeline.getAttribute('aria-valuenow') || 0);
 
-      switch(e.key) {
+      switch (e.key) {
         case 'ArrowLeft':
           newPercent = Math.max(0, newPercent - step);
           break;
@@ -166,7 +166,7 @@ export class AudioPlayer {
     const rect = this.timeline.getBoundingClientRect();
     const percent = (e.clientX - rect.left) / rect.width;
     const time = percent * this.duration;
-    
+
     this.audio.currentTime = Math.max(0, Math.min(time, this.duration));
   }
 
@@ -209,8 +209,14 @@ export class AudioPlayer {
    * Show the player
    */
   show() {
+    console.log('AudioPlayer.show() called');
+    console.log('Container:', this.container);
+    console.log('Player container:', this.playerContainer);
     this.container.classList.remove('hidden');
-    this.playerContainer.classList.add('animate-fadeIn');
+    if (this.playerContainer) {
+      this.playerContainer.classList.add('animate-fadeIn');
+    }
+    console.log('Container classes after show:', this.container.className);
   }
 
   /**
@@ -242,10 +248,10 @@ export class AudioPlayer {
    */
   removeAudioListeners() {
     if (this.audio) {
-      this.audio.removeEventListener('loadedmetadata', () => {});
-      this.audio.removeEventListener('timeupdate', () => {});
-      this.audio.removeEventListener('ended', () => {});
-      this.audio.removeEventListener('error', () => {});
+      this.audio.removeEventListener('loadedmetadata', () => { });
+      this.audio.removeEventListener('timeupdate', () => { });
+      this.audio.removeEventListener('ended', () => { });
+      this.audio.removeEventListener('error', () => { });
     }
   }
 

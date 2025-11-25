@@ -4,8 +4,8 @@
  */
 
 // API Configuration
-// Point to backend server on port 5001 for local dev
-const API_BASE_URL = 'http://localhost:5001/api';
+// Point to backend server on port 8888 for local dev (Docker)
+const API_BASE_URL = 'http://localhost:8888/api';
 
 // API Client Class
 class VinylAPI {

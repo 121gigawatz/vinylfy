@@ -98,6 +98,15 @@ class VinylApp {
     // Setup PWA
     this.setupPWA();
 
+    // Set Model Number
+    const modelNumberEl = document.getElementById('modelNumber');
+    if (modelNumberEl) {
+      modelNumberEl.textContent = `Model No. ${this.appVersion}`;
+    }
+
+    // Set Manufacturing Date
+    this.setManufacturingDate();
+
     // Load saved preferences
     this.loadPreferences();
 
@@ -243,6 +252,32 @@ class VinylApp {
       sessionStorage.setItem('cacheModalDismissed', 'true');
       console.log('ℹ️ Cache modal dismissed for this session');
     };
+  }
+
+  /**
+   * Set manufacturing date from release notes
+   */
+  async setManufacturingDate() {
+    const mfgDateEl = document.getElementById('mfgDate');
+    if (!mfgDateEl) return;
+
+    try {
+      const response = await fetch('/release-notes.json');
+      if (!response.ok) return;
+
+      const releaseNotes = await response.json();
+      const currentVersionData = releaseNotes[this.appVersion];
+
+      if (currentVersionData && currentVersionData.date) {
+        mfgDateEl.textContent = `MFG ${currentVersionData.date}`;
+      } else {
+        // Fallback if date not found for current version
+        mfgDateEl.textContent = 'MFG UNKNOWN';
+      }
+    } catch (error) {
+      console.warn('Failed to load manufacturing date:', error);
+      mfgDateEl.textContent = '';
+    }
   }
 
   /**
@@ -646,7 +681,24 @@ class VinylApp {
     const displayFormat = document.getElementById('displayFormat');
     const displaySize = document.getElementById('displaySize');
 
-    displayFilename.textContent = file.name;
+    // Update Filename with Marquee support
+    displayFilename.innerHTML = ''; // Clear previous content
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = file.name;
+    displayFilename.appendChild(nameSpan);
+    displayFilename.classList.remove('scrolling'); // Reset scrolling state
+
+    // Check for overflow after a brief delay to allow rendering
+    setTimeout(() => {
+      const container = displayFilename.parentElement;
+      if (displayFilename.scrollWidth > container.clientWidth) {
+        // Needs scrolling - duplicate content for seamless loop
+        const duplicateSpan = document.createElement('span');
+        duplicateSpan.textContent = file.name;
+        displayFilename.appendChild(duplicateSpan);
+        displayFilename.classList.add('scrolling');
+      }
+    }, 50);
     displaySize.textContent = formatFileSize(file.size);
     displayFormat.textContent = file.type.split('/')[1].toUpperCase();
 
@@ -926,27 +978,27 @@ class VinylApp {
    * Setup custom controls
    */
   setupCustomControls() {
-    // Frequency response toggle
-    const frequencyResponseToggle = document.getElementById('frequencyResponse');
-    frequencyResponseToggle.addEventListener('change', (e) => {
-      this.customSettings.frequency_response = e.target.checked;
-      e.target.setAttribute('aria-checked', e.target.checked);
-      this.switchToCustomPreset();
-    });
+    // RIAA Button
+    const riaaBtn = document.getElementById('riaaBtn');
+    if (riaaBtn) {
+      riaaBtn.addEventListener('click', () => {
+        this.customSettings.frequency_response = !this.customSettings.frequency_response;
+        // Update UI
+        if (this.customSettings.frequency_response) {
+          riaaBtn.classList.add('active');
+        } else {
+          riaaBtn.classList.remove('active');
+        }
+        riaaBtn.setAttribute('aria-pressed', this.customSettings.frequency_response);
+        this.switchToCustomPreset();
+      });
+    }
 
-    // Surface noise toggle and intensity
-    const surfaceNoiseToggle = document.getElementById('surfaceNoise');
+    // Surface noise intensity
     const noiseIntensity = document.getElementById('noiseIntensity');
     const noiseIntensityValue = document.getElementById('noiseIntensityValue');
     const popIntensity = document.getElementById('popIntensity');
     const popIntensityValue = document.getElementById('popIntensityValue');
-
-    // Surface noise toggle listener
-    surfaceNoiseToggle.addEventListener('change', (e) => {
-      this.customSettings.surface_noise = e.target.checked;
-      e.target.setAttribute('aria-checked', e.target.checked);
-      this.switchToCustomPreset();
-    });
 
     noiseIntensity.addEventListener('input', (e) => {
       const value = parseFloat(e.target.value);
@@ -1001,30 +1053,9 @@ class VinylApp {
       this.switchToCustomPreset();
     });
 
-    // Stereo reduction toggle and width
-    const stereoReductionToggle = document.getElementById('stereoReduction');
+    // Stereo width
     const stereoWidth = document.getElementById('stereoWidth');
     const stereoWidthValue = document.getElementById('stereoWidthValue');
-    const stereoWidthGroup = document.getElementById('stereoWidthGroup');
-
-    console.log('🔍 Stereo Elements:', { stereoReductionToggle, stereoWidth, stereoWidthValue, stereoWidthGroup });
-
-    if (stereoReductionToggle && stereoWidthGroup) {
-      const stereoLED = document.querySelector('.switch-led[data-switch="stereoReduction"]');
-      stereoReductionToggle.addEventListener('change', (e) => {
-        console.log('🎚️ Stereo Toggle changed:', e.target.checked);
-        this.customSettings.stereo_reduction = e.target.checked;
-        e.target.setAttribute('aria-checked', e.target.checked);
-        // Disable slider instead of hiding
-        if (stereoWidth) stereoWidth.disabled = !e.target.checked;
-        console.log('🎚️ Stereo Width disabled:', !e.target.checked);
-        // Update LED
-        if (stereoLED) this.updateLEDState(stereoLED, e.target.checked);
-        this.switchToCustomPreset();
-      });
-    } else {
-      console.error('❌ Stereo Toggle or Group not found!');
-    }
 
     if (stereoWidth && stereoWidthValue) {
       stereoWidth.addEventListener('input', (e) => {
@@ -1082,29 +1113,8 @@ class VinylApp {
     });
 
     // High-Pass Filter
-    const hpfToggle = document.getElementById('hpfEnabled');
     const hpfCutoff = document.getElementById('hpfCutoff');
     const hpfCutoffValue = document.getElementById('hpfCutoffValue');
-    const hpfCutoffGroup = document.getElementById('hpfCutoffGroup');
-
-    console.log('🔍 HPF Elements:', { hpfToggle, hpfCutoff, hpfCutoffValue, hpfCutoffGroup });
-
-    if (hpfToggle && hpfCutoffGroup) {
-      const hpfLED = document.querySelector('.switch-led[data-switch="hpfEnabled"]');
-      hpfToggle.addEventListener('change', (e) => {
-        console.log('🎚️ HPF Toggle changed:', e.target.checked);
-        this.customSettings.hpf_enabled = e.target.checked;
-        e.target.setAttribute('aria-checked', e.target.checked);
-        // Disable slider instead of hiding
-        if (hpfCutoff) hpfCutoff.disabled = !e.target.checked;
-        console.log('🎚️ HPF Cutoff disabled:', !e.target.checked);
-        // Update LED
-        if (hpfLED) this.updateLEDState(hpfLED, e.target.checked);
-        this.switchToCustomPreset();
-      });
-    } else {
-      console.error('❌ HPF Toggle or Group not found!');
-    }
 
     if (hpfCutoff && hpfCutoffValue) {
       hpfCutoff.addEventListener('input', (e) => {
@@ -1119,29 +1129,8 @@ class VinylApp {
     }
 
     // Low-Pass Filter
-    const lpfToggle = document.getElementById('lpfEnabled');
     const lpfCutoff = document.getElementById('lpfCutoff');
     const lpfCutoffValue = document.getElementById('lpfCutoffValue');
-    const lpfCutoffGroup = document.getElementById('lpfCutoffGroup');
-
-    console.log('🔍 LPF Elements:', { lpfToggle, lpfCutoff, lpfCutoffValue, lpfCutoffGroup });
-
-    if (lpfToggle && lpfCutoffGroup) {
-      const lpfLED = document.querySelector('.switch-led[data-switch="lpfEnabled"]');
-      lpfToggle.addEventListener('change', (e) => {
-        console.log('🎚️ LPF Toggle changed:', e.target.checked);
-        this.customSettings.lpf_enabled = e.target.checked;
-        e.target.setAttribute('aria-checked', e.target.checked);
-        // Disable slider instead of hiding
-        if (lpfCutoff) lpfCutoff.disabled = !e.target.checked;
-        console.log('🎚️ LPF Cutoff disabled:', !e.target.checked);
-        // Update LED
-        if (lpfLED) this.updateLEDState(lpfLED, e.target.checked);
-        this.switchToCustomPreset();
-      });
-    } else {
-      console.error('❌ LPF Toggle or Group not found!');
-    }
 
     if (lpfCutoff && lpfCutoffValue) {
       lpfCutoff.addEventListener('input', (e) => {
@@ -1382,48 +1371,65 @@ class VinylApp {
     const removeArtwork = document.getElementById('removeArtwork');
 
     // Open modal
-    metadataBtn.addEventListener('click', async () => {
-      await this.openMetadataModal();
-      this.trapFocus(metadataModal);
-    });
+    if (metadataBtn) {
+      metadataBtn.addEventListener('click', async () => {
+        await this.openMetadataModal();
+        if (metadataModal) this.trapFocus(metadataModal);
+      });
+    }
 
     // Close modal
-    closeMetadataModal.addEventListener('click', () => {
-      metadataModal.classList.add('hidden');
-      this.resetMetadataEditMode();
-    });
+    if (closeMetadataModal) {
+      closeMetadataModal.addEventListener('click', () => {
+        if (metadataModal) metadataModal.classList.add('hidden');
+        this.resetMetadataEditMode();
+      });
+    }
 
     // Close on overlay click
-    const modalOverlay = metadataModal.querySelector('.modal-overlay');
-    modalOverlay.addEventListener('click', () => {
-      metadataModal.classList.add('hidden');
-      this.resetMetadataEditMode();
-    });
+    if (metadataModal) {
+      const modalOverlay = metadataModal.querySelector('.modal-overlay');
+      if (modalOverlay) {
+        modalOverlay.addEventListener('click', () => {
+          metadataModal.classList.add('hidden');
+          this.resetMetadataEditMode();
+        });
+      }
+    }
 
     // Edit metadata button
-    editMetadataBtn.addEventListener('click', () => {
-      this.enableMetadataEditMode();
-    });
+    if (editMetadataBtn) {
+      editMetadataBtn.addEventListener('click', () => {
+        this.enableMetadataEditMode();
+      });
+    }
 
     // Save metadata button
-    saveMetadataBtn.addEventListener('click', () => {
-      this.saveMetadataChanges();
-    });
+    if (saveMetadataBtn) {
+      saveMetadataBtn.addEventListener('click', () => {
+        this.saveMetadataChanges();
+      });
+    }
 
     // Artwork upload
-    artworkFile.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        this.handleArtworkUpload(file);
-      }
-    });
+    if (artworkFile) {
+      artworkFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          this.handleArtworkUpload(file);
+        }
+      });
+    }
 
     // Remove artwork
-    removeArtwork.addEventListener('click', () => {
-      this.uploadedArtwork = null;
-      document.getElementById('artworkPreview').classList.add('hidden');
-      document.getElementById('artworkFile').value = '';
-    });
+    if (removeArtwork) {
+      removeArtwork.addEventListener('click', () => {
+        this.uploadedArtwork = null;
+        const artworkPreview = document.getElementById('artworkPreview');
+        if (artworkPreview) artworkPreview.classList.add('hidden');
+        if (artworkFile) artworkFile.value = '';
+      });
+    }
   }
 
   /**
@@ -1614,7 +1620,9 @@ class VinylApp {
       processBtn.innerHTML = '<span class="spinner spinner-sm"></span> Processing...';
       processingIndicator.classList.remove('hidden');
       resultsSection.classList.add('hidden');
-      this.audioPlayer.hide();
+      if (this.audioPlayer) {
+        this.audioPlayer.hide();
+      }
 
       // Reset progress bar
       this.updateProgress(0);
@@ -1671,7 +1679,11 @@ class VinylApp {
     } finally {
       // Reset button state
       processBtn.disabled = false;
-      processBtn.textContent = 'Process Audio';
+      processBtn.classList.add('active'); // Make green by default
+      const btnText = processBtn.querySelector('.btn-text');
+      if (btnText) {
+        btnText.textContent = 'START';
+      }
       processingIndicator.classList.add('hidden');
 
       // Reset progress bar
@@ -1740,13 +1752,76 @@ class VinylApp {
     resultFileName.textContent = result.suggested_filename;
     resultFileSize.textContent = result.file_size_formatted;
     resultPreset.textContent = formatPresetName(result.preset);
-    resultFormat.textContent = result.output_format.toUpperCase();
+    if (resultFormat) {
+      resultFormat.textContent = result.output_format.toUpperCase();
+    }
+
+    // Enable marquee scrolling for long filenames
+    const marqueeContainer = document.getElementById('resultFileNameMarquee');
+    if (marqueeContainer) {
+      // Use setTimeout to ensure DOM is rendered before measuring
+      setTimeout(() => {
+        const containerWidth = marqueeContainer.parentElement.offsetWidth;
+        const contentWidth = resultFileName.scrollWidth;
+        if (contentWidth > containerWidth) {
+          marqueeContainer.classList.add('scrolling');
+          // Duplicate content for seamless loop
+          resultFileName.innerHTML = `<span>${result.suggested_filename}</span><span>${result.suggested_filename}</span>`;
+        } else {
+          marqueeContainer.classList.remove('scrolling');
+        }
+      }, 100);
+    }
 
     const minutes = Math.floor(result.expires_in_seconds / 60);
-    expiresIn.textContent = `${minutes} minutes`;
+    if (expiresIn) {
+      expiresIn.textContent = `${minutes} min`;
+    }
 
-    // Setup preview button
-    previewBtn.onclick = () => this.previewAudio(result.file_id);
+    // Setup metal control buttons
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const rewindBtn = document.getElementById('rewindBtn');
+    const fastForwardBtn = document.getElementById('fastForwardBtn');
+
+    // Play/Pause button - toggles audio player
+    if (playPauseBtn) {
+      playPauseBtn.onclick = () => {
+        if (this.integratedAudio && this.integratedAudio.src) {
+          if (this.integratedAudio.paused) {
+            this.integratedAudio.play();
+            playPauseBtn.textContent = '❚❚';
+          } else {
+            this.integratedAudio.pause();
+            playPauseBtn.textContent = '▶';
+          }
+        } else {
+          // Load and play preview
+          this.previewAudio(result.file_id);
+          playPauseBtn.textContent = '❚❚';
+        }
+      };
+    }
+
+    // Rewind button - go back 30 seconds
+    if (rewindBtn) {
+      rewindBtn.onclick = () => {
+        if (this.integratedAudio && this.integratedAudio.src) {
+          this.integratedAudio.currentTime = Math.max(0, this.integratedAudio.currentTime - 30);
+        }
+      };
+    }
+
+    // Fast forward button - go forward 30 seconds
+    if (fastForwardBtn) {
+      fastForwardBtn.onclick = () => {
+        if (this.integratedAudio && this.integratedAudio.src) {
+          this.integratedAudio.currentTime = Math.min(
+            this.integratedAudio.duration,
+            this.integratedAudio.currentTime + 30
+          );
+        }
+      };
+    }
 
     // Setup download button
     downloadBtn.onclick = () => this.downloadAudio(result.file_id);
@@ -1757,6 +1832,16 @@ class VinylApp {
     // Update metadata button state
     this.updateMetadataButtonState();
 
+    // Update process button to show PROCESSED
+    const processBtn = document.getElementById('processBtn');
+    if (processBtn) {
+      const btnText = processBtn.querySelector('.btn-text');
+      if (btnText) {
+        btnText.textContent = 'PROCESSED';
+      }
+      processBtn.classList.add('active'); // Keep green
+    }
+
     // Show results section
     resultsSection.classList.remove('hidden');
     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1766,11 +1851,120 @@ class VinylApp {
    * Preview processed audio
    */
   previewAudio(fileId) {
-    const previewUrl = api.getPreviewURL(fileId);
-    this.audioPlayer.load(previewUrl);
-    this.audioPlayer.show();
+    const previewUrl = `${api.getPreviewURL(fileId)}?t=${Date.now()}`;
+    const playPauseBtn = document.getElementById('playPauseBtn');
+
+    // Create or get audio element
+    if (!this.integratedAudio) {
+      this.integratedAudio = new Audio();
+      this.setupIntegratedAudioListeners();
+    }
+
+    this.integratedAudio.src = previewUrl;
+    this.integratedAudio.load();
+    this.integratedAudio.play();
+
+    if (playPauseBtn) {
+      playPauseBtn.textContent = '❚❚';
+    }
 
     showToast('Loading preview...', 'info');
+  }
+
+  /**
+   * Setup listeners for integrated audio player
+   */
+  setupIntegratedAudioListeners() {
+    const timeline = document.getElementById('audioTimeline');
+    const currentTimeEl = document.getElementById('currentTime');
+    const totalTimeEl = document.getElementById('totalTime');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+
+    if (!this.integratedAudio) return;
+
+    // Update timeline and time displays
+    this.integratedAudio.addEventListener('timeupdate', () => {
+      if (!timeline || timeline.dataset.seeking === 'true') return;
+
+      const current = this.integratedAudio.currentTime;
+      const duration = this.integratedAudio.duration || 0;
+
+      if (duration > 0) {
+        timeline.value = (current / duration) * 100;
+        if (currentTimeEl) currentTimeEl.textContent = this.formatTime(current);
+      }
+
+      // Update visualizer
+      this.updateVisualizer();
+    });
+
+    // Set total time when metadata loads
+    this.integratedAudio.addEventListener('loadedmetadata', () => {
+      if (totalTimeEl) {
+        totalTimeEl.textContent = this.formatTime(this.integratedAudio.duration);
+      }
+      if (timeline) {
+        timeline.max = 100;
+      }
+    });
+
+    // Handle timeline seeking
+    if (timeline) {
+      timeline.addEventListener('mousedown', () => {
+        timeline.dataset.seeking = 'true';
+      });
+
+      timeline.addEventListener('mouseup', () => {
+        timeline.dataset.seeking = 'false';
+      });
+
+      timeline.addEventListener('input', (e) => {
+        const duration = this.integratedAudio.duration || 0;
+        const seekTime = (e.target.value / 100) * duration;
+        this.integratedAudio.currentTime = seekTime;
+        if (currentTimeEl) currentTimeEl.textContent = this.formatTime(seekTime);
+      });
+    }
+
+    // Handle play/pause state changes
+    this.integratedAudio.addEventListener('play', () => {
+      if (playPauseBtn) playPauseBtn.textContent = '❚❚';
+    });
+
+    this.integratedAudio.addEventListener('pause', () => {
+      if (playPauseBtn) playPauseBtn.textContent = '▶';
+    });
+
+    this.integratedAudio.addEventListener('ended', () => {
+      if (playPauseBtn) playPauseBtn.textContent = '▶';
+      if (timeline) timeline.value = 0;
+    });
+  }
+
+  /**
+   * Update visualizer bars based on audio playback
+   */
+  updateVisualizer() {
+    const bars = document.querySelectorAll('.visualizer-bar');
+    if (!bars.length || !this.integratedAudio || this.integratedAudio.paused) return;
+
+    // Animate bars with varied heights to simulate frequency spectrum
+    bars.forEach((bar, index) => {
+      // Create a wave pattern across the bars
+      const baseHeight = 5 + (Math.sin(index / bars.length * Math.PI) * 15);
+      const variation = Math.random() * 10;
+      bar.style.height = `${baseHeight + variation}px`;
+    });
+  }
+
+  /**
+   * Format time in MM:SS
+   */
+  formatTime(seconds) {
+    if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   }
 
   /**
@@ -1906,9 +2100,9 @@ class VinylApp {
       bass: 0.0,
       mid: 0.0,
       treble: 0.0,
-      hpf_enabled: false,
+      hpf_enabled: true,
       hpf_cutoff: 30,
-      lpf_enabled: false,
+      lpf_enabled: true,
       lpf_cutoff: 15000
     };
   }
@@ -2671,7 +2865,10 @@ class VinylApp {
 
       if (prefs.outputFormat) {
         this.outputFormat = prefs.outputFormat;
-        document.getElementById('formatSelector').value = prefs.outputFormat;
+        const formatSelector = document.getElementById('formatSelector');
+        if (formatSelector) {
+          formatSelector.value = prefs.outputFormat;
+        }
       }
     }
   }
@@ -2680,7 +2877,16 @@ class VinylApp {
    * Update custom control values from saved settings
    */
   updateCustomControlValues() {
-    document.getElementById('frequencyResponse').checked = this.customSettings.frequency_response;
+    // RIAA Button state
+    const riaaBtn = document.getElementById('riaaBtn');
+    if (riaaBtn) {
+      if (this.customSettings.frequency_response) {
+        riaaBtn.classList.add('active');
+      } else {
+        riaaBtn.classList.remove('active');
+      }
+      riaaBtn.setAttribute('aria-pressed', this.customSettings.frequency_response);
+    }
 
     const noiseIntensity = document.getElementById('noiseIntensity');
     const popIntensity = document.getElementById('popIntensity');
@@ -2688,7 +2894,7 @@ class VinylApp {
     const distortionAmount = document.getElementById('distortionAmount');
     const stereoWidth = document.getElementById('stereoWidth');
 
-    document.getElementById('surfaceNoise').checked = this.customSettings.surface_noise;
+    // Removed surfaceNoise toggle check
     noiseIntensity.value = this.customSettings.noise_intensity;
     document.getElementById('noiseIntensityValue').textContent = this.customSettings.noise_intensity.toFixed(3);
     // Update ARIA attributes
@@ -2715,14 +2921,11 @@ class VinylApp {
     distortionAmount.setAttribute('aria-valuetext', this.customSettings.distortion_amount.toFixed(2));
 
 
-    document.getElementById('stereoReduction').checked = this.customSettings.stereo_reduction;
     stereoWidth.value = this.customSettings.stereo_width;
     document.getElementById('stereoWidthValue').textContent = this.customSettings.stereo_width.toFixed(2);
     // Update ARIA attributes
     stereoWidth.setAttribute('aria-valuenow', this.customSettings.stereo_width);
     stereoWidth.setAttribute('aria-valuetext', this.customSettings.stereo_width.toFixed(2));
-    // Disable slider based on toggle state
-    stereoWidth.disabled = !this.customSettings.stereo_reduction;
 
     // Bass EQ
     const bassSlider = document.getElementById('bass');
@@ -2749,30 +2952,26 @@ class VinylApp {
     trebleSlider.setAttribute('aria-valuetext', trebleValueText);
 
     // High-Pass Filter
-    const hpfToggle = document.getElementById('hpfEnabled');
     const hpfCutoff = document.getElementById('hpfCutoff');
-    hpfToggle.checked = this.customSettings.hpf_enabled || false;
-    hpfToggle.setAttribute('aria-checked', this.customSettings.hpf_enabled || false);
-    hpfCutoff.value = this.customSettings.hpf_cutoff || 30;
-    const hpfValueText = this.formatFrequency(this.customSettings.hpf_cutoff || 30);
-    document.getElementById('hpfCutoffValue').textContent = hpfValueText;
-    hpfCutoff.setAttribute('aria-valuenow', this.customSettings.hpf_cutoff || 30);
-    hpfCutoff.setAttribute('aria-valuetext', hpfValueText);
-    // Disable slider based on toggle state
-    hpfCutoff.disabled = !(this.customSettings.hpf_enabled || false);
+    if (hpfCutoff) {
+      hpfCutoff.value = this.customSettings.hpf_cutoff || 30;
+      const hpfValueText = this.formatFrequency(this.customSettings.hpf_cutoff || 30);
+      document.getElementById('hpfCutoffValue').textContent = hpfValueText;
+      hpfCutoff.setAttribute('aria-valuenow', this.customSettings.hpf_cutoff || 30);
+      hpfCutoff.setAttribute('aria-valuetext', hpfValueText);
+      hpfCutoff.disabled = false; // Always enabled
+    }
 
     // Low-Pass Filter
-    const lpfToggle = document.getElementById('lpfEnabled');
     const lpfCutoff = document.getElementById('lpfCutoff');
-    lpfToggle.checked = this.customSettings.lpf_enabled || false;
-    lpfToggle.setAttribute('aria-checked', this.customSettings.lpf_enabled || false);
-    lpfCutoff.value = this.customSettings.lpf_cutoff || 15000;
-    const lpfValueText = this.formatFrequency(this.customSettings.lpf_cutoff || 15000);
-    document.getElementById('lpfCutoffValue').textContent = lpfValueText;
-    lpfCutoff.setAttribute('aria-valuenow', this.customSettings.lpf_cutoff || 15000);
-    lpfCutoff.setAttribute('aria-valuetext', lpfValueText);
-    // Disable slider based on toggle state
-    lpfCutoff.disabled = !(this.customSettings.lpf_enabled || false);
+    if (lpfCutoff) {
+      lpfCutoff.value = this.customSettings.lpf_cutoff || 15000;
+      const lpfValueText = this.formatFrequency(this.customSettings.lpf_cutoff || 15000);
+      document.getElementById('lpfCutoffValue').textContent = lpfValueText;
+      lpfCutoff.setAttribute('aria-valuenow', this.customSettings.lpf_cutoff || 15000);
+      lpfCutoff.setAttribute('aria-valuetext', lpfValueText);
+      lpfCutoff.disabled = false; // Always enabled
+    }
   }
 
   /**
