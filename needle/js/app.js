@@ -81,7 +81,7 @@ class VinylApp {
     this.setupThemeToggle();
     this.setupGitHubStars();
     this.setupMetadataModal();
-    this.setupHelpButtons(); // Setup contextual help tours
+    this.setupMetadataModal();
 
     // Wire up Metadata Button in Console
     const metadataBtn = document.getElementById('metadataBtn');
@@ -110,8 +110,7 @@ class VinylApp {
     // Load saved preferences
     this.loadPreferences();
 
-    // Setup product tour (runs on first visit or version change)
-    this.setupProductTour();
+
 
     console.log('✅ Vinylfy ready!');
   }
@@ -1197,7 +1196,7 @@ class VinylApp {
     }
 
     const presetSelector = document.getElementById('presetSelector');
-    if (this.currentPreset !== 'custom') {
+    if (presetSelector && this.currentPreset !== 'custom') {
       this.currentPreset = 'custom';
       presetSelector.value = 'custom';
       this.savePreferences();
@@ -1367,6 +1366,7 @@ class VinylApp {
     const closeMetadataModal = document.getElementById('closeMetadataModal');
     const editMetadataBtn = document.getElementById('editMetadataBtn');
     const saveMetadataBtn = document.getElementById('saveMetadataBtn');
+    const discardMetadataBtn = document.getElementById('discardMetadataBtn');
     const artworkFile = document.getElementById('artworkFile');
     const removeArtwork = document.getElementById('removeArtwork');
 
@@ -1411,6 +1411,18 @@ class VinylApp {
       });
     }
 
+    // Discard metadata button
+    if (discardMetadataBtn) {
+      discardMetadataBtn.addEventListener('click', () => {
+        // Reset to original metadata without saving
+        this.editedMetadata = { ...this.originalMetadata };
+        this.uploadedArtwork = null;
+        this.populateMetadataModal();
+        this.resetMetadataEditMode();
+        showToast('Changes discarded', 'info');
+      });
+    }
+
     // Artwork upload
     if (artworkFile) {
       artworkFile.addEventListener('change', (e) => {
@@ -1428,6 +1440,10 @@ class VinylApp {
         const artworkPreview = document.getElementById('artworkPreview');
         if (artworkPreview) artworkPreview.classList.add('hidden');
         if (artworkFile) artworkFile.value = '';
+
+        // Show upload button
+        const fileUpload = document.querySelector('.file-upload');
+        if (fileUpload) fileUpload.classList.remove('hidden');
       });
     }
   }
@@ -1512,13 +1528,38 @@ class VinylApp {
     document.getElementById('metaTrack').removeAttribute('readonly');
     document.getElementById('metaComment').removeAttribute('readonly');
 
-    // Show save button, hide edit button
+    // Show save and discard buttons, hide edit button
     document.getElementById('editMetadataBtn').classList.add('hidden');
     document.getElementById('saveMetadataBtn').classList.remove('hidden');
+    document.getElementById('discardMetadataBtn').classList.remove('hidden');
 
     // Show artwork upload section if MP3 format
     if (supportsMetadataWriting(this.outputFormat)) {
-      document.getElementById('artworkUploadSection').classList.remove('hidden');
+      const uploadSection = document.getElementById('artworkUploadSection');
+      uploadSection.classList.remove('hidden');
+
+      // Check if we have existing artwork
+      const metadata = this.editedMetadata || this.originalMetadata;
+      const fileUpload = uploadSection.querySelector('.file-upload');
+      const artworkPreview = document.getElementById('artworkPreview');
+      const artworkPreviewImg = document.getElementById('artworkPreviewImg');
+
+      if (metadata && metadata.picture && metadata.picture.data) {
+        // We have artwork, show it in preview and hide upload button
+        const { data, format } = metadata.picture;
+        const blob = new Blob([new Uint8Array(data)], { type: format });
+        const url = URL.createObjectURL(blob);
+        artworkPreviewImg.src = url;
+        artworkPreview.classList.remove('hidden');
+        if (fileUpload) fileUpload.classList.add('hidden');
+      } else {
+        // No artwork, show upload button
+        if (fileUpload) fileUpload.classList.remove('hidden');
+        artworkPreview.classList.add('hidden');
+      }
+
+      // Hide the display-only artwork section to avoid duplicates
+      document.getElementById('albumArtworkSection').classList.add('hidden');
     }
 
     showToast('Edit mode enabled', 'info');
@@ -1539,9 +1580,10 @@ class VinylApp {
     document.getElementById('metaTrack').setAttribute('readonly', true);
     document.getElementById('metaComment').setAttribute('readonly', true);
 
-    // Show edit button, hide save button
+    // Show edit button, hide save and discard buttons
     document.getElementById('editMetadataBtn').classList.remove('hidden');
     document.getElementById('saveMetadataBtn').classList.add('hidden');
+    document.getElementById('discardMetadataBtn').classList.add('hidden');
 
     // Hide artwork upload section
     document.getElementById('artworkUploadSection').classList.add('hidden');
@@ -1552,6 +1594,13 @@ class VinylApp {
    */
   saveMetadataChanges() {
     // Get values from form
+    const commentValue = document.getElementById('metaComment').value;
+
+    // Append Vinylfy signature to comment (hidden from user)
+    const commentWithSignature = commentValue
+      ? `${commentValue} (Converted by Vinylfy)`
+      : '(Converted by Vinylfy)';
+
     this.editedMetadata = {
       title: document.getElementById('metaTitle').value,
       artist: document.getElementById('metaArtist').value,
@@ -1559,7 +1608,7 @@ class VinylApp {
       year: document.getElementById('metaYear').value,
       genre: document.getElementById('metaGenre').value,
       track: document.getElementById('metaTrack').value,
-      comment: document.getElementById('metaComment').value,
+      comment: commentWithSignature,  // Save with signature
       picture: this.uploadedArtwork || (this.originalMetadata && this.originalMetadata.picture) || null
     };
 
@@ -1594,6 +1643,10 @@ class VinylApp {
       artworkPreviewImg.src = url;
       artworkPreview.classList.remove('hidden');
 
+      // Hide upload button
+      const fileUpload = document.querySelector('.file-upload');
+      if (fileUpload) fileUpload.classList.add('hidden');
+
       showToast('Artwork uploaded successfully', 'success');
     } catch (error) {
       console.error('Failed to upload artwork:', error);
@@ -1627,8 +1680,7 @@ class VinylApp {
       // Reset progress bar
       this.updateProgress(0);
 
-      // Show processing tour on first use
-      this.showProcessingTour();
+
 
       // Prepare options
       const options = {
@@ -2361,469 +2413,7 @@ class VinylApp {
     }, 30000);
   }
 
-  /**
-   * Setup product tour with Driver.js
-   * Disabled - tours are now triggered manually via help buttons
-   */
-  setupProductTour() {
-    // Automatic tour disabled - now using contextual help buttons
-    console.log('ℹ️ Contextual tours available via help buttons');
-  }
 
-  /**
-   * Show processing tour on first use
-   * Disabled - now using contextual help button
-   */
-  showProcessingTour() {
-    // Processing tour disabled - now using contextual help button
-    return;
-  }
-
-  /**
-   * Contextual tour definitions
-   * Populate these with your driver.js tour steps
-   */
-  getTourDefinitions() {
-    return {
-      upload: {
-        steps: [
-          {
-            element: '#audioFile',
-            popover: {
-              title: 'Upload Your File for Vinylifacation',
-              description: 'Click to browse and add your audio file to import, or drag and drop your input file into this area',
-              side: 'right',
-              align: 'center'
-            }
-          }
-        ]
-      },
-      'vinyl-effects': {
-        steps: [
-          {
-            element: '#presetSelector',
-            popover: {
-              title: 'Choosing a Vinylfy preset...',
-              description: 'Vinylfy comes with presets to make vinylification easy!<br><br>Choose a preset from the 1920s through modern day.<br><br>The default value is AJW Recommended from our own Vinylfy vinyl enthusiast!',
-              side: 'right',
-              align: 'center'
-            }
-          },
-          {
-            element: '#formatSelector',
-            popover: {
-              title: 'Choose your desired output format.',
-              description: 'Vinylfy supports multiple output formats to suit your individual needs. Choose the output format you prefer.<br><br>The default is MP3 for maximum compatability.',
-              side: 'start',
-              align: 'bottom'
-            }
-          },
-          {
-            element: '#customSettingsHeader',
-            popover: {
-              title: 'Customizing your vinylification...',
-              description: 'Vinylfy makes it easy to customize your audio to your own individual tastes. Start with one of our presets, and adjust the sound to your taste.',
-              side: 'right',
-              align: 'center'
-            }
-          },
-          {
-            element: '#frequencyResponseLabel',
-            popover: {
-              title: 'RIAA Curve On/Off',
-              description: 'Toggle this switch to apply or bypass the RIAA equalization curve introduced in the 1950s.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#surfaceNoiseLabel',
-            popover: {
-              title: 'Adding Surface Noise',
-              description: 'Toggle this switch to activate digital surface noise. This feature attempts to add clicks and crackle from vinyl playback, which are caused by dust and scratches on the record surface.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#noiseIntensity',
-            popover: {
-              title: 'Surface Noise Intensity',
-              description: 'Use this slider to adjust the strength of the clicker algorithm. Adjusting the intensity controls how aggressively the filter attempts to add surface noise.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#popIntensity',
-            popover: {
-              title: 'Pop Intensity',
-              description: 'Use this slider to adjust the intensity of the algorithm to add pops often caused by dust on the vinyl record.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#wowFlutterLabel',
-            popover: {
-              title: 'Wow & Flutter',
-              description: 'Toggle this switch to enable or bypass the Wow & Flutter effect. This intentionally introduces subtle, periodic speed variations that mimic inconsistencies found in older analog playback systems (like turntables with unstable motors)',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#wowFlutterIntensity',
-            popover: {
-              title: 'Wow & Flutter Intensity',
-              description: 'Use this slider to adjust the degree of speed variation and pitch instability applied to the audio signal. This controls how aggressively the analog "age" or "drift" is introduced into the sound.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#harmonicDistortionLabel',
-            popover: {
-              title: 'Harmonic Distortion (Color/Warmth)',
-              description: 'Toggle this switch to enable or bypass the deliberate introduction of harmonic distortion (sometimes called "saturation"). This is an effect used to simulate the sound of analog gear, adding a subjective sense of "warmth," "color," or "grit" to the sound.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#distortionAmount',
-            popover: {
-              title: 'Harmonic Distortion Amount',
-              description: 'Use this slider to adjust the intensity of the added harmonic distortion (saturation). This controls the degree of analog "color" or "warmth" applied to the audio signal.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#stereoReductionLabel',
-            popover: {
-              title: 'Stereo Reduction (Mono Sum)',
-              description: 'Toggle this switch to reduce the stereo width of the audio signal.<br><br>This is a useful feature for creating a more mono-like sound, which can be helpful for certain genres or when you want to create a more balanced mix.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#stereoWidth',
-            popover: {
-              title: 'Stereo Width / Mono Blend Slider',
-              description: 'Use this slider to adjust the width of the stereo field, ranging from the original full stereo image to a completely summed mono signal. This allows you to selectively reduce the stereo separation without going straight to pure mono.<br><br>A value of 0 will give a full stereo signal, while a value of 1 will give a pure mono signal.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#bass',
-            popover: {
-              title: 'Bass',
-              description: 'Use this slider to adjust the bass of the audio signal.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#mid',
-            popover: {
-              title: 'Mid',
-              description: 'Use this slider to adjust the midtones of the audio signal.<br><br>Midtones are the frequencies between the bass and treble, which is usually where vocals and most of the instruments are.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#treble',
-            popover: {
-              title: 'Treble',
-              description: 'Use this slider to adjust the treble of the audio signal.<br><br>Treble is the high frequency range of the audio signal, which is usually where most of the high pitched instruments are.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#hpfLabel',
-            popover: {
-              title: 'High Pass Filter',
-              description: 'Toggle this switch to enable or bypass the high pass filter.<br><br>The high pass filter removes low frequency noise and rumble from the audio signal.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#hpfCutoff',
-            popover: {
-              title: 'High Pass Filter Cutoff',
-              description: 'Use this slider to adjust the cutoff frequency of the high pass filter.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#lpfLabel',
-            popover: {
-              title: 'Low Pass Filter',
-              description: 'Toggle this switch to enable or bypass the low pass filter.<br><br>The low pass filter removes high frequency noise and hiss from the audio signal.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#lpfCutoff',
-            popover: {
-              title: 'Low Pass Filter Cutoff',
-              description: 'Use this slider to adjust the cutoff frequency of the low pass filter.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#processBtn',
-            popover: {
-              title: 'Begin Vinylification',
-              description: 'Click here to begin vinylifying your uploaded audio file with Vinylfy. Vinylfy will apply its algorithm based on the settings above.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-        ]
-      },
-      results: {
-        steps: [
-          {
-            element: '#resultsSection',
-            popover: {
-              title: 'Results Section',
-              description: 'After clicking the Process Audio button above, this section will appear where you can preview, download, or discard the finished file. You also can manage the metadata for the processed file before downloading (MP3, AAC, and FLAC outputs only).',
-              side: 'left',
-              align: 'center'
-            }
-          },
-          {
-            element: '#resultFileName',
-            popover: {
-              title: 'Output File Name',
-              description: 'This shows the filename that will be outputted upon download. All downloads from Vinylfy will append _vinylfy to the file name.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#resultFileSize',
-            popover: {
-              title: 'Output File Size',
-              description: 'This area shows the size of the processed file if you choose to download it. Ensure your downloads folder has enough space to store this file.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#resultPreset',
-            popover: {
-              title: 'Preset Applied',
-              description: 'This shows the preset applied to the outputted file.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#resultFormat',
-            popover: {
-              title: 'Output File Format',
-              description: 'This shows the outputted file format chosen above. Ensure you have the appropriate software to play this file type before downloading.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#expiresIn',
-            popover: {
-              title: 'File Expiration',
-              description: 'The time shown here represents the amount of time before the processed file is removed from the server, as set by your administrator. You will need to make sure you download the file prior to this time.',
-              side: 'left',
-              align: 'center'
-            }
-          },
-          {
-            element: '#previewBtn',
-            popover: {
-              title: 'Preview Button',
-              description: 'Press this button to prview your vinylfied audio before downloading.',
-              side: 'bottom',
-              align: 'center'
-            }
-          },
-          {
-            element: '#metadataBtn',
-            popover: {
-              title: 'Metadata Button',
-              description: 'Press this button to view, edit, or delete the metadata tags associated with the processed file. Vinylfy will populate any avaialble metadata from the source file by default.',
-              side: 'bottom',
-              align: 'center'
-            }
-          },
-          {
-            element: '#downloadBtn',
-            popover: {
-              title: 'Download Button',
-              description: 'Press this button to download your Vinylfied audio file.',
-              side: 'bottom',
-              align: 'center'
-            }
-          },
-          {
-            element: '#discardBtn',
-            popover: {
-              title: 'Discard Button',
-              description: 'Press this button to discard your Vinylfied audio file. This will delete the file from the server, and allow you to start over. You will need to reupload the same file, or you can select a new file.',
-              side: 'bottom',
-              align: 'center'
-            }
-          }
-        ]
-      },
-      metadata: {
-        steps: [
-          {
-            element: '#metadataModal',
-            popover: {
-              title: 'Metadata Management',
-              description: 'In this screen, you can view, edit, or delete any metadata for your file. Vinylfy will automatically include any existing metadata from your uploaded file by default.',
-              side: 'top',
-              align: 'start'
-            }
-          },
-          {
-            element: '#editMetadataBtn',
-            popover: {
-              title: 'Edit Your Metadata',
-              description: 'Press this button to enter into edit mode, where you can edit your file\'s metadata. All of these fields are optional, however, filling in as much metadata as possible can help software such as Apple Music properly organize and show the properties of the song, and allow it to be indexable for features such as smart playlists, searches, etc.',
-              side: 'top',
-              align: 'center'
-            }
-          },
-          {
-            element: '#metaTitle',
-            popover: {
-              title: 'Title',
-              description: 'This is the song title.',
-              side: 'left',
-              align: 'center'
-            }
-          },
-          {
-            element: '#metaArtist',
-            popover: {
-              title: 'Artist',
-              description: 'This is the artist for the song.',
-              side: 'right',
-              align: 'center'
-            }
-          },
-          {
-            element: '#metaAlbum',
-            popover: {
-              title: 'Album',
-              description: 'This is the album for the song.',
-              side: 'left',
-              align: 'center'
-            }
-          },
-          {
-            element: '#metaYear',
-            popover: {
-              title: 'Year',
-              description: 'This is the year the song was released.',
-              side: 'right',
-              align: 'center'
-            }
-          },
-          {
-            element: '#metaGenre',
-            popover: {
-              title: 'Genre',
-              description: 'This is the genre for the song.',
-              side: 'left',
-              align: 'center'
-            }
-          },
-          {
-            element: '#metaTrack',
-            popover: {
-              title: 'Track Number',
-              description: 'This is the track number of the song on the album.',
-              side: 'right',
-              align: 'center'
-            }
-          },
-          {
-            element: '#metaComment',
-            popover: {
-              title: 'Comments',
-              description: 'This is where any comments are shown, or can be added.',
-              side: 'bottom',
-              align: 'center'
-            }
-          }
-        ]
-      }
-    };
-  }
-
-  /**
-   * Start a contextual tour
-   * @param {string} tourName - Name of the tour to start
-   */
-  startTour(tourName) {
-    // Check if Driver.js is loaded
-    if (typeof window.driver === 'undefined' ||
-      typeof window.driver.js === 'undefined' ||
-      typeof window.driver.js.driver === 'undefined') {
-      console.warn('Driver.js not loaded');
-      showToast('Tour functionality not available', 'error');
-      return;
-    }
-
-    // Get tour definition
-    const tours = this.getTourDefinitions();
-    const tourDef = tours[tourName];
-
-    if (!tourDef) {
-      console.warn(`Tour '${tourName}' not found`);
-      return;
-    }
-
-    // Create and start the driver
-    const driverObj = window.driver.js.driver({
-      sanitize: false,
-      showProgress: true,
-      showButtons: ['next', 'previous', 'close'],
-      steps: tourDef.steps,
-      onDestroyStarted: () => {
-        driverObj.destroy();
-      }
-    });
-
-    driverObj.drive();
-  }
-
-  /**
-   * Setup help button event listeners
-   */
-  setupHelpButtons() {
-    // Get all help buttons
-    const helpButtons = document.querySelectorAll('.help-btn[data-tour]');
-
-    helpButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        const tourName = button.getAttribute('data-tour');
-        this.startTour(tourName);
-      });
-    });
-  }
 
   /**
    * Save user preferences

@@ -405,71 +405,11 @@
    ======================================== */
 
 /* Show/Hide utilities for different breakpoints */
-@media (max-width: 639px) {
-  .sm-hidden {
-    display: none !important;
-  }
-}
+
 
 @media (min-width: 640px) {
   .sm-visible {
     display: block !important;
-  }
-}
-
-/* Responsive text alignment */
-@media (max-width: 767px) {
-  .mobile-center {
-    text-align: center !important;
-  }
-}
-
-/* Responsive flex direction */
-@media (max-width: 767px) {
-  .mobile-flex-col {
-    flex-direction: column !important;
-  }
-}
-
-/* Responsive padding */
-@media (max-width: 767px) {
-  .mobile-p-sm {
-    padding: var(--space-sm) !important;
-  }
-}
-
-/* Full width on mobile */
-@media (max-width: 767px) {
-  .mobile-full {
-    width: 100% !important;
-  }
-}
-
-/* Stack buttons on mobile */
-@media (max-width: 767px) {
-  .btn-group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-  }
-
-  .btn-group .btn {
-    width: 100%;
-  }
-
-  /* Make header controls wrap and center on mobile */
-  .app-header .flex {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  /* Center align health status badge on mobile */
-  #healthStatus {
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
   }
 }
 

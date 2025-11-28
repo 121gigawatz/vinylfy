@@ -32,14 +32,32 @@
   <link rel="stylesheet" href="css/variables.css?v=beta4.1.7">
   <link rel="stylesheet" href="css/base.css?v=beta4.1.7">
   <link rel="stylesheet" href="css/components.css?v=beta4.1.7">
+  <link rel="stylesheet" href="css/device-modal.css?v=beta4.1.7">
+
   <link rel="stylesheet" href="css/responsive.css?v=beta4.1.7">
 
-  <!-- Driver.js for product tours -->
-  <link rel="stylesheet" href="css/vendor/driver.css?v=beta4.1.1">
-  <script src="js/vendor/driver.js?v=beta4.1.1"></script>
+
 </head>
 
 <body>
+  <!-- Device Detection Modal -->
+  <div id="deviceModal" class="device-modal hidden">
+    <div class="device-modal-content">
+      <div class="device-modal-icon" id="deviceIcon">
+        <!-- Icon will be inserted by JavaScript -->
+      </div>
+      <h2 id="deviceModalTitle" class="device-modal-title">
+        <!-- Title will be inserted by JavaScript -->
+      </h2>
+      <p id="deviceModalMessage" class="device-modal-message">
+        <!-- Message will be inserted by JavaScript -->
+      </p>
+      <button id="dismissDeviceModal" class="btn-device-dismiss">
+        Continue Anyway
+      </button>
+    </div>
+  </div>
+
   <!-- Skip Navigation -->
   <a href="#main-content" class="skip-link">Go to Vinylfy configurator</a>
   <!-- Screen Reader Announcements for Accessibility-->
@@ -301,9 +319,9 @@
           </button>
 
           <!-- Metadata Button -->
-          <button id="metadataBtn" class="btn-console-start" title="Metadata Manager" aria-label="Open Metadata Manager"
+          <button id="metadataBtn" class="btn-console-start" title="Info Manager" aria-label="Open Info Manager"
             style="flex: 1;">
-            <span class="btn-text">METADATA</span>
+            <span class="btn-text">INFO</span>
           </button>
 
           <!-- Process Button -->
@@ -389,7 +407,7 @@
             ⬇
           </button>
           <button id="discardBtn" class="btn-metal-control" title="Discard" aria-label="Discard processed file">
-            ⏏
+            ▲
           </button>
         </div>
 
@@ -479,17 +497,9 @@
   <!-- Metadata Modal -->
   <div id="metadataModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="metadataModalTitle">
     <div class="modal-overlay" aria-hidden="true"></div>
-    <div class="modal-content" style="max-width: 700px;">
+    <div class="modal-content metadata-editor">
       <div class="modal-header">
-        <h3
-          style="color: var(--color-primary); margin: 0; display: flex; align-items: center; gap: var(--space-xs); flex: 1;">
-          <span aria-hidden="true">🏷️</span>
-          <span>Audio Metadata</span>
-        </h3>
-        <button class="help-btn" data-tour="metadata" title="Learn about metadata management"
-          aria-label="Help: Learn about metadata management">
-          ?
-        </button>
+        <!-- Empty header -->
       </div>
       <div class="modal-body">
         <!-- Metadata Notice -->
@@ -500,97 +510,105 @@
 
         <!-- View Mode -->
         <div id="metadataViewMode">
-          <!-- Album Artwork -->
-          <div id="albumArtworkSection" class="hidden" style="margin-bottom: var(--space-lg);">
-            <h4
-              style="color: var(--color-text-primary); margin-bottom: var(--space-sm); font-size: var(--font-size-md);">
-              Album Artwork</h4>
-            <div style="display: flex; justify-content: center;">
-              <img id="albumArtwork"
-                style="max-width: 200px; max-height: 200px; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border);"
-                alt="Album artwork">
-            </div>
-          </div>
+          <!-- Metadata 3-Column Layout -->
+          <div class="metadata-layout-grid">
 
-          <!-- Metadata Fields -->
-          <div style="display: grid; gap: var(--space-md);">
-            <div class="form-row">
-              <div class="form-group" style="margin-bottom: 0;">
+            <!-- Left Column: Comments -->
+            <div class="metadata-fields-left">
+              <div class="form-group">
+                <label class="form-label">Notes</label>
+                <textarea id="metaComment" class="form-textarea metadata-editor-fields" rows="20" style="resize: none;"
+                  placeholder="No notes" readonly></textarea>
+              </div>
+
+              <!-- Metadata Action Buttons -->
+              <div class="metadata-action-buttons">
+                <button id="editMetadataBtn" class="btn-metadata-icon" aria-label="Edit audio file metadata"
+                  title="Edit Metadata">
+                  <img src="assets/icons/metadata-edit-button.png" alt="Edit" style="height: 120px; width: auto;">
+                  <span class="btn-metadata-label">Edit</span>
+                </button>
+                <button id="saveMetadataBtn" class="btn-metadata-icon hidden" aria-label="Save audio file metadata"
+                  title="Save Changes">
+                  <img src="assets/icons/metadata-save-button.png" alt="Save" style="height: 120px; width: auto;">
+                  <span class="btn-metadata-label">Save</span>
+                </button>
+                <button id="discardMetadataBtn" class="btn-metadata-icon hidden" aria-label="Discard metadata changes"
+                  title="Discard Changes">
+                  <img src="assets/icons/metadata-discard-button.png" alt="Discard" style="height: 120px; width: auto;">
+                  <span class="btn-metadata-label">Discard</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Center Column: Artwork -->
+            <div class="metadata-artwork-container">
+              <!-- Album Artwork Display -->
+              <div id="albumArtworkSection" class="hidden">
+                <img id="albumArtwork" alt="Album artwork">
+              </div>
+
+              <!-- Album Artwork Upload (Edit Mode) -->
+              <div id="artworkUploadSection" class="hidden">
+                <div class="file-upload">
+                  <input type="file" id="artworkFile" accept="image/jpeg,image/png" style="display: none;">
+                  <label for="artworkFile" class="file-upload-label">
+                    <span class="file-upload-icon">🖼️</span>
+                    <span class="file-upload-text">Upload Art</span>
+                  </label>
+                </div>
+                <div id="artworkPreview" class="hidden" style="margin-top: var(--space-sm); text-align: center;">
+                  <img id="artworkPreviewImg" alt="Artwork preview">
+                  <button id="removeArtwork" class="btn btn-ghost btn-sm"
+                    style="display: block; margin: var(--space-sm) auto 0;">Remove</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: All Other Info -->
+            <div class="metadata-fields-right">
+              <div class="form-group">
                 <label class="form-label">Title</label>
-                <input type="text" id="metaTitle" class="form-input" placeholder="No title" readonly>
+                <input type="text" id="metaTitle" class="form-input metadata-editor-fields" placeholder="No title"
+                  readonly>
               </div>
-              <div class="form-group" style="margin-bottom: 0;">
+              <div class="form-group">
                 <label class="form-label">Artist</label>
-                <input type="text" id="metaArtist" class="form-input" placeholder="No artist" readonly>
+                <input type="text" id="metaArtist" class="form-input metadata-editor-fields" placeholder="No artist"
+                  readonly>
               </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group" style="margin-bottom: 0;">
+              <div class="form-group">
                 <label class="form-label">Album</label>
-                <input type="text" id="metaAlbum" class="form-input" placeholder="No album" readonly>
+                <input type="text" id="metaAlbum" class="form-input metadata-editor-fields" placeholder="No album"
+                  readonly>
               </div>
-              <div class="form-group" style="margin-bottom: 0;">
+              <div class="form-group">
                 <label class="form-label">Year</label>
-                <input type="text" id="metaYear" class="form-input" placeholder="No year" readonly>
+                <input type="text" id="metaYear" class="form-input metadata-editor-fields" placeholder="No year"
+                  readonly>
               </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group" style="margin-bottom: 0;">
+              <div class="form-group">
                 <label class="form-label">Genre</label>
-                <input type="text" id="metaGenre" class="form-input" placeholder="No genre" readonly>
+                <input type="text" id="metaGenre" class="form-input metadata-editor-fields" placeholder="No genre"
+                  readonly>
               </div>
-              <div class="form-group" style="margin-bottom: 0;">
+              <div class="form-group">
                 <label class="form-label">Track Number</label>
-                <input type="text" id="metaTrack" class="form-input" placeholder="No track number" readonly>
+                <input type="text" id="metaTrack" class="form-input metadata-editor-fields"
+                  placeholder="No track number" readonly>
               </div>
             </div>
 
-            <div class="form-group" style="margin-bottom: 0;">
-              <label class="form-label">Comment</label>
-              <textarea id="metaComment" class="form-textarea" rows="2" placeholder="No comment" readonly></textarea>
-            </div>
           </div>
+        </div>
+      </div>
 
-          <!-- Album Artwork Upload (Edit Mode) -->
-          <div id="artworkUploadSection" class="hidden" style="margin-top: var(--space-md);">
-            <label class="form-label">Album Artwork</label>
-            <div class="file-upload">
-              <input type="file" id="artworkFile" accept="image/jpeg,image/png" style="display: none;">
-              <label for="artworkFile" class="file-upload-label" style="min-height: 120px; cursor: pointer;">
-                <span class="file-upload-icon">🖼️</span>
-                <span class="file-upload-text">Click to upload album artwork</span>
-                <span class="file-upload-hint">JPEG or PNG (recommended: 500x500px)</span>
-              </label>
-            </div>
-            <div id="artworkPreview" class="hidden" style="margin-top: var(--space-sm); text-align: center;">
-              <img id="artworkPreviewImg"
-                style="max-width: 150px; max-height: 150px; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid var(--color-border);"
-                alt="Artwork preview">
-              <button id="removeArtwork" class="btn btn-ghost btn-sm"
-                style="display: block; margin: var(--space-sm) auto 0;">Remove Artwork</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer" style="display: flex; justify-content: space-between; gap: var(--space-sm);">
-        <button id="closeMetadataModal" class="btn btn-ghost" aria-label="Close Metadata manager window">
-          Close
-        </button>
-        <div style="display: flex; gap: var(--space-sm);">
-          <button id="editMetadataBtn" class="btn btn-secondary" aria-label="Modify audio file metadata">
-            Modify Metadata
-          </button>
-          <button id="saveMetadataBtn" class="btn btn-primary hidden" aria-label="Save audio file metadata">
-            Save Changes
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 
   <!-- Scripts -->
+  <script src="/js/device-detection.js?v=beta4.1.7"></script>
+
   <script type="module" src="/js/app.js?v=beta4.1.7"></script>
 </body>
 

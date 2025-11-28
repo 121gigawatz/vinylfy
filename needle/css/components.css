@@ -45,44 +45,7 @@
   color: var(--color-primary);
 }
 
-/* ========================================
-   HELP BUTTONS
-   ======================================== */
 
-.help-btn {
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
-  flex-shrink: 0;
-  padding: 0;
-  border-radius: 50%;
-  border: 2px solid var(--color-info);
-  background: transparent;
-  color: var(--color-info);
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-bold);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all var(--transition-base);
-}
-
-.help-btn:hover {
-  background: var(--color-info);
-  color: var(--color-text-inverse);
-  transform: scale(1.1);
-}
-
-.help-btn:active {
-  transform: scale(0.95);
-}
-
-.help-btn:focus-visible {
-  outline: 3px solid var(--color-info);
-  outline-offset: 3px;
-}
 
 /* ========================================
    THEME TOGGLE
@@ -1436,6 +1399,308 @@
 /* ========================================
    MODAL
    ======================================== */
+
+/* METADATA EDITOR */
+.metadata-editor.modal-content {
+  background-image: url('../assets/textures/vinyl-sleeve-inside.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 100% 100%;
+  /* Force background to fit fixed dimensions */
+  background-color: #f0e6d2;
+  /* Fallback color matching the sleeve */
+
+  /* 3D Animation Properties */
+  transform-origin: left center;
+  animation: openAlbum 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  border: 1px solid #d4a574;
+
+  /* Layout Dimensions */
+  max-width: 1300px !important;
+  width: 95vw;
+  height: 800px;
+  /* Fixed height */
+  overflow: hidden;
+  /* Prevent scrolling of the modal itself */
+}
+
+@keyframes openAlbum {
+  0% {
+    transform: rotateY(-90deg);
+    opacity: 0;
+  }
+
+  100% {
+    transform: rotateY(0);
+    opacity: 1;
+  }
+}
+
+.metadata-editor-fields {
+  font-family: 'Courier New', Courier, monospace !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  /* Reduced font size */
+  color: #2c1e12 !important;
+  /* Dark brown ink color */
+  border: none !important;
+  background: transparent !important;
+  padding: 2px 0 !important;
+  /* Tighter padding */
+  border-bottom: 1px solid #000000 !important;
+  /* Solid black border */
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  line-height: 1.2 !important;
+}
+
+.metadata-editor .form-label {
+  font-family: 'Courier New', Courier, monospace !important;
+  color: #2c1e12 !important;
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
+  margin-bottom: 2px !important;
+}
+
+.metadata-editor-fields:focus {
+  outline: none !important;
+  border-bottom: 1px solid var(--color-primary) !important;
+  box-shadow: none !important;
+}
+
+/* Metadata Layout */
+/* Metadata Layout */
+.metadata-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 500px 1fr;
+  /* Widen center to push sides out */
+  gap: var(--space-xl);
+  align-items: start;
+  /* Align to top */
+  padding: 0 40px;
+  /* Reduce padding to move content closer to edges */
+  height: 100%;
+  /* Ensure full height for alignment */
+}
+
+.metadata-artwork-container {
+  /* Centered in grid column 2 */
+  width: 460px;
+  /* Adjusted width to better fill darker area */
+  height: 100%;
+  /* Fill the grid cell */
+  display: flex;
+  flex-direction: column;
+  /* Stack artwork and buttons */
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  /* Keep artwork vertically centered */
+  margin-left: 20px;
+  /* Shift left to align with darker area */
+  position: relative;
+  /* Reference for absolute positioning */
+}
+
+/* Circular Icon Buttons */
+.btn-icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  border: none !important;
+  background: transparent !important;
+  transition: background-color 0.2s;
+}
+
+.btn-icon-circle:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Metadata Icon Buttons */
+.btn-metadata-icon {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.btn-metadata-icon:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
+.btn-metadata-icon:active {
+  transform: scale(0.95);
+}
+
+.btn-metadata-icon img {
+  display: block;
+}
+
+/* Metadata Button Labels */
+.btn-metadata-label {
+  font-family: 'Courier New', Courier, monospace;
+  color: #2c1e12;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: var(--space-xs);
+}
+
+/* Metadata Action Buttons Container */
+.metadata-action-buttons {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: flex-start;
+  /* Left-align buttons */
+  align-items: center;
+  margin-top: auto;
+  /* Push to bottom */
+  padding-top: var(--space-md);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+
+.metadata-fields-left {
+  /* Left column */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  height: 100%;
+  justify-content: space-between;
+  /* Push buttons to bottom */
+}
+
+.metadata-fields-right {
+  /* Right column */
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* Tightest spacing */
+}
+
+/* Tighter label spacing */
+.metadata-editor .form-label {
+  font-family: 'Courier New', Courier, monospace !important;
+  color: #2c1e12 !important;
+  font-weight: 700 !important;
+  font-size: 0.8rem !important;
+  /* Reduced font size */
+  margin-bottom: 0 !important;
+  /* Remove margin */
+}
+
+/* Tighter input spacing */
+.metadata-editor-fields {
+  font-family: 'Courier New', Courier, monospace !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  color: #2c1e12 !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  /* Remove padding */
+  border-bottom: 1px solid #000000 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  line-height: 1.1 !important;
+  /* Reduced line height */
+}
+
+/* Ensure artwork fits within darker center area */
+#albumArtwork,
+#artworkPreviewImg {
+  width: 460px;
+  /* Wider to better fill darker area */
+  height: 530px;
+  /* Taller to better fill darker area */
+  object-fit: cover;
+  /* Cover to maintain aspect ratio within bounds */
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  /* Softer shadow for paper-like appearance */
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  margin-top: 25px;
+  /* Shift down to align with darker area */
+  position: relative;
+  /* For overlay positioning */
+
+  /* Vintage filter effects - muted and paper-like */
+  filter: sepia(0.3) contrast(0.9) brightness(0.92) saturate(0.85);
+}
+
+/* Vintage overlay texture for album artwork */
+#albumArtworkSection,
+#artworkPreview {
+  position: relative;
+  /* Required for overlay positioning */
+}
+
+#albumArtworkSection::after,
+#artworkPreview::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('../assets/textures/vintage-overlay.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.4;
+  /* Increased for more visible vintage effect */
+  mix-blend-mode: multiply;
+  /* Blend naturally with image */
+  pointer-events: none;
+  /* Don't interfere with clicks */
+  border-radius: var(--radius-sm);
+  z-index: 1;
+  /* Ensure overlay is on top of image */
+}
+
+/* Adjust file upload label to fit container */
+.metadata-artwork-container .file-upload-label {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-sm);
+  text-align: center;
+  border: 2px dashed rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.metadata-artwork-container .file-upload-icon {
+  font-size: 2rem;
+  margin-bottom: var(--space-xs);
+}
+
+.metadata-artwork-container .file-upload-text {
+  font-size: var(--font-size-sm);
+}
+
+.metadata-artwork-container .file-upload-hint {
+  display: none;
+  /* Hide hint to save space */
+}
+
+
 
 .modal {
   position: fixed;
