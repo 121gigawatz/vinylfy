@@ -1406,7 +1406,7 @@
   background-repeat: no-repeat;
   background-position: center center;
   background-size: 100% 100%;
-  /* Force background to fit fixed dimensions */
+  /* Lock background size */
   background-color: #f0e6d2;
   /* Fallback color matching the sleeve */
 
@@ -1420,10 +1420,12 @@
   /* Layout Dimensions */
   max-width: 1300px !important;
   width: 95vw;
-  height: 800px;
-  /* Fixed height */
-  overflow: hidden;
-  /* Prevent scrolling of the modal itself */
+  max-height: 90vh;
+  /* Responsive height - 90% of viewport */
+  height: auto;
+  /* Allow height to adjust */
+  overflow-y: auto;
+  /* Allow scrolling if content exceeds viewport */
 }
 
 @keyframes openAlbum {
@@ -1481,8 +1483,11 @@
   /* Align to top */
   padding: 0 40px;
   /* Reduce padding to move content closer to edges */
-  height: 100%;
-  /* Ensure full height for alignment */
+  height: auto;
+  max-height: calc(90vh - 100px);
+  /* Account for modal padding/margins */
+  overflow-y: auto;
+  /* Allow grid itself to scroll if needed */
 }
 
 .metadata-artwork-container {
@@ -3043,4 +3048,119 @@ a:focus-visible {
   justify-content: center;
   white-space: nowrap;
   overflow: hidden;
+}
+
+/* ===== RESPONSIVE SCALING FOR METADATA MODAL ===== */
+
+/* Medium height screens (smaller laptops, tablets in landscape) */
+@media (max-height: 900px) {
+  .btn-metadata-icon img {
+    height: 90px !important;
+    width: auto;
+  }
+
+  .metadata-artwork-container {
+    width: 420px;
+  }
+
+  #albumArtwork,
+  #artworkPreviewImg {
+    width: 420px;
+    height: 480px;
+  }
+}
+
+/* Small height screens */
+@media (max-height: 800px) {
+  .btn-metadata-icon img {
+    height: 70px !important;
+    width: auto;
+  }
+
+  .metadata-editor.modal-content {
+    max-height: 95vh;
+  }
+
+  .metadata-artwork-container {
+    width: 380px;
+  }
+
+  #albumArtwork,
+  #artworkPreviewImg {
+    width: 380px;
+    height: 420px;
+    margin-top: 15px;
+  }
+
+  .metadata-fields-left,
+  .metadata-fields-right {
+    gap: 2px;
+  }
+}
+
+/* Very small height screens */
+@media (max-height: 700px) {
+  .btn-metadata-icon img {
+    height: 50px !important;
+    width: auto;
+  }
+
+  .metadata-action-buttons {
+    gap: var(--space-sm);
+  }
+
+  .metadata-artwork-container {
+    width: 340px;
+  }
+
+  #albumArtwork,
+  #artworkPreviewImg {
+    width: 340px;
+    height: 360px;
+  }
+}
+/* Extra small height screens - very aggressive scaling */
+@media (max-height: 600px) {
+  .btn-metadata-icon img {
+    height: 40px !important;
+    width: auto;
+  }
+  
+  .btn-metadata-label {
+    font-size: 0.7rem;
+  }
+  
+  .metadata-action-buttons {
+    gap: 4px;
+    padding-top: var(--space-sm);
+  }
+  
+  .metadata-layout-grid {
+    gap: var(--space-sm);
+    padding: 0 20px;
+    max-height: calc(95vh - 60px);
+  }
+  
+  .metadata-artwork-container {
+    width: 300px;
+  }
+  
+  #albumArtwork,
+  #artworkPreviewImg {
+    width: 300px;
+    height: 320px;
+    margin-top: 10px;
+  }
+  
+  .metadata-editor-fields {
+    font-size: 0.9rem !important;
+  }
+  
+  .metadata-editor .form-label {
+    font-size: 0.7rem !important;
+  }
+  
+  #metaComment {
+    rows: 10;
+  }
 }

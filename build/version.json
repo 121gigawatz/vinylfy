@@ -1,7 +1,7 @@
 {
-  "version": "v1.0.0 Beta 4.1.1",
-  "shortVersion": "beta4.1.1",
-  "dockerTag": "v1.0.0-beta-4.1.1",
-  "buildDate": "2025-11-22",
-  "description": "Beta 4.1: Hotfix for guided tour."
+  "version": "public-beta-1",
+  "shortVersion": "public-beta-1",
+  "dockerTag": "public-beta-1",
+  "buildDate": "2025-11-27",
+  "description": "Public Beta 1: New UI with buttons and sliders."
 }

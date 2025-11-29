@@ -1,4 +1,25 @@
 {
+  "Public Beta 1": {
+    "date": "2025-11-27",
+    "highlights": [
+      "Vinylfy is now available for public beta with an all new user internface, including buttons and sliders.",
+      "Vinylfy now allows users to select all new presets by decade and genre. Ever wonder what modern song would sound like on a vinyl from the 1940s?",
+      "Manage your metadata on an authentic insider the sleeve experience by hitting the INFO button on the main board.",
+      "Please note that this is a beta release and may contain some bugs.",
+      "if you like Vinylfy, please consider supporting us by giving us a star on GitHub by clicking the star button on the top of the page."
+    ],
+    "bugfixes": [
+      "Fixed service worker caching issues that prevented UI from loading properly",
+      "Fixed service worker cache issues",
+      "Improved mobile Chrome connection reliability"
+    ],
+    "improvements": [
+      "Better cache management",
+      "Improved error messages",
+      "Added popup notification for mobile users to utilize a desktop browser for the best experience.",
+      "Added popup notification for tablet users to rotate their device to landscape mode."
+    ]
+  },
   "v1.0.0 Beta 4.1.7": {
     "date": "2025-11-24",
     "highlights": [
