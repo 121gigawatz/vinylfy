@@ -4,22 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vinylfy</title>
-    <meta name="description"
-        content="Transform your digital audio into warm, nostalgic vinyl records with authentic vinyl effects.">
-    <meta name="theme-color" content="#d4a574">
-
-    <!-- PWA Meta Tags -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Vinylfy">
-
-    <!-- Icons -->
-    <link rel="icon" type="image/png" sizes="96x96" href="assets/icons/favicon-96x96.png">
-    <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
-    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+    <title>Vinylfy - Design Preview</title>
 
     <style>
         /* CSS Variables - Embedded for easy tweaking */
@@ -548,12 +533,11 @@
         <div class="container">
             <div class="app-header-content">
                 <div style="display: flex; align-items: center; gap: var(--space-sm);">
-                    <img src="assets/icons/favicon-96x96.png" alt="Vinylfy icon" style="width: 48px; height: 48px;">
+                    <img src="../needle/assets/icons/favicon-96x96.png" alt="Vinylfy icon"
+                        style="width: 48px; height: 48px;">
                     <div class="brand-text" style="font-size: var(--font-size-3xl);">Vinylfy</div>
                 </div>
                 <div style="display: flex; gap: var(--space-sm); align-items: center;">
-                    <button class="btn-glass hidden" id="installBtn" style="font-size: var(--font-size-sm);">📲
-                        Install</button>
                     <button class="btn-glass" id="lightModeBtn" onclick="setTheme('light')">☀️</button>
                     <button class="btn-glass" id="darkModeBtn" onclick="setTheme('dark')">🌙</button>
                 </div>
@@ -1263,7 +1247,7 @@
         // Fetch and display latest release notes
         async function loadReleaseNotes() {
             try {
-                const response = await fetch('release-notes.json');
+                const response = await fetch('../needle/release-notes.json');
                 const releaseNotes = await response.json();
 
                 // Get the first (latest) entry
@@ -1321,50 +1305,13 @@
 
         // Load release notes when page loads
         loadReleaseNotes();
-
-        // PWA Install functionality
-        let deferredPrompt;
-        const installBtn = document.getElementById('installBtn');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent the mini-infobar from appearing on mobile
-            e.preventDefault();
-            // Stash the event so it can be triggered later
-            deferredPrompt = e;
-            // Show the install button
-            installBtn.classList.remove('hidden');
-        });
-
-        installBtn.addEventListener('click', async () => {
-            if (!deferredPrompt) {
-                return;
-            }
-            // Show the install prompt
-            deferredPrompt.prompt();
-            // Wait for the user to respond to the prompt
-            const { outcome } = await deferredPrompt.userChoice;
-            console.log(`User response to the install prompt: ${outcome}`);
-            // Clear the deferredPrompt for next time
-            deferredPrompt = null;
-            // Hide the install button
-            installBtn.classList.add('hidden');
-        });
-
-        // Register service worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then(reg => console.log('Service Worker registered'))
-                    .catch(err => console.log('Service Worker registration failed', err));
-            });
-        }
     </script>
 
     <!-- Footer -->
     <footer
         style="padding: var(--space-xl) 0; border-top: 1px solid var(--glass-border); background: linear-gradient(180deg, transparent 0%, rgba(201, 148, 29, 0.05) 100%); margin-top: var(--space-3xl);">
         <div class="container" style="text-align: center;">
-            <img src="assets/icons/favicon-96x96.png" alt="Vinylfy icon"
+            <img src="../needle/assets/icons/favicon-96x96.png" alt="Vinylfy icon"
                 style="width: 60px; height: 60px; margin: 0 auto var(--space-md); display: block;">
             <p
                 style="font-size: var(--font-size-lg); color: var(--color-primary); font-weight: var(--font-weight-medium); margin-bottom: var(--space-sm);">
