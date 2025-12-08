@@ -29,7 +29,6 @@ class VinylApp {
     this.selectedFile = null;
     this.processedFileId = null;
     this.currentPreset = 'AJW Recommended';
-    this.outputFormat = 'mp3';
     this.audioPlayer = null;
     this.presets = {};
     this.customSettings = this.getDefaultCustomSettings();
@@ -74,7 +73,6 @@ class VinylApp {
     // Setup UI
     this.setupFileUpload();
     this.setupPresetSelector();
-    this.setupFormatSelector();
     this.setupCustomControls();
     this.setupLEDIndicators(); // Setup LED indicators for toggle switches
     this.setupProcessButton();
@@ -940,38 +938,17 @@ class VinylApp {
   }
 
   /**
-   * Setup output format selector
-   */
-  /**
-   * Setup output format selector
-   */
-  setupFormatSelector() {
-    const formatInputs = document.querySelectorAll('input[name="outputFormat"]');
-
-    formatInputs.forEach(input => {
-      input.addEventListener('change', (e) => {
-        this.outputFormat = e.target.value;
-        this.updateMetadataButtonState();
-        this.savePreferences();
-      });
-    });
-  }
-
-  /**
-   * Update metadata button state based on selected format
+   * Update metadata button state
    */
   updateMetadataButtonState() {
     const metadataBtn = document.getElementById('metadataBtn');
     if (!metadataBtn) return;
 
-    if (supportsMetadataWriting(this.outputFormat)) {
-      metadataBtn.disabled = false;
-      metadataBtn.title = 'View and edit audio metadata';
-    } else {
-      metadataBtn.disabled = true;
-      metadataBtn.title = `Metadata is only supported for MP3, FLAC, and AAC formats. Current format: ${this.outputFormat.toUpperCase()}`;
-    }
+    // Metadata is now always available since we generate all formats
+    metadataBtn.disabled = false;
+    metadataBtn.title = 'View and edit audio metadata';
   }
+
 
   /**
    * Setup custom controls
@@ -1684,8 +1661,7 @@ class VinylApp {
 
       // Prepare options
       const options = {
-        preset: this.currentPreset,
-        outputFormat: this.outputFormat
+        preset: this.currentPreset
       };
 
       // Add custom settings if custom preset
@@ -1792,21 +1768,15 @@ class VinylApp {
   showResults(result) {
     const resultsSection = document.getElementById('resultsSection');
     const resultFileName = document.getElementById('resultFileName');
-    const resultFileSize = document.getElementById('resultFileSize');
     const resultPreset = document.getElementById('resultPreset');
-    const resultFormat = document.getElementById('resultFormat');
     const expiresIn = document.getElementById('expiresIn');
     const previewBtn = document.getElementById('previewBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
     const discardBtn = document.getElementById('discardBtn');
 
     // Update result info
-    resultFileName.textContent = result.suggested_filename;
-    resultFileSize.textContent = result.file_size_formatted;
+    const originalName = result.original_filename.split('.')[0];
+    resultFileName.textContent = `${originalName}_vinylfy`;
     resultPreset.textContent = formatPresetName(result.preset);
-    if (resultFormat) {
-      resultFormat.textContent = result.output_format.toUpperCase();
-    }
 
     // Enable marquee scrolling for long filenames
     const marqueeContainer = document.getElementById('resultFileNameMarquee');
@@ -1818,7 +1788,7 @@ class VinylApp {
         if (contentWidth > containerWidth) {
           marqueeContainer.classList.add('scrolling');
           // Duplicate content for seamless loop
-          resultFileName.innerHTML = `<span>${result.suggested_filename}</span><span>${result.suggested_filename}</span>`;
+          resultFileName.innerHTML = `<span>${originalName}_vinylfy</span><span>${originalName}_vinylfy</span>`;
         } else {
           marqueeContainer.classList.remove('scrolling');
         }
@@ -1847,7 +1817,7 @@ class VinylApp {
             playPauseBtn.textContent = '▶';
           }
         } else {
-          // Load and play preview
+          // Load and play preview (defaults to MP3)
           this.previewAudio(result.file_id);
           playPauseBtn.textContent = '❚❚';
         }
@@ -1875,8 +1845,54 @@ class VinylApp {
       };
     }
 
-    // Setup download button
-    downloadBtn.onclick = () => this.downloadAudio(result.file_id);
+    // Create download buttons for each format
+    const downloadButtonsContainer = document.getElementById('downloadButtonsContainer');
+    if (downloadButtonsContainer && result.formats) {
+      let buttonsHTML = '<div style="display: flex; gap: var(--space-md); margin-bottom: var(--space-md); flex-wrap: wrap;">';
+
+      // Individual format buttons
+      const formats = ['mp3', 'wav', 'flac', 'aac'];
+      formats.forEach(format => {
+        if (result.formats[format]) {
+          const formatData = result.formats[format];
+          buttonsHTML += `
+            <button class="btn btn-secondary format-download-btn" 
+                    data-file-id="${result.file_id}" 
+                    data-format="${format}"
+                    style="flex: 1; min-width: 100px;">
+              ${format.toUpperCase()}<br>
+              <small>${formatData.size_formatted}</small>
+            </button>
+          `;
+        }
+      });
+
+      buttonsHTML += '</div>';
+
+      // Download All button
+      buttonsHTML += `
+        <button id="downloadAllBtn" class="btn btn-primary" style="width: 100%;">
+          📦 Download All Formats (ZIP)
+        </button>
+      `;
+
+      downloadButtonsContainer.innerHTML = buttonsHTML;
+
+      // Wire up individual format download buttons
+      document.querySelectorAll('.format-download-btn').forEach(btn => {
+        btn.onclick = () => {
+          const fileId = btn.dataset.fileId;
+          const format = btn.dataset.format;
+          this.downloadFormat(fileId, format);
+        };
+      });
+
+      // Wire up Download All button
+      const downloadAllBtn = document.getElementById('downloadAllBtn');
+      if (downloadAllBtn) {
+        downloadAllBtn.onclick = () => this.downloadAllFormats(result.file_id);
+      }
+    }
 
     // Setup discard button
     discardBtn.onclick = () => this.discardAudio(result.file_id);
@@ -2031,19 +2047,8 @@ class VinylApp {
 
       let { blob, filename } = await api.downloadFile(fileId);
 
-      // If format supports metadata and we have edited metadata, write it to the file
-      if (supportsMetadataWriting(this.outputFormat) && this.editedMetadata) {
-        try {
-          downloadBtn.innerHTML = '<span class="spinner spinner-sm"></span> Adding metadata...';
-          console.log(`Writing metadata to ${this.outputFormat.toUpperCase()} file...`);
-          blob = await writeMetadata(blob, this.editedMetadata, this.outputFormat);
-          showToast('Metadata added to file! 🏷️', 'success');
-        } catch (error) {
-          console.error('Failed to write metadata:', error);
-          showToast('Warning: Failed to add metadata to file', 'warning');
-          // Continue with download even if metadata writing fails
-        }
-      }
+      // Note: Metadata writing is now handled per-format in downloadFormat()
+      // For backward compatibility, this method downloads MP3 by default
 
       // Create download link
       const url = URL.createObjectURL(blob);
@@ -2063,6 +2068,96 @@ class VinylApp {
     } finally {
       downloadBtn.disabled = false;
       downloadBtn.innerHTML = '⬇ Download';
+    }
+  }
+
+  /**
+   * Download specific format
+   */
+  async downloadFormat(fileId, format) {
+    try {
+      showToast(`Downloading ${format.toUpperCase()}...`, 'info');
+
+      // Call API with format-specific endpoint
+      const response = await fetch(`/api/download/${fileId}/${format}`);
+
+      if (!response.ok) {
+        throw new Error(`Download failed: ${response.statusText}`);
+      }
+
+      // Get the blob
+      const blob = await response.blob();
+
+      // Get filename from Content-Disposition header
+      const contentDisposition = response.headers.get('content-disposition');
+      let filename = `vinylfy_audio.${format}`;
+      if (contentDisposition) {
+        const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(contentDisposition);
+        if (matches != null && matches[1]) {
+          filename = matches[1].replace(/['"]/g, '');
+        }
+      }
+
+      // Create download link
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showToast(`${format.toUpperCase()} download started! 🎉`, 'success');
+
+    } catch (error) {
+      console.error('Format download failed:', error);
+      showToast(`Download failed: ${parseErrorMessage(error)}`, 'error');
+    }
+  }
+
+  /**
+   * Download all formats as ZIP
+   */
+  async downloadAllFormats(fileId) {
+    try {
+      showToast('Preparing ZIP archive...', 'info');
+
+      // Call API download-all endpoint
+      const response = await fetch(`/api/download-all/${fileId}`);
+
+      if (!response.ok) {
+        throw new Error(`Download failed: ${response.statusText}`);
+      }
+
+      // Get the blob
+      const blob = await response.blob();
+
+      // Get filename from Content-Disposition header
+      const contentDisposition = response.headers.get('content-disposition');
+      let filename = 'vinylfy_all_formats.zip';
+      if (contentDisposition) {
+        const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(contentDisposition);
+        if (matches != null && matches[1]) {
+          filename = matches[1].replace(/['"]/g, '');
+        }
+      }
+
+      // Create download link
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showToast('ZIP download started! 📦', 'success');
+
+    } catch (error) {
+      console.error('ZIP download failed:', error);
+      showToast(`Download failed: ${parseErrorMessage(error)}`, 'error');
     }
   }
 
@@ -2421,7 +2516,6 @@ class VinylApp {
   savePreferences() {
     storage.set('vinylfy_preferences', {
       preset: this.currentPreset,
-      outputFormat: this.outputFormat,
       customSettings: this.customSettings
     });
   }
@@ -2451,14 +2545,6 @@ class VinylApp {
         }
 
         this.updateCustomControlsVisibility();
-      }
-
-      if (prefs.outputFormat) {
-        this.outputFormat = prefs.outputFormat;
-        const formatSelector = document.getElementById('formatSelector');
-        if (formatSelector) {
-          formatSelector.value = prefs.outputFormat;
-        }
       }
     }
   }

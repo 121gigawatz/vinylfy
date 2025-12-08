@@ -7,7 +7,10 @@
     <title>Vinylfy</title>
     <meta name="description"
         content="Transform your digital audio into warm, nostalgic vinyl records with authentic vinyl effects.">
-    <meta name="theme-color" content="#d4a574">
+    <meta name="theme-color" content="#DA8137">
+    <meta name="theme-color" content="#DA8137" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0f0f14" media="(prefers-color-scheme: dark)">
+    <meta name="color-scheme" content="light dark">
 
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="manifest.json">
@@ -34,9 +37,9 @@
             --glass-opacity-heavy: 0.3;
 
             /* Gradients - Warm Vinyl Theme */
-            --gradient-primary: linear-gradient(135deg, #c9941d 0%, #d4a574 100%);
+            --gradient-primary: linear-gradient(135deg, #DA8137 0%, #f4c542 100%);
             --gradient-accent: linear-gradient(135deg, #e8b86d 0%, #f4c542 100%);
-            --gradient-vinyl: linear-gradient(135deg, #d4a574 0%, #f4c542 100%);
+            --gradient-vinyl: linear-gradient(135deg, #DA8137 0%, #f4c542 100%);
 
             /* Spacing */
             --space-xs: 0.25rem;
@@ -76,9 +79,9 @@
             --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
             --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
 
-            --shadow-glass-sm: 0 2px 8px rgba(201, 148, 29, 0.15);
-            --shadow-glass-md: 0 8px 32px rgba(201, 148, 29, 0.2);
-            --shadow-glass-lg: 0 16px 48px rgba(201, 148, 29, 0.25);
+            --shadow-glass-sm: 0 2px 8px rgba(218, 129, 55, 0.15);
+            --shadow-glass-md: 0 8px 32px rgba(218, 129, 55, 0.2);
+            --shadow-glass-lg: 0 16px 48px rgba(218, 129, 55, 0.25);
 
             /* Transitions */
             --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -107,12 +110,12 @@
             --glass-bg-medium: rgba(255, 255, 255, 0.03);
             --glass-bg-heavy: rgba(255, 255, 255, 0.05);
 
-            --glass-bg-amber: rgba(201, 148, 29, 0.1);
-            --glass-bg-vinyl: rgba(212, 165, 116, 0.1);
+            --glass-bg-amber: rgba(218, 129, 55, 0.1);
+            --glass-bg-vinyl: rgba(218, 129, 55, 0.1);
 
             --color-border: rgba(255, 255, 255, 0.1);
             --glass-border: rgba(255, 255, 255, 0.2);
-            --glass-border-vibrant: rgba(201, 148, 29, 0.4);
+            --glass-border-vibrant: rgba(218, 129, 55, 0.4);
 
             --backdrop-blur: blur(20px);
             --backdrop-saturate: saturate(180%);
@@ -208,7 +211,7 @@
         }
 
         body.light-mode .glass-slider:hover {
-            border-color: rgba(201, 148, 29, 0.5);
+            border-color: rgba(218, 129, 55, 0.5);
         }
 
         /* Light mode strong text in descriptions */
@@ -281,7 +284,7 @@
             font-weight: var(--font-weight-medium);
             color: var(--color-text-secondary);
             background: transparent;
-            border: 2px solid rgba(201, 148, 29, 0.4);
+            border: 2px solid rgba(218, 129, 55, 0.4);
             border-radius: var(--radius-full);
             cursor: pointer;
             white-space: nowrap;
@@ -291,7 +294,7 @@
         .tab-button:hover {
             font-weight: var(--font-weight-bold);
             background: var(--glass-bg-light);
-            border-color: rgba(201, 148, 29, 0.5);
+            border-color: rgba(218, 129, 55, 0.5);
         }
 
         .tab-button.active {
@@ -324,7 +327,7 @@
 
         .glass-card:hover {
             border-color: var(--glass-border-vibrant);
-            box-shadow: var(--shadow-glass-lg), 0 0 20px rgba(201, 148, 29, 0.4);
+            box-shadow: var(--shadow-glass-lg), 0 0 20px rgba(218, 129, 55, 0.4);
             transform: translateY(-2px);
         }
 
@@ -391,7 +394,7 @@
             background: var(--gradient-primary);
             border-radius: var(--radius-full);
             cursor: pointer;
-            box-shadow: var(--shadow-md), 0 0 20px rgba(201, 148, 29, 0.4);
+            box-shadow: var(--shadow-md), 0 0 20px rgba(218, 129, 55, 0.4);
             border: 2px solid var(--glass-border-vibrant);
         }
 
@@ -401,7 +404,7 @@
             background: var(--gradient-primary);
             border-radius: var(--radius-full);
             cursor: pointer;
-            box-shadow: var(--shadow-md), 0 0 20px rgba(201, 148, 29, 0.4);
+            box-shadow: var(--shadow-md), 0 0 20px rgba(218, 129, 55, 0.4);
             border: 2px solid var(--glass-border-vibrant);
         }
 
@@ -424,7 +427,7 @@
         .btn-glass:hover {
             background: var(--glass-bg-heavy);
             border-color: var(--color-primary);
-            box-shadow: var(--shadow-glass-md), 0 0 20px rgba(201, 148, 29, 0.4);
+            box-shadow: var(--shadow-glass-md), 0 0 20px rgba(218, 129, 55, 0.4);
             transform: translateY(-2px);
         }
 
@@ -435,7 +438,7 @@
         }
 
         .btn-glass-primary:hover {
-            box-shadow: var(--shadow-glass-md), 0 0 20px rgba(201, 148, 29, 0.4);
+            box-shadow: var(--shadow-glass-md), 0 0 20px rgba(218, 129, 55, 0.4);
             filter: brightness(1.1);
         }
 
@@ -474,7 +477,7 @@
         .toggle-switch.active {
             background: var(--gradient-primary);
             border-color: var(--color-primary);
-            box-shadow: 0 0 20px rgba(201, 148, 29, 0.4);
+            box-shadow: 0 0 20px rgba(218, 129, 55, 0.4);
         }
 
         .toggle-switch-handle {
@@ -536,7 +539,7 @@
 
         .preset-card.selected img {
             border-color: var(--color-primary);
-            box-shadow: 0 0 20px rgba(201, 148, 29, 0.5);
+            box-shadow: 0 0 20px rgba(218, 129, 55, 0.5);
         }
     </style>
 </head>
@@ -548,8 +551,13 @@
         <div class="container">
             <div class="app-header-content">
                 <div style="display: flex; align-items: center; gap: var(--space-sm);">
-                    <img src="assets/icons/favicon-96x96.png" alt="Vinylfy icon" style="width: 48px; height: 48px;">
-                    <div class="brand-text" style="font-size: var(--font-size-3xl);">Vinylfy</div>
+                    <img src="assets/icons/apple-touch-icon.png" alt="Vinylfy icon" style="width: 56px; height: 56px;">
+                    <div>
+                        <div class="brand-text" style="font-size: var(--font-size-3xl);">Vinylfy</div>
+                        <div
+                            style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-top: 2px;">
+                            Give Your Digital Music that Vinyl Sound</div>
+                    </div>
                 </div>
                 <div style="display: flex; gap: var(--space-sm); align-items: center;">
                     <button class="btn-glass hidden" id="installBtn" style="font-size: var(--font-size-sm);">📲
@@ -570,7 +578,7 @@
                 <button class="tab-button" data-tab="presets">Presets</button>
                 <button class="tab-button" data-tab="configure">Configure</button>
                 <button class="tab-button" data-tab="results">Results</button>
-                <button class="tab-button" data-tab="info">Info</button>
+                <button class="tab-button" data-tab="info">About</button>
             </div>
         </div>
     </nav>
@@ -583,7 +591,9 @@
             <div class="glass-card">
                 <div class="glass-card-header">
                     <h2 class="glass-card-title">Welcome to Vinylfy</h2>
-                    <p class="glass-card-subtitle">Transform your digital audio into warm, nostalgic vinyl records</p>
+                    <p class="glass-card-subtitle">Transform your digital audio into warm, nostalgic vinyl records.
+                        Vinylfy is made for vinyl lovers who desire a vinyl-like sound in their digital audio files.
+                        Built using open source tools and technologies, Vinylfy is open source and free to use.</p>
                 </div>
             </div>
 
@@ -1098,31 +1108,20 @@
                         M4A, AAC</p>
                 </div>
             </div>
-
-            <div class="glass-card">
-                <h3 class="glass-card-title">Output Format</h3>
-                <div style="display: flex; gap: var(--space-md); flex-wrap: wrap;">
-                    <button class="btn-glass format-btn active" data-format="mp3" style="flex: 1; min-width: 120px;"
-                        onclick="selectFormat('mp3', this)">MP3</button>
-                    <button class="btn-glass format-btn" data-format="wav" style="flex: 1; min-width: 120px;"
-                        onclick="selectFormat('wav', this)">WAV</button>
-                    <button class="btn-glass format-btn" data-format="flac" style="flex: 1; min-width: 120px;"
-                        onclick="selectFormat('flac', this)">FLAC</button>
-                    <button class="btn-glass format-btn" data-format="aac" style="flex: 1; min-width: 120px;"
-                        onclick="selectFormat('aac', this)">AAC</button>
-                </div>
-            </div>
         </div>
 
         <!-- RESULTS TAB -->
         <div id="tab-results" class="tab-content">
             <div class="glass-card" style="text-align: center; padding: var(--space-3xl);">
-                <span style="font-size: 4rem;">🎧</span>
+                <span style="font-size: 4rem;">💿</span>
                 <h3 style="margin: var(--space-lg) 0;">No Results Yet</h3>
                 <p style="margin-bottom: var(--space-xl);">Process an audio file to see your results here. <span
                         onclick="document.querySelector('[data-tab=process]').click()"
                         style="color: var(--color-primary); text-decoration: underline; cursor: pointer;">Load a
                         File</span></p>
+
+                <!-- Download Buttons Container (dynamically populated by JavaScript) -->
+                <div id="downloadButtonsContainer"></div>
             </div>
         </div>
 
@@ -1136,19 +1135,30 @@
                 <div
                     style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-2xl);">
                     <div>
-                        <h3 style="color: var(--color-primary); margin-bottom: var(--space-md);">What is Vinylfy?</h3>
-                        <p>Transform digital audio into warm, nostalgic vinyl records with authentic vinyl effects
-                            including surface noise, pops, crackles, wow and flutter, and RIAA equalization.</p>
+                        <h3 style="color: var(--color-primary); margin-bottom: var(--space-md);">The Vinyly Story</h3>
+                        <p>Vinylfy was orignally created as a peronsal project for the original creator's daughter, an
+                            avid vinyl lover who
+                            loved to listen to her favorite albums on vinyl. Interested in programming, she asked her
+                            father to create a tool
+                            that would allow her to convert her favorite digital files into vinyl records. The creator,
+                            being a software engineer,
+                            set out to create a tool that would allow her to convert her favorite digital files to sound
+                            like her favoriate sound.
+                            <br>
+                            <br>
+                            You'll find her influence in the presets screen as "AJW Recommended". We
+                            certainly hope you enjoy it!
+                        </p>
                     </div>
 
                     <div>
                         <h3 style="color: var(--color-primary); margin-bottom: var(--space-md);">Features</h3>
                         <ul style="list-style: none; color: var(--color-text-secondary); line-height: 1.75;">
-                            <li>💽 Authentic vinyl sound</li>
-                            <li>⚡ Fast processing</li>
-                            <li>🔒 Privacy first</li>
-                            <li>📱 PWA ready</li>
-                            <li>♿ Accessible</li>
+                            <li>Authentic vinyl sound</li>
+                            <li>Fast processing</li>
+                            <li>Privacy first</li>
+                            <li>PWA ready</li>
+                            <li>Accessible</li>
                         </ul>
                     </div>
                 </div>
@@ -1170,21 +1180,6 @@
     </main>
 
     <script>
-        // Output format selection
-        function selectFormat(format, button) {
-            // Remove active class from all format buttons and reset to glass style
-            document.querySelectorAll('.format-btn').forEach(btn => {
-                btn.classList.remove('active');
-                btn.style.background = 'var(--glass-bg-medium)';
-                btn.style.color = '';
-            });
-
-            // Add active class to clicked button
-            button.classList.add('active');
-            button.style.background = 'var(--gradient-primary)';
-            button.style.color = 'white';
-        }
-
         // Theme switching
         function setTheme(theme) {
             if (theme === 'light') {
@@ -1204,18 +1199,6 @@
         window.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('theme') || 'dark';
             setTheme(savedTheme);
-
-            // Set default MP3 format button and reset others
-            document.querySelectorAll('.format-btn').forEach(btn => {
-                btn.style.background = 'var(--glass-bg-medium)';
-                btn.style.color = '';
-            });
-
-            const mp3Btn = document.querySelector('.format-btn[data-format="mp3"]');
-            if (mp3Btn) {
-                mp3Btn.style.background = 'var(--gradient-primary)';
-                mp3Btn.style.color = 'white';
-            }
         });
 
         // Simple tab switching
@@ -1362,7 +1345,7 @@
 
     <!-- Footer -->
     <footer
-        style="padding: var(--space-xl) 0; border-top: 1px solid var(--glass-border); background: linear-gradient(180deg, transparent 0%, rgba(201, 148, 29, 0.05) 100%); margin-top: var(--space-3xl);">
+        style="padding: var(--space-xl) 0; border-top: 1px solid var(--glass-border); background: linear-gradient(180deg, transparent 0%, rgba(218, 129, 55, 0.05) 100%); margin-top: var(--space-3xl);">
         <div class="container" style="text-align: center;">
             <img src="assets/icons/favicon-96x96.png" alt="Vinylfy icon"
                 style="width: 60px; height: 60px; margin: 0 auto var(--space-md); display: block;">
@@ -1371,13 +1354,8 @@
                 Vinylfy</p>
             <p
                 style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-md);">
-                Transform digital audio into warm vinyl records</p>
-            <div
-                style="display: flex; gap: var(--space-md); justify-content: center; flex-wrap: wrap; font-size: var(--font-size-sm); color: var(--color-text-secondary);">
-                <span>💽 Authentic Sound</span>
-                <span>⚡ Fast Processing</span>
-                <span>🔒 Privacy First</span>
-            </div>
+                Made with ❤️ for AJW and vinyl enthusiasts.
+            </p>
         </div>
     </footer>
 

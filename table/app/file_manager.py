@@ -45,48 +45,54 @@ class ProcessedFileManager:
         # Start cleanup thread
         self._start_cleanup_thread()
     
-    def store_file(self, filepath: str, original_filename: str,
-                   output_format: str, preset: str, settings: Dict) -> str:
+    def store_file(self, format_filepaths: Dict[str, str], original_filename: str,
+                   preset: str, settings: Dict) -> str:
         """
-        Store a processed file with metadata.
+        Store multiple format files with metadata.
 
         Args:
-            filepath: Path to the processed file
+            format_filepaths: Dictionary mapping format (mp3, wav, flac, aac) to filepath
             original_filename: Original filename uploaded by user
-            output_format: Output format (wav, mp3, etc.)
             preset: Preset used for processing
-            settings: Processing settngs used
+            settings: Processing settings used
         
         Returns:
             Unique file ID
         """
-
+        import shutil
+        
         # Generate unique ID
         file_id = str(uuid.uuid4())
 
-        # Store file
-        stored_filepath = self.files_dir / f"{file_id}.{output_format}"
+        # Store all format files and collect metadata
+        formats = {}
+        for output_format, filepath in format_filepaths.items():
+            # Store file
+            stored_filepath = self.files_dir / f"{file_id}.{output_format}"
 
-        # Copy file to storage
-        # Try copy2() first (preserves metadata), fallback to copy() if permission denied
-        import shutil
-        try:
-            shutil.copy2(filepath, stored_filepath)
-        except (PermissionError, OSError):
-            # Fallback for Windows mounts or restricted volumes
-            shutil.copy(filepath, stored_filepath)
+            # Copy file to storage
+            # Try copy2() first (preserves metadata), fallback to copy() if permission denied
+            try:
+                shutil.copy2(filepath, stored_filepath)
+            except (PermissionError, OSError):
+                # Fallback for Windows mounts or restricted volumes
+                shutil.copy(filepath, stored_filepath)
+            
+            # Track format-specific data
+            formats[output_format] = {
+                'filepath': str(stored_filepath),
+                'file_size': os.path.getsize(stored_filepath)
+            }
 
         # Create metadata
         metadata = {
             'id': file_id,
             'original_filename': original_filename,
-            'output_format': output_format,
             'preset': preset,
             'settings': settings,
             'stored_at': datetime.now().isoformat(),
             'expires_at': (datetime.now() + timedelta(seconds=self.ttl_seconds)).isoformat(),
-            'file_size': os.path.getsize(stored_filepath),
-            'filepath': str(stored_filepath)
+            'formats': formats  # Store all format data
         }
 
         # Store metadata
@@ -94,18 +100,19 @@ class ProcessedFileManager:
         with open(metadata_path, 'w') as f:
             json.dump(metadata, f, indent=2)
         
-        logger.info(f"Stored file with ID: {file_id}")
+        logger.info(f"Stored file with ID: {file_id} ({len(formats)} formats)")
         return file_id
     
-    def get_file(self, file_id: str) -> Optional[Dict]:
+    def get_file(self, file_id: str, format: Optional[str] = None) -> Optional[Dict]:
         """
         Retrieve file information by ID.
 
         Args:
             file_id: Unique file identifier
+            format: Optional format to get specific format filepath (mp3, wav, flac, aac)
 
         Returns:
-            Dictionary with file metadata and path, or None if not found/expired
+            Dictionary with file metadata and paths, or None if not found/expired
         """
         metadata_path = self.metadata_dir / f"{file_id}.json"
 
@@ -124,39 +131,71 @@ class ProcessedFileManager:
             self.delete_file(file_id)
             return None
 
-        # Check if file exists
-        filepath = Path(metadata['filepath'])
-        if not filepath.exists():
-            logger.warning(f"File missing on disk: {file_id}")
-            self.delete_file(file_id)
-            return None
+        # Check if files exist (check all formats)
+        if 'formats' in metadata:
+            # Multi-format storage (new format)
+            for fmt, fmt_data in metadata['formats'].items():
+                filepath = Path(fmt_data['filepath'])
+                if not filepath.exists():
+                    logger.warning(f"File missing on disk: {file_id}.{fmt}")
+                    self.delete_file(file_id)
+                    return None
+        else:
+            # Legacy single-format storage (backward compatibility)
+            filepath = Path(metadata['filepath'])
+            if not filepath.exists():
+                logger.warning(f"File missing on disk: {file_id}")
+                self.delete_file(file_id)
+                return None
+
+        # If specific format requested, return that format's data
+        if format and 'formats' in metadata:
+            if format in metadata['formats']:
+                return {
+                    **metadata,
+                    'filepath': metadata['formats'][format]['filepath'],
+                    'file_size': metadata['formats'][format]['file_size'],
+                    'output_format': format
+                }
+            else:
+                logger.warning(f"Format {format} not found for file {file_id}")
+                return None
 
         return metadata
     def delete_file(self, file_id: str) -> bool:
         """
-        Delete a file and its metadata.
+        Delete a file and its metadata (all format versions).
 
         Args:
             file_id: Unique file identifier
         
         Returns:
-            True if deleted, False is not found
+            True if deleted, False if not found
         """
         metadata_path = self.metadata_dir / f"{file_id}.json"
 
         if not metadata_path.exists():
             return False
         
-        # Load metadata to get file path
+        # Load metadata to get file paths
         try:
             with open(metadata_path, 'r') as f:
                 metadata = json.load(f)
             
-            # Delete file
-            filepath = Path(metadata['filepath'])
-            if filepath.exists():
-                filepath.unlink()
-                logger.debug(f"Deleted file: {filepath}")
+            # Delete all format files
+            if 'formats' in metadata:
+                # Multi-format storage (new format)
+                for fmt, fmt_data in metadata['formats'].items():
+                    filepath = Path(fmt_data['filepath'])
+                    if filepath.exists():
+                        filepath.unlink()
+                        logger.debug(f"Deleted file: {filepath}")
+            else:
+                # Legacy single-format storage (backward compatibility)
+                filepath = Path(metadata['filepath'])
+                if filepath.exists():
+                    filepath.unlink()
+                    logger.debug(f"Deleted file: {filepath}")
             
             # Delete metadata
             metadata_path.unlink()

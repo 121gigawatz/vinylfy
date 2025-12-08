@@ -168,7 +168,6 @@
 .results-card {
   position: relative;
   background-color: #8d6e63;
-  background-image: url('../assets/textures/wood.png');
   background-size: cover;
   background-blend-mode: multiply;
   border-radius: var(--radius-xl);
@@ -189,7 +188,6 @@
   right: var(--space-lg);
   height: 150px;
   background-color: #999;
-  background-image: url('../assets/textures/speaker-grill.png');
   background-size: cover;
   background-position: center;
   border-radius: var(--radius-lg);
@@ -501,7 +499,6 @@
   height: 80px;
   border-radius: 50%;
   background-color: #999;
-  background-image: url('../assets/textures/metal.png');
   background-size: cover;
   background-blend-mode: overlay;
   border: 2px solid #666;
@@ -800,8 +797,8 @@
 }
 
 .toggle-input:checked+.toggle-switch {
-  background: var(--color-success);
-  border-color: var(--color-success);
+  background: #DA8137 !important;
+  border-color: #DA8137 !important;
 }
 
 .toggle-input:checked+.toggle-switch::after {
@@ -979,7 +976,7 @@
   background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-accent) 100%);
   border-radius: var(--radius-full);
   transition: width 0.3s ease-out;
-  box-shadow: 0 0 10px rgba(212, 165, 116, 0.5);
+  box-shadow: 0 0 10px rgba(218, 129, 55, 0.5);
   position: relative;
   overflow: hidden;
 }
@@ -1162,7 +1159,6 @@
   width: 420px;
   height: 420px;
   background-color: #999;
-  background-image: url('../assets/textures/metal.png');
   background-size: cover;
   background-blend-mode: overlay;
   border-radius: 8px;
@@ -1180,7 +1176,6 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url('../assets/textures/metal.png');
   background-size: cover;
   opacity: 0.6;
   border-radius: 8px;
@@ -1220,7 +1215,6 @@
 .turntable-label {
   width: 140px;
   height: 140px;
-  background-image: url('../assets/textures/label.png');
   background-size: cover;
   background-position: center;
   border-radius: 50%;
@@ -1334,7 +1328,7 @@
    ======================================== */
 
 .card-glow {
-  box-shadow: var(--shadow-lg), 0 0 30px rgba(212, 165, 116, 0.1);
+  box-shadow: var(--shadow-lg), 0 0 30px rgba(218, 129, 55, 0.1);
 }
 
 .card-header-icon {
@@ -1402,7 +1396,6 @@
 
 /* METADATA EDITOR */
 .metadata-editor.modal-content {
-  background-image: url('../assets/textures/vinyl-sleeve-inside.png');
   background-repeat: no-repeat;
   background-position: center center;
   background-size: 100% 100%;
@@ -1415,7 +1408,7 @@
   animation: openAlbum 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
   backface-visibility: hidden;
   perspective: 1000px;
-  border: 1px solid #d4a574;
+  border: 1px solid #DA8137;
 
   /* Layout Dimensions */
   max-width: 1300px !important;
@@ -1662,7 +1655,6 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('../assets/textures/vintage-overlay.png');
   background-size: cover;
   background-position: center;
   opacity: 0.4;
@@ -1916,7 +1908,7 @@ a:focus-visible {
 .audio-play-btn:focus-visible {
   outline: 3px solid var(--color-primary);
   outline-offset: 3px;
-  box-shadow: 0 0 0 4px rgba(212, 165, 116, 0.3);
+  box-shadow: 0 0 0 4px rgba(218, 129, 55, 0.3);
 }
 
 .audio-timeline:focus-visible {
@@ -1935,7 +1927,7 @@ a:focus-visible {
 .theme-toggle-btn:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.2);
+  box-shadow: 0 0 0 3px rgba(218, 129, 55, 0.2);
 }
 
 /* ========================================
@@ -1948,7 +1940,6 @@ a:focus-visible {
   gap: var(--space-sm);
   /* Wood casing effect with real texture - Lighter base for visibility */
   background-color: #8d6e63;
-  background-image: url('../assets/textures/wood.png');
   background-size: cover;
   background-blend-mode: multiply;
   border-radius: var(--radius-xl);
@@ -1975,7 +1966,6 @@ a:focus-visible {
   min-width: 0;
   /* Prevent flex item expansion */
   background-color: #999;
-  background-image: url('../assets/textures/metal.png');
   background-size: cover;
   background-blend-mode: overlay;
   border-radius: var(--radius-lg);
@@ -2014,7 +2004,6 @@ a:focus-visible {
   width: 100%;
   /* Recessed area for turntable */
   background-color: #999;
-  background-image: url('../assets/textures/metal.png');
   background-size: cover;
   background-blend-mode: overlay;
   border-radius: var(--radius-lg);
@@ -2245,7 +2234,7 @@ a:focus-visible {
 
 .format-option input:checked+span {
   color: var(--color-vinyl-gold);
-  text-shadow: 0 0 5px rgba(212, 165, 116, 0.3);
+  text-shadow: 0 0 5px rgba(218, 129, 55, 0.3);
 }
 
 /* Faders Bank */
@@ -3119,47 +3108,48 @@ a:focus-visible {
     height: 360px;
   }
 }
+
 /* Extra small height screens - very aggressive scaling */
 @media (max-height: 600px) {
   .btn-metadata-icon img {
     height: 40px !important;
     width: auto;
   }
-  
+
   .btn-metadata-label {
     font-size: 0.7rem;
   }
-  
+
   .metadata-action-buttons {
     gap: 4px;
     padding-top: var(--space-sm);
   }
-  
+
   .metadata-layout-grid {
     gap: var(--space-sm);
     padding: 0 20px;
     max-height: calc(95vh - 60px);
   }
-  
+
   .metadata-artwork-container {
     width: 300px;
   }
-  
+
   #albumArtwork,
   #artworkPreviewImg {
     width: 300px;
     height: 320px;
     margin-top: 10px;
   }
-  
+
   .metadata-editor-fields {
     font-size: 0.9rem !important;
   }
-  
+
   .metadata-editor .form-label {
     font-size: 0.7rem !important;
   }
-  
+
   #metaComment {
     rows: 10;
   }

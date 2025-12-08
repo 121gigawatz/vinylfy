@@ -73,11 +73,15 @@
     display: flex;
     gap: var(--space-sm);
     padding: var(--space-md) 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-    /* Firefox */
-    -ms-overflow-style: none;
-    /* IE/Edge */
+    justify-content: center;
+}
+
+/* Stack tabs in 2 columns on tablets and smaller */
+@media (max-width: 900px) {
+    .tab-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .tab-list::-webkit-scrollbar {
@@ -373,9 +377,9 @@
 }
 
 .glass-toggle.active {
-    background: var(--gradient-primary);
-    border-color: var(--color-primary);
-    box-shadow: var(--glow-primary);
+    background: #DA8137 !important;
+    border-color: #DA8137 !important;
+    box-shadow: 0 0 0 3px rgba(218, 129, 55, 0.2) !important;
 }
 
 .glass-toggle-handle {

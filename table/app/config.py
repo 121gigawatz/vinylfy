@@ -18,7 +18,7 @@ class Config:
     MAX_CONTENT_LENGTH = MAX_FILE_SIZE * 1024 * 1024 # Default 25MB
     UPLOAD_FOLDER = Path('/tmp/vinylfy/uploads')
     PROCESSED_FILES_DIR = Path('/tmp/vinylfy/processed')
-    PROCESSED_FILES_TTL_HOURS = 1
+    PROCESSED_FILES_TTL_HOURS = 0.5
     ALLOWED_EXTENSIONS = {'wav', 'mp3', 'flac', 'ogg', 'm4a', 'aac'}
     ALLOWED_OUTPUT_FORMATS = {'wav', 'mp3', 'aac', 'flac', 'ogg'}
 

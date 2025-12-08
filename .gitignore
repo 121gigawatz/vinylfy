@@ -34,5 +34,5 @@ logs/
 tmp/
 temp/
 
-# Tests
-tests/
+# Developer tools and preview files
+developer/

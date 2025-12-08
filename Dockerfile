@@ -41,17 +41,17 @@ WORKDIR /app
 COPY --from=python:3.11-slim /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=python:3.11-slim /usr/local/bin /usr/local/bin
 
-# Copy build scripts and version file
-COPY build /app/build
-
-# Copy maintenance scripts
-COPY scripts /app/scripts
-
 # Copy backend application
 COPY table/app /app/table/app
 
 # Copy frontend application
 COPY needle /app/needle
+
+# Copy only version.json (needed for version update script)
+COPY build/version.json /app/build/version.json
+
+# Copy maintenance scripts
+COPY scripts /app/scripts
 
 # Run version update script to sync all version strings
 # (must run AFTER files are copied so it can update them)

@@ -8,11 +8,11 @@ This directory contains build-time tools for **developers and contributors**.
 
 - **Makefile** - All development commands (version, build, dev-setup, etc.)
 - **version.json** - Single source of truth for version numbers
-- **update-version.py** - Python script to update version across all files
-- **update-version.sh** - Bash script (alternative to Python)
-- **VERSION_MANAGEMENT.md** - Detailed version system documentation
-- **WORKFLOW.md** - Visual build process and deployment guide
 - **README.md** - This file
+
+**Related Documentation:**
+- **[../docs/VERSION_MANAGEMENT.md](../docs/VERSION_MANAGEMENT.md)** - Version system documentation
+- **[../docs/WORKFLOW.md](../docs/WORKFLOW.md)** - Build process and deployment guide
 
 ## 🚀 Quick Start (Developers)
 
@@ -76,8 +76,8 @@ This ensures version numbers cannot be tampered with after deployment.
 ## 📚 Documentation
 
 - **[Makefile](Makefile)** - Run `make help` for all commands
-- **[VERSION_MANAGEMENT.md](VERSION_MANAGEMENT.md)** - Complete version system docs
-- **[WORKFLOW.md](WORKFLOW.md)** - Build process visualization
+- **[../docs/VERSION_MANAGEMENT.md](../docs/VERSION_MANAGEMENT.md)** - Complete version system docs
+- **[../docs/WORKFLOW.md](../docs/WORKFLOW.md)** - Build process visualization
 - **[../docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md)** - Full development guide
 
 ## 🎯 For Contributors

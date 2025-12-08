@@ -4,6 +4,13 @@ docs/
 !README.md
 tests/
 
+# Demo/Preview files
+developer/
+
+# Build tools (only version.json is needed)
+build/
+!build/version.json
+
 # Git
 .git/
 .gitignore
