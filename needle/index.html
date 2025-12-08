@@ -478,14 +478,18 @@
         }
 
         .btn-glass-primary {
-            background: var(--gradient-primary);
-            border-color: transparent;
+            background: linear-gradient(135deg, #da8137 0%, #f4a261 100%);
+            border: 2px solid #da8137;
             color: white;
+            font-weight: var(--font-weight-semibold);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .btn-glass-primary:hover {
-            box-shadow: var(--shadow-glass-md), 0 0 20px rgba(218, 129, 55, 0.4);
-            filter: brightness(1.1);
+            background: linear-gradient(135deg, #e09147 0%, #f5ad71 100%);
+            border-color: #e09147;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15), 0 0 20px rgba(218, 129, 55, 0.4);
+            transform: translateY(-1px);
         }
 
         /* Grid Layout */
@@ -512,17 +516,17 @@
             position: relative;
             width: 50px;
             height: 26px;
-            background: var(--glass-bg-heavy);
+            background: rgba(100, 100, 100, 0.3);
             border-radius: var(--radius-full);
-            border: 1px solid var(--glass-border);
+            border: 2px solid rgba(100, 100, 100, 0.4);
             cursor: pointer;
             transition: all var(--transition-base);
             flex-shrink: 0;
         }
 
         .toggle-switch.active {
-            background: var(--gradient-primary);
-            border-color: var(--color-primary);
+            background: linear-gradient(135deg, #da8137 0%, #f4a261 100%);
+            border-color: #da8137;
             box-shadow: 0 0 20px rgba(218, 129, 55, 0.4);
         }
 
@@ -535,7 +539,7 @@
             background: white;
             border-radius: var(--radius-full);
             transition: all var(--transition-base);
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .toggle-switch.active .toggle-switch-handle {
@@ -1132,8 +1136,9 @@
 
             <!-- Start Processing Button -->
             <div class="glass-card">
-                <button class="btn-glass-primary" style="width: 100%; padding: var(--space-lg);">
-                    ▶️ START PROCESSING
+                <button class="btn-glass-primary"
+                    style="width: 100%; padding: var(--space-lg); border-radius: var(--radius-full); font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold);">
+                    START PROCESSING
                 </button>
             </div>
         </div>
@@ -1414,21 +1419,14 @@
     </footer>
 
     <!-- JavaScript -->
-    <script src="js/utils.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/metadata.js"></script>
-    <script src="js/audio-player.js"></script>
-    <script src="js/app.js"></script>
-    <script>
+    <script type="module">
+        // Import VinylApp
+        import VinylApp from './js/app.js?v=beta4.1.7';
+
         // Initialize the app
         document.addEventListener('DOMContentLoaded', () => {
-            // Check if VinylApp is defined
-            if (typeof VinylApp !== 'undefined') {
-                const app = new VinylApp();
-                app.init();
-            } else {
-                console.warn('VinylApp not loaded - running in demo mode');
-            }
+            const app = new VinylApp();
+            console.log('✅ VinylApp initialized from module');
         });
     </script>
 

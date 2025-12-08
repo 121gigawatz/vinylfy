@@ -21,7 +21,7 @@ def test_workflow(audio_file_path):
     with open(audio_file_path, 'rb') as f:
         files = {'audio': f}
         data = {
-            'preset': 'medium',
+            'preset': 'AJW Recommended',
             'output_format': 'wav'
         }
 

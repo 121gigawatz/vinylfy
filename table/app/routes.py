@@ -60,7 +60,7 @@ def get_presets():
     """
     return jsonify({
         'presets': Config.PRESETS,
-        'default': 'medium'
+        'default': 'AJW Recommended'
     }), 200
 
 
@@ -177,7 +177,7 @@ def process_audio():
     
     Expected form data:
         - audio: Audio file (required)
-        - preset: Preset name (optional, default: 'medium')
+        - preset: Preset name (optional, default: 'AJW Recommended')
         - output_format: Output format (optional, default: 'wav')
         - Custom settings when preset='custom':
             - frequency_response: bool
@@ -213,7 +213,7 @@ def process_audio():
             }), 400
         
         # Get preset
-        preset_name = request.form.get('preset', 'medium')  # Keep original case for preset names
+        preset_name = request.form.get('preset', 'AJW Recommended')  # Keep original case for preset names
 
         # Validate preset
         if preset_name not in Config.PRESETS:

@@ -295,7 +295,7 @@ fly deploy
 # Upload and process a file
 curl -X POST http://localhost/api/process \
   -F "audio=@test.mp3" \
-  -F "preset=medium"
+  -F "preset=AJW Recommended"
 
 # Response will include file_id for preview/download
 ```

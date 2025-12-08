@@ -39,7 +39,7 @@ needle/
 - 📱 **Native feel** - Standalone display mode
 
 ### Audio Processing
-- 🎵 **5 presets** - Light, Medium, Heavy, Vintage, Custom
+- 🎵 **20+ era-based presets** - From 1920's Jazz to 2020's Modern Vinyl, plus Custom
 - 🎛️ **Custom controls** - Fine-tune every parameter
 - 🎧 **Live preview** - Stream audio before downloading
 - 💾 **Multiple formats** - WAV, MP3, FLAC, OGG

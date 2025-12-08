@@ -20,11 +20,17 @@ Transform your digital audio into warm, nostalgic vinyl records. Vinylfy applies
 - 📲 **PWA** - Install as app on any device, including iOS.
 
 ### Presets
-- **AJW Recommended** - Recommended Settings from our resident vinyl enthusiast, AWJ. Give it a spin!
-- **Light** - Subtle vinyl character (minimal noise)
-- **Medium** - Classic vinyl sound (default)
-- **Heavy** - Well-worn record feel
-- **Vintage** - Old, heavily-played record with lots of character
+- **AJW Recommended** - Recommended Settings from our resident vinyl enthusiast, AJW (default) ❤️
+- **Era-Based Presets** - Authentic vinyl sounds from different decades:
+  - 1920's Jazz, 1930's Swing, 1940's Big Band
+  - 1950's Rock & Roll, 1950's Rhythm & Blues
+  - 1960's Pop, 1960's Psychedelic
+  - 1970's Rock, 1970's Disco, 1970's Funk
+  - 1980's New Wave, 1980's Metal
+  - 1990's Alternative, 1990's Hip-Hop
+  - 2000's Pop, 2000's Indie
+  - 2010's Pop, 2010's Electronic
+  - 2020's Modern Vinyl
 - **Custom** - Full control over every parameter
 
 ### Workflow
@@ -128,7 +134,7 @@ When using `preset=custom`, you can fine-tune every aspect:
 ```bash
 curl -X POST http://localhost:5000/api/process \
   -F "audio=@song.mp3" \
-  -F "preset=medium" \
+  -F "preset=AJW Recommended" \
   -F "output_format=wav"
 ```
 
