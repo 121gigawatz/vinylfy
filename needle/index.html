@@ -133,7 +133,7 @@
             font-size: var(--font-size-base);
             color: var(--color-text-primary);
             background: var(--color-bg-primary);
-            background-image: url('../needle/assets/backgrounds/background-dark.png');
+            background-image: url('assets/backgrounds/background-dark.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -143,7 +143,53 @@
         }
 
         body.light-mode {
-            background-image: url('../needle/assets/backgrounds/background-light.png');
+            background-image: url('assets/backgrounds/background-light.png');
+        }
+
+        /* ========================================
+           LIGHT MODE CSS VARIABLES
+           ======================================== */
+        body.light-mode {
+            /* Gradients - Keep same warm vinyl theme */
+            --gradient-primary: linear-gradient(135deg, #DA8137 0%, #f4c542 100%);
+            --gradient-accent: linear-gradient(135deg, #e8b86d 0%, #f4c542 100%);
+            --gradient-vinyl: linear-gradient(135deg, #DA8137 0%, #f4c542 100%);
+
+            /* Base Colors */
+            --color-primary: #c9941d;
+            --color-accent: #e8b86d;
+            --color-vinyl-accent: #DA8137;
+
+            /* Text Colors */
+            --color-text-primary: #1a1a1a;
+            --color-text-secondary: #606060;
+            --color-text-muted: #909090;
+
+            /* Background Colors */
+            --color-bg-primary: #f8f8fa;
+            --color-bg-secondary: #ffffff;
+            --color-bg-tertiary: #f0f0f5;
+
+            /* Glass backgrounds */
+            --glass-bg-light: rgba(255, 255, 255, 0.6);
+            --glass-bg-medium: rgba(255, 255, 255, 0.7);
+            --glass-bg-heavy: rgba(255, 255, 255, 0.8);
+            --glass-bg-amber: rgba(218, 129, 55, 0.08);
+            --glass-bg-vinyl: rgba(218, 129, 55, 0.12);
+
+            /* Border Colors */
+            --color-border: rgba(0, 0, 0, 0.1);
+            --glass-border: rgba(0, 0, 0, 0.15);
+            --glass-border-vibrant: rgba(218, 129, 55, 0.3);
+
+            /* Shadows */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+            --shadow-glass-sm: 0 2px 8px rgba(218, 129, 55, 0.15);
+            --shadow-glass-md: 0 8px 32px rgba(218, 129, 55, 0.2);
+            --shadow-glass-lg: 0 16px 48px rgba(218, 129, 55, 0.25);
         }
 
         /* Light Mode Text Colors */
@@ -632,7 +678,7 @@
 
                     <!-- AJW Recommended -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/ajw-recommended.png" alt="AJW Recommended"
+                        <img src="assets/covers/ajw-recommended.png" alt="AJW Recommended"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -643,7 +689,7 @@
 
                     <!-- 1920s Jazz -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/1920-s-jazz.png" alt="1920s Jazz"
+                        <img src="assets/covers/1920-s-jazz.png" alt="1920s Jazz"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -654,7 +700,7 @@
 
                     <!-- 1930s Swing -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/1930-s-swing.png" alt="1930s Swing"
+                        <img src="assets/covers/1930-s-swing.png" alt="1930s Swing"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -665,7 +711,7 @@
 
                     <!-- 1940s Big Band -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/1940-s-big-band.png" alt="1940s Big Band"
+                        <img src="assets/covers/1940-s-big-band.png" alt="1940s Big Band"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -676,7 +722,7 @@
 
                     <!-- 1950s Rhythm & Blues -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/1950-s-rhythm-blues.png" alt="1950s Rhythm & Blues"
+                        <img src="assets/covers/1950-s-rhythm-blues.png" alt="1950s Rhythm & Blues"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -687,7 +733,7 @@
 
                     <!-- 1950s Rock & Roll -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/1950-s-rock-roll.png" alt="1950s Rock & Roll"
+                        <img src="assets/covers/1950-s-rock-roll.png" alt="1950s Rock & Roll"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -698,7 +744,7 @@
 
                     <!-- 1960s Pop -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/1960-s-pop.png" alt="1960s Pop"
+                        <img src="assets/covers/1960-s-pop.png" alt="1960s Pop"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -709,7 +755,7 @@
 
                     <!-- 1960s Psychedelic -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/1960-s-psychedelic.png" alt="1960s Psychedelic"
+                        <img src="assets/covers/1960-s-psychedelic.png" alt="1960s Psychedelic"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -720,7 +766,7 @@
 
                     <!-- 1970s Disco -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/1970-s-disco.png" alt="1970s Disco"
+                        <img src="assets/covers/1970-s-disco.png" alt="1970s Disco"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -731,7 +777,7 @@
 
                     <!-- 1970s Funk -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/1970-s-funk.png" alt="1970s Funk"
+                        <img src="assets/covers/1970-s-funk.png" alt="1970s Funk"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -742,7 +788,7 @@
 
                     <!-- 1970s Rock -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/1970-s-rock.png" alt="1970s Rock"
+                        <img src="assets/covers/1970-s-rock.png" alt="1970s Rock"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -753,7 +799,7 @@
 
                     <!-- 1980s Metal -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/1980-s-metal.png" alt="1980s Metal"
+                        <img src="assets/covers/1980-s-metal.png" alt="1980s Metal"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -764,7 +810,7 @@
 
                     <!-- 1980s New Wave -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/1980-s-new-wave.png" alt="1980s New Wave"
+                        <img src="assets/covers/1980-s-new-wave.png" alt="1980s New Wave"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -775,7 +821,7 @@
 
                     <!-- 1990s Alternative -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/1990-s-alternative.png" alt="1990s Alternative"
+                        <img src="assets/covers/1990-s-alternative.png" alt="1990s Alternative"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -786,7 +832,7 @@
 
                     <!-- 1990s Hip Hop -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/1990-s-hip-hop.png" alt="1990s Hip Hop"
+                        <img src="assets/covers/1990-s-hip-hop.png" alt="1990s Hip Hop"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -797,7 +843,7 @@
 
                     <!-- 2000s Indie -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/2000-s-indie.png" alt="2000s Indie"
+                        <img src="assets/covers/2000-s-indie.png" alt="2000s Indie"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -808,7 +854,7 @@
 
                     <!-- 2000s Pop -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/2000-s-pop.png" alt="2000s Pop"
+                        <img src="assets/covers/2000-s-pop.png" alt="2000s Pop"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -819,7 +865,7 @@
 
                     <!-- 2010s Electronic -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/2010-s-electronic.png" alt="2010s Electronic"
+                        <img src="assets/covers/2010-s-electronic.png" alt="2010s Electronic"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -830,7 +876,7 @@
 
                     <!-- 2010s Pop -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/2010-s-pop.png" alt="2010s Pop"
+                        <img src="assets/covers/2010-s-pop.png" alt="2010s Pop"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -841,7 +887,7 @@
 
                     <!-- 2020s Modern Vinyl -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/2020-s-modern-vinyl.png" alt="2020s Modern Vinyl"
+                        <img src="assets/covers/2020-s-modern-vinyl.png" alt="2020s Modern Vinyl"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -852,7 +898,7 @@
 
                     <!-- Custom -->
                     <div class="preset-card">
-                        <img src="../needle/assets/covers/custom.png" alt="Custom"
+                        <img src="assets/covers/custom.png" alt="Custom"
                             style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-sm); cursor: pointer; transition: transform var(--transition-base);"
                             onmouseover="this.style.transform='scale(1.05)'"
                             onmouseout="this.style.transform='scale(1)'">
@@ -1099,16 +1145,24 @@
                     <h2 class="glass-card-title">Select Audio File</h2>
                     <p class="glass-card-subtitle">Drop your audio file or click to browse</p>
                 </div>
-                <div
-                    style="text-align: center; padding: var(--space-3xl); border: 2px dashed var(--glass-border); border-radius: var(--radius-xl); background: var(--glass-bg-light);">
+
+                <!-- Hidden file input -->
+                <input type="file" id="audioFile" accept="audio/*,.wav,.mp3,.flac,.ogg,.m4a,.aac"
+                    style="display: none;">
+
+                <!-- Drop zone -->
+                <div id="consoleDisplay"
+                    style="text-align: center; padding: var(--space-3xl); border: 2px dashed var(--glass-border); border-radius: var(--radius-xl); background: var(--glass-bg-light); cursor: pointer; transition: all var(--transition-base);"
+                    role="button" tabindex="0" aria-label="Click to select audio file or drag and drop">
                     <p style="font-size: 3rem;">🎵</p>
-                    <p style="margin: var(--space-md) 0;" class="drop-zone-text">Click or Drop Audio File
-                        Here</p>
-                    <p style="font-size: var(--font-size-sm);" class="drop-zone-subtext">Supported: WAV, MP3, FLAC, OGG,
-                        M4A, AAC</p>
+                    <p style="margin: var(--space-md) 0; color: var(--color-text-primary);" class="drop-zone-text">Click
+                        or Drop Audio File Here</p>
+                    <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary);"
+                        class="drop-zone-subtext">Supported: WAV, MP3, FLAC, OGG, M4A, AAC</p>
                 </div>
             </div>
         </div>
+
 
         <!-- RESULTS TAB -->
         <div id="tab-results" class="tab-content">
@@ -1358,6 +1412,25 @@
             </p>
         </div>
     </footer>
+
+    <!-- JavaScript -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/metadata.js"></script>
+    <script src="js/audio-player.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if VinylApp is defined
+            if (typeof VinylApp !== 'undefined') {
+                const app = new VinylApp();
+                app.init();
+            } else {
+                console.warn('VinylApp not loaded - running in demo mode');
+            }
+        });
+    </script>
 
 </body>
 
