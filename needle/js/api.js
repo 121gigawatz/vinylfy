@@ -4,8 +4,19 @@
  */
 
 // API Configuration
-// Point to backend server on port 8888 for local dev (Docker)
-const API_BASE_URL = 'http://localhost:8888/api';
+// Auto-detect environment and use appropriate base URL
+const API_BASE_URL = (() => {
+  // Check if running on localhost/dev or production
+  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+  if (isLocalhost) {
+    // Local development - use explicit localhost:8888
+    return 'http://localhost:8888/api';
+  } else {
+    // Production - use relative URL (assumes API is on same domain)
+    return '/api';
+  }
+})();
 
 // API Client Class
 class VinylAPI {

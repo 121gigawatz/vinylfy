@@ -248,6 +248,14 @@
 
         body.light-mode .toggle-switch {
             background: rgba(0, 0, 0, 0.15);
+            border-color: rgba(0, 0, 0, 0.25);
+        }
+
+        /* Keep the orange gradient when active in light mode */
+        body.light-mode .toggle-switch.active {
+            background: linear-gradient(135deg, #da8137 0%, #f4a261 100%) !important;
+            border-color: #da8137 !important;
+            box-shadow: 0 0 20px rgba(218, 129, 55, 0.5) !important;
         }
 
         /* Light mode slider improvements */
