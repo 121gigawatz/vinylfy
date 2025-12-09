@@ -2,11 +2,9 @@
  * Main Application Logic for Vinylfy
  */
 
-// App Configuration
-const APP_VERSION = 'v1.0.0 Beta 4.1.7';
-
-import api from './api.js?v=beta4.1.7';
-import AudioPlayer from './audio-player.js?v=beta4.1.7';
+import versionLoader from './version.js';
+import api from './api.js';
+import AudioPlayer from './audio-player.js';
 import {
   formatFileSize,
   isValidAudioFile,
@@ -16,13 +14,13 @@ import {
   formatPresetName,
   parseErrorMessage,
   isPWAInstalled
-} from './utils.js?v=beta4.1.7';
+} from './utils.js';
 import {
   extractMetadata,
   writeMetadata,
   getEmptyMetadata,
   supportsMetadataWriting
-} from './metadata.js?v=beta4.1.7';
+} from './metadata.js';
 
 class VinylApp {
   constructor() {
@@ -33,7 +31,7 @@ class VinylApp {
     this.presets = {};
     this.customSettings = this.getDefaultCustomSettings();
     this.isLoadingPreset = false; // Flag to prevent auto-switching to custom during preset load
-    this.appVersion = APP_VERSION;
+    this.appVersion = versionLoader.getVersion(); // Load from VERSION file
     this.fileTTL = 1; // Default, will be updated from API
     this.maxUploadMB = 25; // Default, will be updated from API
 
@@ -54,6 +52,10 @@ class VinylApp {
    */
   async init() {
     console.log('🎵 Vinylfy initializing...');
+
+    // Wait for version to load (happens in background on import)
+    this.appVersion = await versionLoader.waitForLoad();
+    console.log(`📦 App version: ${this.appVersion}`);
 
     // Check for version mismatch and show modal if needed
     await this.checkCacheVersion();
@@ -206,6 +208,14 @@ class VinylApp {
     const clearCacheBtn = document.getElementById('clearCacheBtn');
     const dismissBtn = document.getElementById('dismissCacheModal');
 
+    // If modal doesn't exist in simplified UI, just log and return
+    if (!modal || !cachedVersionEl || !latestVersionEl || !clearCacheBtn || !dismissBtn) {
+      console.warn('⚠️ Cache update modal elements not found in simplified UI');
+      console.info(`ℹ️ Version mismatch: Client ${cachedVersion} vs Server ${latestVersion}`);
+      console.info('💡 Tip: Update server version or clear cache manually if needed');
+      return;
+    }
+
     // Set version info
     cachedVersionEl.textContent = cachedVersion;
     latestVersionEl.textContent = latestVersion;
@@ -242,13 +252,15 @@ class VinylApp {
 
     // Close on overlay click
     const overlay = modal.querySelector('.modal-overlay');
-    overlay.onclick = () => {
-      modal.classList.add('hidden');
-      // Mark as dismissed for this session
-      this.cacheModalDismissed = true;
-      sessionStorage.setItem('cacheModalDismissed', 'true');
-      console.log('ℹ️ Cache modal dismissed for this session');
-    };
+    if (overlay) {
+      overlay.onclick = () => {
+        modal.classList.add('hidden');
+        // Mark as dismissed for this session
+        this.cacheModalDismissed = true;
+        sessionStorage.setItem('cacheModalDismissed', 'true');
+        console.log('ℹ️ Cache modal dismissed for this session');
+      };
+    }
   }
 
   /**
@@ -1213,6 +1225,11 @@ class VinylApp {
    */
   setupProcessButton() {
     const processBtn = document.getElementById('processBtn');
+
+    if (!processBtn) {
+      console.warn('⚠️ Process button not found, skipping setup');
+      return;
+    }
 
     processBtn.addEventListener('click', () => {
       this.processAudio();
@@ -2584,74 +2601,96 @@ class VinylApp {
     }
 
     const noiseIntensity = document.getElementById('noiseIntensity');
+    const noiseIntensityValue = document.getElementById('noiseIntensityValue');
     const popIntensity = document.getElementById('popIntensity');
+    const popIntensityValue = document.getElementById('popIntensityValue');
     const wowFlutterIntensity = document.getElementById('wowFlutterIntensity');
+    const wowFlutterValue = document.getElementById('wowFlutterValue');
     const distortionAmount = document.getElementById('distortionAmount');
+    const distortionValue = document.getElementById('distortionValue');
     const stereoWidth = document.getElementById('stereoWidth');
+    const stereoWidthValue = document.getElementById('stereoWidthValue');
 
-    // Removed surfaceNoise toggle check
-    noiseIntensity.value = this.customSettings.noise_intensity;
-    document.getElementById('noiseIntensityValue').textContent = this.customSettings.noise_intensity.toFixed(3);
-    // Update ARIA attributes
-    noiseIntensity.setAttribute('aria-valuenow', this.customSettings.noise_intensity);
-    noiseIntensity.setAttribute('aria-valuetext', this.customSettings.noise_intensity.toFixed(3));
+    // Noise intensity
+    if (noiseIntensity && noiseIntensityValue) {
+      noiseIntensity.value = this.customSettings.noise_intensity;
+      noiseIntensityValue.textContent = this.customSettings.noise_intensity.toFixed(3);
+      noiseIntensity.setAttribute('aria-valuenow', this.customSettings.noise_intensity);
+      noiseIntensity.setAttribute('aria-valuetext', this.customSettings.noise_intensity.toFixed(3));
+    }
 
-    popIntensity.value = this.customSettings.pop_intensity;
-    document.getElementById('popIntensityValue').textContent = this.customSettings.pop_intensity.toFixed(2);
-    // Update ARIA attributes
-    popIntensity.setAttribute('aria-valuenow', this.customSettings.pop_intensity);
-    popIntensity.setAttribute('aria-valuetext', this.customSettings.pop_intensity.toFixed(2));
+    // Pop intensity
+    if (popIntensity && popIntensityValue) {
+      popIntensity.value = this.customSettings.pop_intensity;
+      popIntensityValue.textContent = this.customSettings.pop_intensity.toFixed(2);
+      popIntensity.setAttribute('aria-valuenow', this.customSettings.pop_intensity);
+      popIntensity.setAttribute('aria-valuetext', this.customSettings.pop_intensity.toFixed(2));
+    }
 
+    // Wow flutter intensity
+    if (wowFlutterIntensity && wowFlutterValue) {
+      wowFlutterIntensity.value = this.customSettings.wow_flutter_intensity;
+      wowFlutterValue.textContent = this.customSettings.wow_flutter_intensity.toFixed(4);
+      wowFlutterIntensity.setAttribute('aria-valuenow', this.customSettings.wow_flutter_intensity);
+      wowFlutterIntensity.setAttribute('aria-valuetext', this.customSettings.wow_flutter_intensity.toFixed(4));
+    }
 
-    wowFlutterIntensity.value = this.customSettings.wow_flutter_intensity;
-    document.getElementById('wowFlutterValue').textContent = this.customSettings.wow_flutter_intensity.toFixed(4);
-    // Update ARIA attributes
-    wowFlutterIntensity.setAttribute('aria-valuenow', this.customSettings.wow_flutter_intensity);
-    wowFlutterIntensity.setAttribute('aria-valuetext', this.customSettings.wow_flutter_intensity.toFixed(4));
+    // Distortion amount
+    if (distortionAmount && distortionValue) {
+      distortionAmount.value = this.customSettings.distortion_amount;
+      distortionValue.textContent = this.customSettings.distortion_amount.toFixed(2);
+      distortionAmount.setAttribute('aria-valuenow', this.customSettings.distortion_amount);
+      distortionAmount.setAttribute('aria-valuetext', this.customSettings.distortion_amount.toFixed(2));
+    }
 
-    distortionAmount.value = this.customSettings.distortion_amount;
-    document.getElementById('distortionValue').textContent = this.customSettings.distortion_amount.toFixed(2);
-    // Update ARIA attributes
-    distortionAmount.setAttribute('aria-valuenow', this.customSettings.distortion_amount);
-    distortionAmount.setAttribute('aria-valuetext', this.customSettings.distortion_amount.toFixed(2));
-
-
-    stereoWidth.value = this.customSettings.stereo_width;
-    document.getElementById('stereoWidthValue').textContent = this.customSettings.stereo_width.toFixed(2);
-    // Update ARIA attributes
-    stereoWidth.setAttribute('aria-valuenow', this.customSettings.stereo_width);
-    stereoWidth.setAttribute('aria-valuetext', this.customSettings.stereo_width.toFixed(2));
+    // Stereo width
+    if (stereoWidth && stereoWidthValue) {
+      stereoWidth.value = this.customSettings.stereo_width;
+      stereoWidthValue.textContent = this.customSettings.stereo_width.toFixed(2);
+      stereoWidth.setAttribute('aria-valuenow', this.customSettings.stereo_width);
+      stereoWidth.setAttribute('aria-valuetext', this.customSettings.stereo_width.toFixed(2));
+    }
 
     // Bass EQ
     const bassSlider = document.getElementById('bass');
-    bassSlider.value = this.customSettings.bass || 0;
-    const bassValueText = `${(this.customSettings.bass || 0).toFixed(1)} dB`;
-    document.getElementById('bassValue').textContent = bassValueText;
-    bassSlider.setAttribute('aria-valuenow', this.customSettings.bass || 0);
-    bassSlider.setAttribute('aria-valuetext', bassValueText);
+    const bassValue = document.getElementById('bassValue');
+    if (bassSlider && bassValue) {
+      bassSlider.value = this.customSettings.bass || 0;
+      const bassValueText = `${(this.customSettings.bass || 0).toFixed(1)} dB`;
+      bassValue.textContent = bassValueText;
+      bassSlider.setAttribute('aria-valuenow', this.customSettings.bass || 0);
+      bassSlider.setAttribute('aria-valuetext', bassValueText);
+    }
 
     // Mid EQ
     const midSlider = document.getElementById('mid');
-    midSlider.value = this.customSettings.mid || 0;
-    const midValueText = `${(this.customSettings.mid || 0).toFixed(1)} dB`;
-    document.getElementById('midValue').textContent = midValueText;
-    midSlider.setAttribute('aria-valuenow', this.customSettings.mid || 0);
-    midSlider.setAttribute('aria-valuetext', midValueText);
+    const midValue = document.getElementById('midValue');
+    if (midSlider && midValue) {
+      midSlider.value = this.customSettings.mid || 0;
+      const midValueText = `${(this.customSettings.mid || 0).toFixed(1)} dB`;
+      midValue.textContent = midValueText;
+      midSlider.setAttribute('aria-valuenow', this.customSettings.mid || 0);
+      midSlider.setAttribute('aria-valuetext', midValueText);
+    }
 
     // Treble EQ
     const trebleSlider = document.getElementById('treble');
-    trebleSlider.value = this.customSettings.treble || 0;
-    const trebleValueText = `${(this.customSettings.treble || 0).toFixed(1)} dB`;
-    document.getElementById('trebleValue').textContent = trebleValueText;
-    trebleSlider.setAttribute('aria-valuenow', this.customSettings.treble || 0);
-    trebleSlider.setAttribute('aria-valuetext', trebleValueText);
+    const trebleValue = document.getElementById('trebleValue');
+    if (trebleSlider && trebleValue) {
+      trebleSlider.value = this.customSettings.treble || 0;
+      const trebleValueText = `${(this.customSettings.treble || 0).toFixed(1)} dB`;
+      trebleValue.textContent = trebleValueText;
+      trebleSlider.setAttribute('aria-valuenow', this.customSettings.treble || 0);
+      trebleSlider.setAttribute('aria-valuetext', trebleValueText);
+    }
 
     // High-Pass Filter
     const hpfCutoff = document.getElementById('hpfCutoff');
-    if (hpfCutoff) {
+    const hpfCutoffValue = document.getElementById('hpfCutoffValue');
+    if (hpfCutoff && hpfCutoffValue) {
       hpfCutoff.value = this.customSettings.hpf_cutoff || 30;
       const hpfValueText = this.formatFrequency(this.customSettings.hpf_cutoff || 30);
-      document.getElementById('hpfCutoffValue').textContent = hpfValueText;
+      hpfCutoffValue.textContent = hpfValueText;
       hpfCutoff.setAttribute('aria-valuenow', this.customSettings.hpf_cutoff || 30);
       hpfCutoff.setAttribute('aria-valuetext', hpfValueText);
       hpfCutoff.disabled = false; // Always enabled
@@ -2659,10 +2698,11 @@ class VinylApp {
 
     // Low-Pass Filter
     const lpfCutoff = document.getElementById('lpfCutoff');
-    if (lpfCutoff) {
+    const lpfCutoffValue = document.getElementById('lpfCutoffValue');
+    if (lpfCutoff && lpfCutoffValue) {
       lpfCutoff.value = this.customSettings.lpf_cutoff || 15000;
       const lpfValueText = this.formatFrequency(this.customSettings.lpf_cutoff || 15000);
-      document.getElementById('lpfCutoffValue').textContent = lpfValueText;
+      lpfCutoffValue.textContent = lpfValueText;
       lpfCutoff.setAttribute('aria-valuenow', this.customSettings.lpf_cutoff || 15000);
       lpfCutoff.setAttribute('aria-valuetext', lpfValueText);
       lpfCutoff.disabled = false; // Always enabled

@@ -48,6 +48,7 @@ PORT=80
 SECRET_KEY=your-very-secure-secret-key-here
 MAX_UPLOAD_MB=25
 FILE_TTL_HOURS=1
+CORS_ORIGINS=*
 ```
 
 ### 2. Build and Run
