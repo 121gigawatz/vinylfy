@@ -1,7 +1,7 @@
 {
-  "version": "public-beta-1",
-  "shortVersion": "public-beta-1",
-  "dockerTag": "public-beta-1",
-  "buildDate": "2025-11-27",
-  "description": "Public Beta 1: New UI with buttons and sliders."
+  "version": "0.9.5",
+  "shortVersion": "0.9.5",
+  "dockerTag": "0.9.5",
+  "buildDate": "2025-12-08",
+  "description": "Public Beta 5"
 }
