@@ -1,7 +1,7 @@
 {
-  "version": "0.9.5",
-  "shortVersion": "0.9.5",
-  "dockerTag": "0.9.5",
+  "version": "0.9.5.1",
+  "shortVersion": "0.9.5.1",
+  "dockerTag": "0.9.5.1",
   "buildDate": "2025-12-08",
-  "description": "Public Beta 5"
+  "description": "Public Beta 5.1"
 }

@@ -1298,7 +1298,8 @@
         // Update slider values
         document.querySelectorAll('.glass-slider').forEach(slider => {
             const updateValue = () => {
-                const valueDisplay = slider.parentElement.previousElementSibling.querySelector('.glass-slider-value');
+                const labelDiv = slider.parentElement?.previousElementSibling;
+                const valueDisplay = labelDiv?.querySelector('.glass-slider-value');
                 if (valueDisplay) {
                     valueDisplay.textContent = slider.value;
                 }
