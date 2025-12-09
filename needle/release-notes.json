@@ -1,4 +1,13 @@
 {
+  "Public Beta": {
+    "date": "2025-12-08",
+    "highlights": [
+      "Continued bug fixes with UI and backend."
+    ],
+    "bugfixes": [
+      "Addressed CORS issues with backend."
+    ]
+  },
   "Public Beta 2": {
     "date": "2025-12-07",
     "highlights": [
