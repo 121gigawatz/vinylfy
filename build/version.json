@@ -1,7 +1,7 @@
 {
-  "version": "0.9.6",
-  "shortVersion": "0.9.6",
-  "dockerTag": "0.9.6",
+  "version": "0.9.6.1",
+  "shortVersion": "0.9.6.1",
+  "dockerTag": "0.9.6.1",
   "buildDate": "2025-12-09",
-  "description": "Public Beta 6: Major Update - Results Tab, PWA, & Artwork Support"
+  "description": "Hotfix: Audio Player Restoration & UI Polish"
 }

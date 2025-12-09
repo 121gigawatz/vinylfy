@@ -1,4 +1,17 @@
 {
+  "0.9.6.1": {
+    "date": "2025-12-09",
+    "highlights": [
+      "🔥 Hotfix Release: Polished Results Tab Experience",
+      "🎵 Restored audio preview player in Results tab.",
+      "✨ Enhanced button styling with Glass Morphism theme."
+    ],
+    "bugfixes": [
+      "Fixed 'Version mismatch' warning by correcting version file path.",
+      "Fixed missing API version warning.",
+      "Removed deprecated cache update modal to streamline user experience."
+    ]
+  },
   "0.9.6": {
     "date": "2025-12-09",
     "highlights": [

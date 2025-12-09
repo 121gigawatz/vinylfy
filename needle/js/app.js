@@ -189,79 +189,14 @@ class VinylApp {
       if (serverVersion !== clientVersion && serverVersion !== 'unknown') {
         console.warn(`⚠️ Version mismatch detected!`);
         console.warn(`Client: ${clientVersion}, Server: ${serverVersion}`);
-
-        // Show the cache update modal
-        this.showCacheUpdateModal(clientVersion, serverVersion);
+        // Modal removed as per request
       }
     } catch (error) {
       console.warn('Could not check cache version:', error);
     }
   }
 
-  /**
-   * Show cache update modal
-   */
-  async showCacheUpdateModal(cachedVersion, latestVersion) {
-    const modal = document.getElementById('cacheUpdateModal');
-    const cachedVersionEl = document.getElementById('cachedVersion');
-    const latestVersionEl = document.getElementById('latestVersion');
-    const clearCacheBtn = document.getElementById('clearCacheBtn');
-    const dismissBtn = document.getElementById('dismissCacheModal');
 
-    // If modal doesn't exist in simplified UI, just log and return
-    if (!modal || !cachedVersionEl || !latestVersionEl || !clearCacheBtn || !dismissBtn) {
-      console.warn('⚠️ Cache update modal elements not found in simplified UI');
-      console.info(`ℹ️ Version mismatch: Client ${cachedVersion} vs Server ${latestVersion}`);
-      console.info('💡 Tip: Update server version or clear cache manually if needed');
-      return;
-    }
-
-    // Set version info
-    cachedVersionEl.textContent = cachedVersion;
-    latestVersionEl.textContent = latestVersion;
-
-    // Load and display release notes for all versions between cached and latest
-    await this.loadReleaseNotes(cachedVersion, latestVersion);
-    this.trapFocus(this.showCacheUpdateModal);
-
-    // Show modal
-    modal.classList.remove('hidden');
-
-    // Clear cache button
-    clearCacheBtn.onclick = async () => {
-      clearCacheBtn.disabled = true;
-      clearCacheBtn.innerHTML = '<span class="spinner spinner-sm"></span> Clearing...';
-
-      await this.clearAllCaches();
-
-      // Mark as dismissed BEFORE reloading to prevent infinite loop
-      sessionStorage.setItem('cacheModalDismissed', 'true');
-
-      // Force reload
-      window.location.reload(true);
-    };
-
-    // Dismiss button
-    dismissBtn.onclick = () => {
-      modal.classList.add('hidden');
-      // Mark as dismissed for this session
-      this.cacheModalDismissed = true;
-      sessionStorage.setItem('cacheModalDismissed', 'true');
-      console.log('ℹ️ Cache modal dismissed for this session');
-    };
-
-    // Close on overlay click
-    const overlay = modal.querySelector('.modal-overlay');
-    if (overlay) {
-      overlay.onclick = () => {
-        modal.classList.add('hidden');
-        // Mark as dismissed for this session
-        this.cacheModalDismissed = true;
-        sessionStorage.setItem('cacheModalDismissed', 'true');
-        console.log('ℹ️ Cache modal dismissed for this session');
-      };
-    }
-  }
 
   /**
    * Set manufacturing date from release notes
@@ -1909,6 +1844,13 @@ class VinylApp {
       resultsArtwork.src = artworkUrl;
     }
 
+    // 3. Initialize Audio Player
+    if (this.audioPlayer) {
+      const previewUrl = `${api.getPreviewURL(result.file_id)}?t=${Date.now()}`;
+      console.log('🎵 Loading audio player:', previewUrl);
+      this.audioPlayer.load(previewUrl);
+    }
+
     // 3. Render Download Buttons
     let buttonsHTML = '<div style="display: flex; gap: var(--space-md); margin-bottom: var(--space-md); flex-wrap: wrap;">';
 
@@ -1917,12 +1859,12 @@ class VinylApp {
       if (result.formats[format]) {
         const formatData = result.formats[format];
         buttonsHTML += `
-            <button class="btn btn-secondary format-download-btn" 
+            <button class="btn-glass format-download-btn" 
                     data-file-id="${result.file_id}" 
                     data-format="${format}"
-                    style="flex: 1; min-width: 100px;">
-              ${format.toUpperCase()}<br>
-              <small>${formatData.size_formatted}</small>
+                    style="flex: 1; min-width: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0;">
+              <span style="font-weight: bold;">${format.toUpperCase()}</span>
+              <small style="opacity: 0.7; font-size: 0.8em;">${formatData.size_formatted}</small>
             </button>
           `;
       }
@@ -1932,8 +1874,8 @@ class VinylApp {
 
     // Download All button
     buttonsHTML += `
-        <button id="downloadAllBtn" class="btn btn-primary" style="width: 100%;">
-          📦 Download All Formats (ZIP)
+        <button id="downloadAllBtn" class="btn-glass btn-glass-primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: var(--space-sm);">
+          <span>📦</span> Download All Formats (ZIP)
         </button>
       `;
 

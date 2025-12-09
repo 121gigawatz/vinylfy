@@ -18,7 +18,7 @@ class VersionLoader {
      */
     async load() {
         try {
-            const response = await fetch('/version.json', {
+            const response = await fetch('version.json', {
                 cache: 'no-store' // Always get fresh version
             });
 
