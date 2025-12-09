@@ -1,4 +1,30 @@
 {
+  "0.9.6.4": {
+    "date": "2025-12-09",
+    "highlights": [
+      "Results UI Overhaul: Added Processing Details card showing original file info, processing time, and applied effects summary.",
+      "Inline Metadata Editor: Edit track title, artist, album, year, genre, and comment directly in the Results tab.",
+      "Album Artwork Editor: Upload, replace, or remove album cover art with live preview.",
+      "Format-Specific Downloads: Individual buttons for MP3, WAV, FLAC, and M4A with file size display.",
+      "Download All Formats: One-click ZIP download of all processed audio formats."
+    ],
+    "bugfixes": [
+      "Fixed audio player not playing - backend preview endpoint now correctly specifies MP3 format.",
+      "Fixed album artwork fallback to use Vinylfy logo when no embedded artwork exists.",
+      "Fixed Processing Time not displaying - now calculated and shown in the Processing Details card.",
+      "Fixed button styling: Edit button now orange when inactive, Save Changes properly styled as primary button.",
+      "Fixed sticky tabs overlapping header when scrolling - tabs now stick below the header.",
+      "Added smooth scroll-to-top when switching between tabs.",
+      "Fixed version.json sync - now runs automatically during Docker startup.",
+      "Removed debug console.log statements from LED indicator methods."
+    ],
+    "improvements": [
+      "Added standard CSS 'mask' property alongside '-webkit-mask' for better browser compatibility.",
+      "Added build/version.json and update-version.py to dev Docker volume mounts for proper version sync.",
+      "Improved error handling for audio playback with async/await and try/catch.",
+      "Removed emojis from Download All, Save Changes, and Cancel buttons for cleaner UI."
+    ]
+  },
   "0.9.6.3": {
     "date": "2025-12-09",
     "highlights": [

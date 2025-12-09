@@ -6,6 +6,13 @@ echo "🎵 Starting Vinylfy..."
 # Create nginx temp directories (non-root user)
 mkdir -p /tmp/nginx_client_body /tmp/nginx_proxy /tmp/nginx_fastcgi /tmp/nginx_uwsgi /tmp/nginx_scgi
 
+# Sync version files (ensure needle has latest version.json)
+echo "📦 Syncing version..."
+if [ -f /app/build/version.json ] && [ -f /app/table/update-version.py ]; then
+    cd /app/table && python3 update-version.py 2>/dev/null || echo "⚠️ Version sync skipped"
+    cd /app
+fi
+
 # Start Flask backend in background
 echo "📀 Starting table (backend)..."
 cd /app/table

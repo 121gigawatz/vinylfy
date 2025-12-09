@@ -1141,25 +1141,20 @@ class VinylApp {
   setupLEDIndicators() {
     // Get all LED elements
     const leds = document.querySelectorAll('.switch-led');
-    console.log('💡 Setting up LED indicators, found:', leds.length);
 
     leds.forEach(led => {
       const switchId = led.dataset.switch;
       const switchElement = document.getElementById(switchId);
 
-      console.log(`💡 LED for ${switchId}:`, { led, switchElement, checked: switchElement?.checked });
+
 
       if (switchElement) {
         // Set initial state
         this.updateLEDState(led, switchElement.checked);
 
-        // Listen for changes
         switchElement.addEventListener('change', (e) => {
-          console.log(`💡 ${switchId} changed to:`, e.target.checked);
           this.updateLEDState(led, e.target.checked);
         });
-      } else {
-        console.error(`❌ Switch element not found for LED: ${switchId}`);
       }
     });
   }
@@ -1168,13 +1163,11 @@ class VinylApp {
    * Update LED state based on toggle state
    */
   updateLEDState(led, isOn) {
-    console.log('💡 Updating LED state:', { led, isOn, currentClasses: led.className });
     if (isOn) {
       led.classList.add('active');
     } else {
       led.classList.remove('active');
     }
-    console.log('💡 LED classes after update:', led.className);
   }
 
   /**
@@ -1716,8 +1709,18 @@ class VinylApp {
       // Start simulated progress
       const progressInterval = this.simulateProgress();
 
+      // Track processing time
+      const startTime = performance.now();
+
       // Process audio
       const result = await api.processAudio(this.selectedFile, options);
+
+      // Calculate processing time
+      const endTime = performance.now();
+      const processingTimeMs = endTime - startTime;
+      result.processing_time = processingTimeMs >= 1000
+        ? `${(processingTimeMs / 1000).toFixed(1)} seconds`
+        : `${Math.round(processingTimeMs)} ms`;
 
       // Clear progress interval and set to 100%
       clearInterval(progressInterval);
@@ -1841,8 +1844,8 @@ class VinylApp {
     const filesize = formatFileSize(this.selectedFile.size);
     const presetName = typeof formatPresetName === 'function' ? formatPresetName(result.preset) : result.preset;
 
-    // Artwork handling
-    let artworkSrc = 'assets/covers/default.png';
+    // Artwork handling - fallback to Vinylfy logo
+    let artworkSrc = 'assets/icons/icon-192x192.png';
     try {
       if (this.uploadedArtwork && this.uploadedArtwork.data) {
         const blob = new Blob([this.uploadedArtwork.data], { type: this.uploadedArtwork.format });
@@ -2001,7 +2004,7 @@ class VinylApp {
                             <h3 class="glass-card-title">🎵 Track Metadata</h3>
                             <p class="glass-card-subtitle">Edit metadata before downloading</p>
                         </div>
-                        <button id="resultsMetadataEditBtn" class="btn-glass" style="padding: var(--space-md) var(--space-xl); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); border: 2px solid rgba(218, 129, 55, 0.4); border-radius: var(--radius-full); background: transparent;">
+                        <button id="resultsMetadataEditBtn" class="btn-glass-primary" style="padding: var(--space-md) var(--space-xl); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); border-radius: var(--radius-full);">
                             Edit
                         </button>
                     </div>
@@ -2056,13 +2059,38 @@ class VinylApp {
                         <textarea id="resultsMetaComment" disabled class="results-metadata-input" rows="2" style="background: var(--glass-bg-medium); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: var(--space-sm) var(--space-md); color: var(--color-text-primary); font-size: var(--font-size-base); resize: vertical; font-family: inherit; transition: all 0.3s ease;">Processed with Vinylfy using ${presetName} preset</textarea>
                     </div>
 
+                    <!-- Album Art Upload Section -->
+                    <div style="display: grid; gap: var(--space-xs);">
+                        <label style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary);">
+                            Album Cover Art
+                        </label>
+                        <div id="resultsAlbumArtUploadArea" style="position: relative; border: 2px dashed var(--glass-border); border-radius: var(--radius-md); padding: var(--space-lg); text-align: center; cursor: pointer; transition: all var(--transition-base); background: var(--glass-bg-light); pointer-events: none; opacity: 0.6;">
+                            <input type="file" id="resultsAlbumArtInput" accept="image/*" style="display: none;">
+                            <div id="resultsAlbumArtPreview" style="display: ${artworkSrc !== 'assets/icons/icon-192x192.png' ? 'block' : 'none'}; margin-bottom: var(--space-md);">
+                                <img id="resultsAlbumArtImage" src="${artworkSrc}" alt="Album Art Preview" style="max-width: 150px; max-height: 150px; border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+                            </div>
+                            <div id="resultsAlbumArtPlaceholder" style="display: ${artworkSrc === 'assets/icons/icon-192x192.png' ? 'block' : 'none'};">
+                                <div style="font-size: var(--font-size-2xl); margin-bottom: var(--space-sm);">🎨</div>
+                                <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-xs);">
+                                    Click to upload or replace album art
+                                </div>
+                                <div style="font-size: var(--font-size-xs); color: var(--color-text-muted);">
+                                    Recommended: 1000x1000px, JPG or PNG
+                                </div>
+                            </div>
+                            <button type="button" id="resultsRemoveAlbumArtBtn" class="btn-glass" style="margin-top: var(--space-md); display: ${artworkSrc !== 'assets/icons/icon-192x192.png' ? 'inline-block' : 'none'};">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Save and Cancel buttons (initially hidden) -->
                     <div id="resultsMetadataActionButtons" style="display: none; grid-template-columns: 1fr 1fr; gap: var(--space-md);">
-                        <button id="resultsMetadataSaveBtn" class="btn-glass btn-glass-primary" style="border-radius: var(--radius-full);">
-                            💾 Save Changes
+                        <button id="resultsMetadataSaveBtn" class="btn-glass-primary" style="border-radius: var(--radius-full); padding: var(--space-md);">
+                            Save Changes
                         </button>
-                        <button id="resultsMetadataCancelBtn" class="btn-glass" style="border-radius: var(--radius-full);">
-                            ❌ Cancel
+                        <button id="resultsMetadataCancelBtn" class="btn-glass" style="border-radius: var(--radius-full); padding: var(--space-md);">
+                            Cancel
                         </button>
                     </div>
                 </div>
@@ -2103,7 +2131,7 @@ class VinylApp {
                     <!-- Download All Formats button -->
                     <div style="text-align: center; margin-bottom: var(--space-lg);">
                         <button id="downloadAllBtn" class="btn-glass-primary" style="width: 100%; max-width: 400px; padding: var(--space-lg); border-radius: var(--radius-full); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold);">
-                            📦 Download All Formats (ZIP)
+                            Download All Formats (ZIP)
                         </button>
                     </div>
                     
@@ -2121,7 +2149,9 @@ class VinylApp {
     container.innerHTML = uiHtml;
 
     // --- Audio Logic ---
-    const audio = new Audio(result.previewUrl);
+    const audio = new Audio();
+    audio.preload = 'metadata';
+    audio.src = result.previewUrl;
     this.currentAudio = audio;
     audio.volume = 0.8;
 
@@ -2137,16 +2167,32 @@ class VinylApp {
     const volumeText = document.getElementById('playerVolumeText');
     const vinylSpinner = document.getElementById('vinylSpinner');
 
-    // Play/Pause
-    playBtn.onclick = () => {
-      if (audio.paused) {
-        audio.play();
-        playBtn.innerHTML = '⏸';
-        vinylSpinner.style.animation = 'spin 2s linear infinite';
-      } else {
-        audio.pause();
-        playBtn.innerHTML = '▶';
-        vinylSpinner.style.animation = 'none';
+    // Audio error handling
+    audio.addEventListener('error', (e) => {
+      console.error('Audio error:', audio.error);
+      showToast('Failed to load audio preview. Please try again.', 'error');
+    });
+
+    // Audio can play
+    audio.addEventListener('canplay', () => {
+      console.log('Audio ready to play');
+    });
+
+    // Play/Pause with proper async handling
+    playBtn.onclick = async () => {
+      try {
+        if (audio.paused) {
+          await audio.play();
+          playBtn.innerHTML = '⏸';
+          if (vinylSpinner) vinylSpinner.style.animation = 'spin 2s linear infinite';
+        } else {
+          audio.pause();
+          playBtn.innerHTML = '▶';
+          if (vinylSpinner) vinylSpinner.style.animation = 'none';
+        }
+      } catch (error) {
+        console.error('Playback error:', error);
+        showToast('Failed to play audio. Please try again.', 'error');
       }
     };
 
@@ -2264,7 +2310,7 @@ class VinylApp {
           showToast(`Download failed: ${error.message}`, 'error');
         } finally {
           downloadAllBtn.disabled = false;
-          downloadAllBtn.innerHTML = '📦 Download All Formats (ZIP)';
+          downloadAllBtn.innerHTML = 'Download All Formats (ZIP)';
         }
       };
     }
@@ -2290,12 +2336,18 @@ class VinylApp {
       });
 
       if (enable) {
-        metadataEditBtn.style.background = 'var(--gradient-primary)';
-        metadataEditBtn.style.color = 'white';
+        // In edit mode - button shows as "active/pressed" state (less prominent)
+        metadataEditBtn.classList.remove('btn-glass-primary');
+        metadataEditBtn.classList.add('btn-glass');
+        metadataEditBtn.style.background = 'var(--glass-bg-medium)';
+        metadataEditBtn.textContent = 'Editing...';
         metadataActionButtons.style.display = 'grid';
       } else {
-        metadataEditBtn.style.background = 'transparent';
-        metadataEditBtn.style.color = '';
+        // Not in edit mode - button is orange/primary (call to action)
+        metadataEditBtn.classList.remove('btn-glass');
+        metadataEditBtn.classList.add('btn-glass-primary');
+        metadataEditBtn.style.background = '';
+        metadataEditBtn.textContent = 'Edit';
         metadataActionButtons.style.display = 'none';
       }
     };
@@ -2343,6 +2395,115 @@ class VinylApp {
         if (commentInput) commentInput.value = `Processed with Vinylfy using ${presetName} preset`;
 
         toggleMetadataEdit(false);
+      };
+    }
+
+    // --- Album Art Upload Handlers ---
+    const albumArtUploadArea = document.getElementById('resultsAlbumArtUploadArea');
+    const albumArtInput = document.getElementById('resultsAlbumArtInput');
+    const albumArtPreview = document.getElementById('resultsAlbumArtPreview');
+    const albumArtImage = document.getElementById('resultsAlbumArtImage');
+    const albumArtPlaceholder = document.getElementById('resultsAlbumArtPlaceholder');
+    const removeAlbumArtBtn = document.getElementById('resultsRemoveAlbumArtBtn');
+
+    // Update toggleMetadataEdit to also control album art area
+    const originalToggle = toggleMetadataEdit;
+    const enhancedToggle = (enable) => {
+      originalToggle(enable);
+      if (albumArtUploadArea) {
+        albumArtUploadArea.style.pointerEvents = enable ? 'auto' : 'none';
+        albumArtUploadArea.style.opacity = enable ? '1' : '0.6';
+      }
+    };
+
+    // Re-bind buttons with enhanced toggle
+    if (metadataEditBtn) {
+      metadataEditBtn.onclick = () => {
+        const isCurrentlyDisabled = metadataInputs[0]?.disabled;
+        enhancedToggle(isCurrentlyDisabled);
+      };
+    }
+    if (metadataSaveBtn) {
+      metadataSaveBtn.onclick = () => {
+        this.editedMetadata = {
+          ...this.editedMetadata,
+          title: document.getElementById('resultsMetaTitle')?.value || '',
+          artist: document.getElementById('resultsMetaArtist')?.value || '',
+          album: document.getElementById('resultsMetaAlbum')?.value || '',
+          year: document.getElementById('resultsMetaYear')?.value || '',
+          genre: document.getElementById('resultsMetaGenre')?.value || '',
+          comment: document.getElementById('resultsMetaComment')?.value || ''
+        };
+        enhancedToggle(false);
+        showToast('Metadata saved! Changes will be applied to downloads.', 'success');
+      };
+    }
+    if (metadataCancelBtn) {
+      metadataCancelBtn.onclick = () => {
+        const titleInput = document.getElementById('resultsMetaTitle');
+        const artistInput = document.getElementById('resultsMetaArtist');
+        const albumInput = document.getElementById('resultsMetaAlbum');
+        const yearInput = document.getElementById('resultsMetaYear');
+        const genreInput = document.getElementById('resultsMetaGenre');
+        const commentInput = document.getElementById('resultsMetaComment');
+        if (titleInput) titleInput.value = this.editedMetadata?.title || this.originalMetadata?.title || filename;
+        if (artistInput) artistInput.value = this.editedMetadata?.artist || this.originalMetadata?.artist || 'Unknown Artist';
+        if (albumInput) albumInput.value = this.editedMetadata?.album || this.originalMetadata?.album || 'Vinyl Collection';
+        if (yearInput) yearInput.value = this.editedMetadata?.year || this.originalMetadata?.year || new Date().getFullYear();
+        if (genreInput) genreInput.value = this.editedMetadata?.genre || this.originalMetadata?.genre || '';
+        if (commentInput) commentInput.value = `Processed with Vinylfy using ${presetName} preset`;
+        enhancedToggle(false);
+      };
+    }
+
+    // Album art click handler
+    if (albumArtUploadArea && albumArtInput) {
+      albumArtUploadArea.onclick = (e) => {
+        if (e.target.id !== 'resultsRemoveAlbumArtBtn') {
+          albumArtInput.click();
+        }
+      };
+
+      albumArtInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            if (albumArtImage) albumArtImage.src = evt.target.result;
+            if (albumArtPreview) albumArtPreview.style.display = 'block';
+            if (albumArtPlaceholder) albumArtPlaceholder.style.display = 'none';
+            if (removeAlbumArtBtn) removeAlbumArtBtn.style.display = 'inline-block';
+
+            // Also update the main player album art
+            const playerArt = document.querySelector('#tab-results .glass-card img[alt="Album Art"]');
+            if (playerArt) playerArt.src = evt.target.result;
+
+            // Store the new artwork
+            this.uploadedArtwork = {
+              data: evt.target.result,
+              format: file.type
+            };
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+    }
+
+    // Remove album art handler
+    if (removeAlbumArtBtn) {
+      removeAlbumArtBtn.onclick = (e) => {
+        e.stopPropagation();
+        if (albumArtImage) albumArtImage.src = 'assets/icons/icon-192x192.png';
+        if (albumArtPreview) albumArtPreview.style.display = 'none';
+        if (albumArtPlaceholder) albumArtPlaceholder.style.display = 'block';
+        removeAlbumArtBtn.style.display = 'none';
+        if (albumArtInput) albumArtInput.value = '';
+
+        // Also reset the main player album art
+        const playerArt = document.querySelector('#tab-results .glass-card img[alt="Album Art"]');
+        if (playerArt) playerArt.src = 'assets/icons/icon-192x192.png';
+
+        this.uploadedArtwork = null;
       };
     }
   }

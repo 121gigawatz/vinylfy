@@ -373,8 +373,8 @@ def preview_audio(file_id):
         Audio file stream for preview (not as attachment)
     """
     try:
-        # Get file metadata
-        metadata = file_manager.get_file(file_id)
+        # Get file metadata - use mp3 for preview as it's the most compatible
+        metadata = file_manager.get_file(file_id, format='mp3')
         
         if not metadata:
             return jsonify({'error': 'File not found or expired'}), 404
@@ -382,7 +382,12 @@ def preview_audio(file_id):
         filepath = metadata['filepath']
         output_format = metadata['output_format']
         
-        logger.info(f"Streaming preview for file: {file_id}")
+        # Verify file exists
+        if not os.path.exists(filepath):
+            logger.error(f"Preview file missing: {filepath}")
+            return jsonify({'error': 'File not found on disk'}), 404
+        
+        logger.info(f"Streaming preview for file: {file_id} (format: {output_format})")
         
         # Send file for streaming (not as attachment)
         return send_file(

@@ -26,7 +26,9 @@ services:
     volumes:
       # Development: mount code for live reload (comment out for production)
       - ./table/app:/app/table/app
+      - ./table/update-version.py:/app/table/update-version.py
       - ./needle:/app/needle
+      - ./build:/app/build
 
       # Persistent storage for temp files
       - vinylfy-data:/tmp/vinylfy

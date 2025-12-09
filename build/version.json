@@ -1,7 +1,7 @@
 {
-  "version": "0.9.6.3",
-  "shortVersion": "0.9.6.3",
-  "dockerTag": "0.9.6.3",
+  "version": "0.9.6.4",
+  "shortVersion": "0.9.6.4",
+  "dockerTag": "0.9.6.4",
   "buildDate": "2025-12-09",
-  "description": "Critical Bugfixes: Single Instance & File Dialog"
+  "description": "Results UI Overhaul: Processing Details, Metadata Editor, Download Formats"
 }
