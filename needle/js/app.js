@@ -745,6 +745,12 @@ class VinylApp {
 
     // Update Console Display
     const display = document.getElementById('consoleDisplay');
+    if (!display) {
+      console.warn('⚠️ consoleDisplay element not found');
+      showToast(`File selected: ${file.name}`, 'success');
+      return;
+    }
+
     const defaultState = display.querySelector('.default-state');
     const loadedState = display.querySelector('.loaded-state');
     const processingState = display.querySelector('.processing-state');
@@ -753,7 +759,19 @@ class VinylApp {
     const displayFormat = document.getElementById('displayFormat');
     const displaySize = document.getElementById('displaySize');
 
-    // Update Filename with Marquee support
+    // Simplified UI - no states,  just update display
+    if (!displayFilename || !defaultState) {
+      console.log(`📁 File selected: ${file.name} (${formatFileSize(file.size)})`);
+      display.innerHTML = `
+        <p style="font-size: 2rem;">✅</p>
+        <p style="margin: var(--space-md) 0; color: var(--color-text-primary);"><strong>${file.name}</strong></p>
+        <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">${formatFileSize(file.size)} • ${file.type.split('/')[1]?.toUpperCase() || 'AUDIO'}</p>
+      `;
+      showToast(`File selected: ${file.name}`, 'success');
+      return;
+    }
+
+    // Full UI - Update Filename with Marquee support
     displayFilename.innerHTML = ''; // Clear previous content
     const nameSpan = document.createElement('span');
     nameSpan.textContent = file.name;
@@ -771,12 +789,13 @@ class VinylApp {
         displayFilename.classList.add('scrolling');
       }
     }, 50);
-    displaySize.textContent = formatFileSize(file.size);
-    displayFormat.textContent = file.type.split('/')[1].toUpperCase();
 
-    defaultState.classList.add('hidden');
-    processingState.classList.add('hidden');
-    loadedState.classList.remove('hidden');
+    if (displaySize) displaySize.textContent = formatFileSize(file.size);
+    if (displayFormat) displayFormat.textContent = file.type.split('/')[1].toUpperCase();
+
+    if (defaultState) defaultState.classList.add('hidden');
+    if (processingState) processingState.classList.add('hidden');
+    if (loadedState) loadedState.classList.remove('hidden');
 
     // Reset metadata when new file is selected
     this.originalMetadata = null;

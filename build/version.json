@@ -1,7 +1,7 @@
 {
-  "version": "0.9.5.3",
-  "shortVersion": "0.9.5.3",
-  "dockerTag": "0.9.5.3",
+  "version": "0.9.5.4",
+  "shortVersion": "0.9.5.4",
+  "dockerTag": "0.9.5.4",
   "buildDate": "2025-12-08",
-  "description": "Public Beta 5.3: Full preset integration"
+  "description": "Public Beta 5.4: File upload fix"
 }
