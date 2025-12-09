@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   vinylfy:
@@ -15,7 +15,7 @@ services:
       - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
 
       # File upload settings
-      - MAX_UPLOAD_MB=${MAX_UPLOAD_MB:-25}
+      - MAX_UPLOAD_MB=${MAX_UPLOAD_MB:-${MAX_FILE_SIZE:-25}}
 
       # File storage
       - FILE_TTL_HOURS=${FILE_TTL_HOURS:-1}

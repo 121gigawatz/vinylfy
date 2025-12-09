@@ -12,7 +12,7 @@ of vinyl records including:
 
 # Version is embedded at build time by update-version script
 # DO NOT modify this manually - use: python3 update-version.py
-__version__ = '0.9.5.6'
+__version__ = '0.9.6'
 __author__ = 'Vinylfy by 121GigaWatz'
 
 from .main import create_app

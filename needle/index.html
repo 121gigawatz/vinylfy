@@ -1212,18 +1212,46 @@
         <!-- RESULTS TAB -->
         <div id="tab-results" class="tab-content">
             <div class="glass-card" style="text-align: center; padding: var(--space-3xl);">
-                <span style="font-size: 4rem;">💿</span>
-                <h3 style="margin: var(--space-lg) 0;">No Results Yet</h3>
-                <p style="margin-bottom: var(--space-xl);">Process an audio file to see your results here. <span
-                        onclick="document.querySelector('[data-tab=process]').click()"
-                        style="color: var(--color-primary); text-decoration: underline; cursor: pointer;">Load a
-                        File</span></p>
+                <!-- Empty State -->
+                <div id="resultsEmptyState">
+                    <span style="font-size: 4rem;">💿</span>
+                    <h3 style="margin: var(--space-lg) 0;">No Results Yet</h3>
+                    <p style="margin-bottom: var(--space-xl);">Process an audio file to see your results here. <span
+                            onclick="document.querySelector('[data-tab=process]').click()"
+                            style="color: var(--color-primary); text-decoration: underline; cursor: pointer;">Load a
+                            File</span></p>
+                </div>
 
-                <!-- Audio Player Container -->
-                <div id="audioPlayerContainer" class="hidden" style="margin-bottom: var(--space-xl);"></div>
+                <!-- Active Results State -->
+                <!-- Active Results State -->
+                <div id="resultsActiveState" class="hidden">
+                    <h3 style="margin-bottom: var(--space-md);">Processing Complete! 🎵</h3>
 
-                <!-- Download Buttons Container (dynamically populated by JavaScript) -->
-                <div id="downloadButtonsContainer"></div>
+                    <div style="display: flex; gap: var(--space-xl); flex-wrap: wrap; margin-bottom: var(--space-xl);">
+                        <!-- Left: Artwork -->
+                        <div style="flex: 0 0 280px; max-width: 100%; margin: 0 auto;">
+                            <img id="resultsArtwork" src="assets/icons/icon-192x192.png" alt="Album Artwork"
+                                style="width: 100%; border-radius: var(--radius-lg); box-shadow: 0 8px 24px rgba(0,0,0,0.2); aspect-ratio: 1/1; object-fit: cover; background: var(--glass-bg-light);">
+                        </div>
+
+                        <!-- Right: Player & Actions -->
+                        <div style="flex: 1; min-width: 300px;">
+                            <p id="resultFileNameDisplay"
+                                style="margin-bottom: var(--space-lg); color: var(--color-text-secondary);"></p>
+
+                            <!-- Audio Player Container -->
+                            <div id="audioPlayerContainer" style="margin-bottom: var(--space-xl);"></div>
+
+                            <!-- Download Buttons Container -->
+                            <div id="downloadButtonsContainer"></div>
+
+                            <button id="discardResultsBtn" class="btn-glass"
+                                style="margin-top: var(--space-xl); width: 100%;">
+                                🗑️ Discard & Start Over
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

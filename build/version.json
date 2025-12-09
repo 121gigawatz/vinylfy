@@ -1,7 +1,7 @@
 {
-  "version": "0.9.5.6",
-  "shortVersion": "0.9.5.6",
-  "dockerTag": "0.9.5.6",
-  "buildDate": "2025-12-08",
-  "description": "Public Beta 5.6: Audio processing fix & PWA tweak"
+  "version": "0.9.6",
+  "shortVersion": "0.9.6",
+  "dockerTag": "0.9.6",
+  "buildDate": "2025-12-09",
+  "description": "Public Beta 6: Major Update - Results Tab, PWA, & Artwork Support"
 }

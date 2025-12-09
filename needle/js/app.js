@@ -684,6 +684,8 @@ class VinylApp {
     consoleDisplay.addEventListener('click', (e) => {
       // Don't trigger if clicking on the file input itself (bubbling)
       if (e.target !== fileInput) {
+        // Safari requires the click to be directly on the input or triggered closely
+        // Sometimes display:none inhibits this.
         fileInput.click();
       }
     });
@@ -702,6 +704,8 @@ class VinylApp {
       if (file) {
         this.handleFileSelect(file);
       }
+      // Reset value to allow selecting the same file again
+      fileInput.value = '';
     });
 
     // Drag and drop
@@ -731,9 +735,6 @@ class VinylApp {
   /**
    * Handle file selection
    */
-  /**
-   * Handle file selection
-   */
   async handleFileSelect(file) {
     if (!isValidAudioFile(file)) {
       showToast('Invalid file type. Please select an audio file.', 'error');
@@ -741,6 +742,15 @@ class VinylApp {
     }
 
     this.selectedFile = file;
+    this.processedFileId = null; // Clear previous result ID
+
+    // Reset Process Button
+    const processBtn = document.getElementById('processBtn');
+    if (processBtn) {
+      processBtn.innerHTML = '<span class="btn-text">START</span>';
+      processBtn.disabled = false;
+      processBtn.classList.add('active');
+    }
 
     // Update Console Display
     const display = document.getElementById('consoleDisplay');
@@ -758,7 +768,7 @@ class VinylApp {
     const displayFormat = document.getElementById('displayFormat');
     const displaySize = document.getElementById('displaySize');
 
-    // Simplified UI - no states,  just update display
+    // Simplified UI - no states, just update display
     if (!displayFilename || !defaultState) {
       console.log(`📁 File selected: ${file.name} (${formatFileSize(file.size)})`);
       display.innerHTML = `
@@ -1709,6 +1719,15 @@ class VinylApp {
     const processingIndicator = document.getElementById('processingIndicator');
     const resultsSection = document.getElementById('resultsSection');
 
+    // Check if we act as "View Results" link
+    if (this.processedFileId && processBtn && processBtn.textContent.includes('View Results')) {
+      const resultsTab = document.querySelector('[data-tab="results"]');
+      if (resultsTab) resultsTab.click();
+      return;
+    }
+
+    let processingSuccess = false;
+
     try {
       // Show processing state
       if (processBtn) {
@@ -1759,6 +1778,7 @@ class VinylApp {
       await new Promise(resolve => setTimeout(resolve, 800));
 
       this.processedFileId = result.file_id;
+      processingSuccess = true;
 
       // Show results
       this.showResults(result);
@@ -1781,9 +1801,11 @@ class VinylApp {
       if (processBtn) {
         processBtn.disabled = false;
         processBtn.classList.add('active'); // Make green by default
-        const btnText = processBtn.querySelector('.btn-text');
-        if (btnText) {
-          btnText.textContent = 'START';
+
+        if (processingSuccess) {
+          processBtn.innerHTML = '<span class="btn-text" style="font-weight: 800;">View Results ➔</span>';
+        } else {
+          processBtn.innerHTML = '<span class="btn-text">START</span>';
         }
       }
 
@@ -1842,97 +1864,59 @@ class VinylApp {
   /**
    * Show processing results
    */
+  /**
+   * Show processing results in new Results Tab
+   */
   showResults(result) {
-    const resultsSection = document.getElementById('resultsSection');
-    const resultFileName = document.getElementById('resultFileName');
-    const resultPreset = document.getElementById('resultPreset');
-    const expiresIn = document.getElementById('expiresIn');
-    const previewBtn = document.getElementById('previewBtn');
-    const discardBtn = document.getElementById('discardBtn');
-
-    // Update result info
-    const originalName = result.original_filename.split('.')[0];
-    resultFileName.textContent = `${originalName}_vinylfy`;
-    resultPreset.textContent = formatPresetName(result.preset);
-
-    // Enable marquee scrolling for long filenames
-    const marqueeContainer = document.getElementById('resultFileNameMarquee');
-    if (marqueeContainer) {
-      // Use setTimeout to ensure DOM is rendered before measuring
-      setTimeout(() => {
-        const containerWidth = marqueeContainer.parentElement.offsetWidth;
-        const contentWidth = resultFileName.scrollWidth;
-        if (contentWidth > containerWidth) {
-          marqueeContainer.classList.add('scrolling');
-          // Duplicate content for seamless loop
-          resultFileName.innerHTML = `<span>${originalName}_vinylfy</span><span>${originalName}_vinylfy</span>`;
-        } else {
-          marqueeContainer.classList.remove('scrolling');
-        }
-      }, 100);
-    }
-
-    const minutes = Math.floor(result.expires_in_seconds / 60);
-    if (expiresIn) {
-      expiresIn.textContent = `${minutes} min`;
-    }
-
-    // Setup metal control buttons
-    const playPauseBtn = document.getElementById('playPauseBtn');
-    const rewindBtn = document.getElementById('rewindBtn');
-    const fastForwardBtn = document.getElementById('fastForwardBtn');
-
-    // Play/Pause button - toggles audio player
-    if (playPauseBtn) {
-      playPauseBtn.onclick = () => {
-        if (this.integratedAudio && this.integratedAudio.src) {
-          if (this.integratedAudio.paused) {
-            this.integratedAudio.play();
-            playPauseBtn.textContent = '❚❚';
-          } else {
-            this.integratedAudio.pause();
-            playPauseBtn.textContent = '▶';
-          }
-        } else {
-          // Load and play preview (defaults to MP3)
-          this.previewAudio(result.file_id);
-          playPauseBtn.textContent = '❚❚';
-        }
-      };
-    }
-
-    // Rewind button - go back 30 seconds
-    if (rewindBtn) {
-      rewindBtn.onclick = () => {
-        if (this.integratedAudio && this.integratedAudio.src) {
-          this.integratedAudio.currentTime = Math.max(0, this.integratedAudio.currentTime - 30);
-        }
-      };
-    }
-
-    // Fast forward button - go forward 30 seconds
-    if (fastForwardBtn) {
-      fastForwardBtn.onclick = () => {
-        if (this.integratedAudio && this.integratedAudio.src) {
-          this.integratedAudio.currentTime = Math.min(
-            this.integratedAudio.duration,
-            this.integratedAudio.currentTime + 30
-          );
-        }
-      };
-    }
-
-    // Create download buttons for each format
+    const fileNameDisplay = document.getElementById('resultFileNameDisplay');
     const downloadButtonsContainer = document.getElementById('downloadButtonsContainer');
-    if (downloadButtonsContainer && result.formats) {
-      let buttonsHTML = '<div style="display: flex; gap: var(--space-md); margin-bottom: var(--space-md); flex-wrap: wrap;">';
+    const resultsArtwork = document.getElementById('resultsArtwork');
+    const activeState = document.getElementById('resultsActiveState');
+    const emptyState = document.getElementById('resultsEmptyState');
 
-      // Individual format buttons
-      const formats = ['mp3', 'wav', 'flac', 'aac'];
-      formats.forEach(format => {
-        if (result.formats[format]) {
-          const formatData = result.formats[format];
-          buttonsHTML += `
+    if (emptyState) emptyState.classList.add('hidden');
+    if (activeState) activeState.classList.remove('hidden');
+
+    if (!downloadButtonsContainer) {
+      console.warn('⚠️ Download buttons container not found');
+      return;
+    }
+
+    // 1. Update File Info
+    if (fileNameDisplay) {
+      const originalName = result.original_filename || 'Audio';
+      const presetName = typeof formatPresetName === 'function' ? formatPresetName(result.preset) : result.preset;
+      fileNameDisplay.innerHTML = `<strong>${originalName}</strong> <span style="opacity:0.7">(${presetName})</span>`;
+    }
+
+    // 2. Update Artwork
+    if (resultsArtwork) {
+      let artworkUrl = 'assets/icons/icon-192x192.png'; // Default Fallback
+
+      try {
+        if (this.uploadedArtwork && this.uploadedArtwork.data) {
+          const blob = new Blob([this.uploadedArtwork.data], { type: this.uploadedArtwork.format });
+          artworkUrl = URL.createObjectURL(blob);
+        } else if (this.originalMetadata && this.originalMetadata.picture && this.originalMetadata.picture.data) {
+          const picture = this.originalMetadata.picture;
+          const byteArray = new Uint8Array(picture.data);
+          const blob = new Blob([byteArray], { type: picture.format || 'image/jpeg' });
+          artworkUrl = URL.createObjectURL(blob);
+        }
+      } catch (e) {
+        console.warn('Failed to load artwork for results:', e);
+      }
+      resultsArtwork.src = artworkUrl;
+    }
+
+    // 3. Render Download Buttons
+    let buttonsHTML = '<div style="display: flex; gap: var(--space-md); margin-bottom: var(--space-md); flex-wrap: wrap;">';
+
+    const formats = ['mp3', 'wav', 'flac', 'aac'];
+    formats.forEach(format => {
+      if (result.formats[format]) {
+        const formatData = result.formats[format];
+        buttonsHTML += `
             <button class="btn btn-secondary format-download-btn" 
                     data-file-id="${result.file_id}" 
                     data-format="${format}"
@@ -1941,55 +1925,31 @@ class VinylApp {
               <small>${formatData.size_formatted}</small>
             </button>
           `;
-        }
-      });
+      }
+    });
 
-      buttonsHTML += '</div>';
+    buttonsHTML += '</div>';
 
-      // Download All button
-      buttonsHTML += `
+    // Download All button
+    buttonsHTML += `
         <button id="downloadAllBtn" class="btn btn-primary" style="width: 100%;">
           📦 Download All Formats (ZIP)
         </button>
       `;
 
-      downloadButtonsContainer.innerHTML = buttonsHTML;
+    downloadButtonsContainer.innerHTML = buttonsHTML;
 
-      // Wire up individual format download buttons
-      document.querySelectorAll('.format-download-btn').forEach(btn => {
-        btn.onclick = () => {
-          const fileId = btn.dataset.fileId;
-          const format = btn.dataset.format;
-          this.downloadFormat(fileId, format);
-        };
-      });
+    // Wire up events
+    document.querySelectorAll('.format-download-btn').forEach(btn => {
+      btn.onclick = () => {
+        this.downloadFormat(btn.dataset.fileId, btn.dataset.format);
+      };
+    });
 
-      // Wire up Download All button
-      const downloadAllBtn = document.getElementById('downloadAllBtn');
-      if (downloadAllBtn) {
-        downloadAllBtn.onclick = () => this.downloadAllFormats(result.file_id);
-      }
+    const downloadAllBtn = document.getElementById('downloadAllBtn');
+    if (downloadAllBtn) {
+      downloadAllBtn.onclick = () => this.downloadAllFormats(result.file_id);
     }
-
-    // Setup discard button
-    discardBtn.onclick = () => this.discardAudio(result.file_id);
-
-    // Update metadata button state
-    this.updateMetadataButtonState();
-
-    // Update process button to show PROCESSED
-    const processBtn = document.getElementById('processBtn');
-    if (processBtn) {
-      const btnText = processBtn.querySelector('.btn-text');
-      if (btnText) {
-        btnText.textContent = 'PROCESSED';
-      }
-      processBtn.classList.add('active'); // Keep green
-    }
-
-    // Show results section
-    resultsSection.classList.remove('hidden');
-    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
   /**
@@ -2529,34 +2489,39 @@ class VinylApp {
 
     document.body.appendChild(banner);
 
-    // Install button handler
-    document.getElementById('androidInstallAccept').addEventListener('click', async () => {
-      if (this.deferredPrompt) {
-        this.deferredPrompt.prompt();
-        const { outcome } = await this.deferredPrompt.userChoice;
-        console.log(`Android install prompt outcome: ${outcome}`);
+    // Install button handler - use onclick for reliability
+    const acceptBtn = banner.querySelector('#androidInstallAccept');
+    if (acceptBtn) {
+      acceptBtn.onclick = async (e) => {
+        e.preventDefault();
+        console.log('Install button clicked');
 
-        if (outcome === 'accepted') {
-          console.log('User accepted the install prompt');
+        if (this.deferredPrompt) {
+          this.deferredPrompt.prompt();
+          const { outcome } = await this.deferredPrompt.userChoice;
+          console.log(`Android install prompt outcome: ${outcome}`);
+
+          // Remove banner after user makes a choice
+          banner.remove();
+          localStorage.setItem('vinylfy_android_install_dismissed', 'true');
+          this.deferredPrompt = null;
         } else {
-          console.log('User dismissed the install prompt');
+          console.warn('⚠️ No deferred prompt available for install');
         }
-
-        // Remove banner after user makes a choice
-        banner.remove();
-        localStorage.setItem('vinylfy_android_install_dismissed', 'true');
-        this.deferredPrompt = null;
-      }
-    });
+      };
+    }
 
     // Close button handler - improved for touch/click
-    const closeBtn = document.getElementById('androidInstallClose');
-    closeBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      banner.remove();
-      localStorage.setItem('vinylfy_android_install_dismissed', 'true');
-    });
+    const closeBtn = banner.querySelector('#androidInstallClose');
+    if (closeBtn) {
+      closeBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Close button clicked');
+        banner.remove();
+        localStorage.setItem('vinylfy_android_install_dismissed', 'true');
+      };
+    }
 
     // Auto-hide after 30 seconds
     setTimeout(() => {
