@@ -643,8 +643,7 @@
                     </div>
                 </div>
                 <div style="display: flex; gap: var(--space-sm); align-items: center;">
-                    <button class="btn-glass hidden" id="installBtn" style="font-size: var(--font-size-sm);">📲
-                        Install</button>
+                    <!-- PWA Install Button (Removed) -->
                     <button class="btn-glass" id="lightModeBtn" onclick="setTheme('light')">☀️</button>
                     <button class="btn-glass" id="darkModeBtn" onclick="setTheme('dark')">🌙</button>
                 </div>
@@ -1400,32 +1399,13 @@
         // Load release notes when page loads
         loadReleaseNotes();
 
-        // PWA Install functionality
-        let deferredPrompt;
-        const installBtn = document.getElementById('installBtn');
-
+        // PWA Install functionality (Disabled as per user request)
         window.addEventListener('beforeinstallprompt', (e) => {
             // Prevent the mini-infobar from appearing on mobile
             e.preventDefault();
-            // Stash the event so it can be triggered later
-            deferredPrompt = e;
-            // Show the install button
-            installBtn.classList.remove('hidden');
-        });
-
-        installBtn.addEventListener('click', async () => {
-            if (!deferredPrompt) {
-                return;
-            }
-            // Show the install prompt
-            deferredPrompt.prompt();
-            // Wait for the user to respond to the prompt
-            const { outcome } = await deferredPrompt.userChoice;
-            console.log(`User response to the install prompt: ${outcome}`);
-            // Clear the deferredPrompt for next time
-            deferredPrompt = null;
-            // Hide the install button
-            installBtn.classList.add('hidden');
+            // Stash the event so it can be triggered later if needed
+            // deferredPrompt = e;
+            console.log('Use saved preference to not show PWA install prompt');
         });
 
         // Register service worker

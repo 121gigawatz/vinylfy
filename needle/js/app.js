@@ -1711,18 +1711,25 @@ class VinylApp {
 
     try {
       // Show processing state
-      processBtn.disabled = true;
-      processBtn.innerHTML = '<span class="spinner spinner-sm"></span> Processing...';
-      processingIndicator.classList.remove('hidden');
-      resultsSection.classList.add('hidden');
+      if (processBtn) {
+        processBtn.disabled = true;
+        processBtn.innerHTML = '<span class="spinner spinner-sm"></span> Processing...';
+      }
+
+      if (processingIndicator) {
+        processingIndicator.classList.remove('hidden');
+      }
+
+      if (resultsSection) {
+        resultsSection.classList.add('hidden');
+      }
+
       if (this.audioPlayer) {
         this.audioPlayer.hide();
       }
 
       // Reset progress bar
       this.updateProgress(0);
-
-
 
       // Prepare options
       const options = {
@@ -1771,13 +1778,18 @@ class VinylApp {
       }
     } finally {
       // Reset button state
-      processBtn.disabled = false;
-      processBtn.classList.add('active'); // Make green by default
-      const btnText = processBtn.querySelector('.btn-text');
-      if (btnText) {
-        btnText.textContent = 'START';
+      if (processBtn) {
+        processBtn.disabled = false;
+        processBtn.classList.add('active'); // Make green by default
+        const btnText = processBtn.querySelector('.btn-text');
+        if (btnText) {
+          btnText.textContent = 'START';
+        }
       }
-      processingIndicator.classList.add('hidden');
+
+      if (processingIndicator) {
+        processingIndicator.classList.add('hidden');
+      }
 
       // Reset progress bar
       this.updateProgress(0);
@@ -2361,37 +2373,14 @@ class VinylApp {
       console.log('ℹ️ Service Workers not supported in this browser');
     }
 
-    // Install prompt for Android/Desktop
-    const installBtn = document.getElementById('installBtn');
-
+    // PWA Install Handling
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       this.deferredPrompt = e;
 
-      if (installBtn && !isPWAInstalled()) {
-        installBtn.classList.remove('hidden');
-      }
-
       // Show Android install banner
       this.setupAndroidInstallBanner();
     });
-
-    if (installBtn) {
-      installBtn.addEventListener('click', async () => {
-        if (this.deferredPrompt) {
-          this.deferredPrompt.prompt();
-          const { outcome } = await this.deferredPrompt.userChoice;
-          console.log(`Install prompt outcome: ${outcome}`);
-          this.deferredPrompt = null;
-          installBtn.classList.add('hidden');
-        }
-      });
-    }
-
-    // Hide install button if already installed
-    if (isPWAInstalled() && installBtn) {
-      installBtn.classList.add('hidden');
-    }
 
     // iOS-specific install prompt
     this.setupIOSInstallPrompt();
@@ -2497,13 +2486,13 @@ class VinylApp {
         animation: slideUp 0.3s ease-out;
       ">
         <div style="max-width: 600px; margin: 0 auto; display: flex; align-items: center; gap: var(--space-md);">
-          <img src="/assets/icons/android-touch-icon.png" alt="Vinylfy" style="width: 48px; height: 48px; border-radius: 10px; flex-shrink: 0;">
+          <img src="assets/icons/icon-192x192.png" alt="Vinylfy" style="width: 48px; height: 48px; border-radius: 10px; flex-shrink: 0;">
           <div style="flex: 1; min-width: 0;">
             <div style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-xs);">
               Install Vinylfy
             </div>
             <div style="font-size: var(--font-size-sm); opacity: 0.95;">
-              Add to your home screen for quick access and offline use
+              Add to your home screen
             </div>
           </div>
           <button id="androidInstallAccept" style="
@@ -2522,15 +2511,17 @@ class VinylApp {
             background: rgba(255,255,255,0.2);
             border: none;
             color: white;
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            margin-left: var(--space-xs);
+            z-index: 10000;
           ">×</button>
         </div>
       </div>
@@ -2558,17 +2549,19 @@ class VinylApp {
       }
     });
 
-    // Close button handler
-    document.getElementById('androidInstallClose').addEventListener('click', () => {
+    // Close button handler - improved for touch/click
+    const closeBtn = document.getElementById('androidInstallClose');
+    closeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       banner.remove();
       localStorage.setItem('vinylfy_android_install_dismissed', 'true');
     });
 
     // Auto-hide after 30 seconds
     setTimeout(() => {
-      if (banner.parentNode) {
-        banner.style.animation = 'slideDown 0.3s ease-out';
-        setTimeout(() => banner.remove(), 300);
+      if (document.body.contains(banner)) {
+        banner.remove();
       }
     }, 30000);
   }

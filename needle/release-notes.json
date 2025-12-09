@@ -1,4 +1,15 @@
 {
+  "0.9.5.6": {
+    "date": "2025-12-08",
+    "highlights": [
+      "Hotfix for audio processing.",
+      "UI Refinement: Permanently removed PWA install button from header (banners still active)."
+    ],
+    "bugfixes": [
+      "Fixed crash when processing audio due to missing UI elements (loading indicator).",
+      "Fixed PWA banner dismissal issue."
+    ]
+  },
   "0.9.5.5": {
     "date": "2025-12-08",
     "highlights": [
