@@ -1,4 +1,32 @@
 {
+  "0.9.5.5": {
+    "date": "2025-12-08",
+    "highlights": [
+      "Full preset card functionality!",
+      "Complete null safety throughout the app - no more crashes from missing UI elements.",
+      "Responsive mobile/tablet layout with 2-column tab grid.",
+      "Audio player ready for results playback."
+    ],
+    "bugfixes": [
+      "Fixed file upload crash when display elements don't exist in simplified UI.",
+      "Fixed audio player initialization crash with comprehensive null checks.",
+      "Fixed GitHub star counter crash when element is missing.",
+      "Fixed inline slider value update crash with safe navigation operators.",
+      "Fixed favicon 404 error by using PNG instead of missing SVG file.",
+      "Fixed version.json loading by adding Flask route to serve it correctly.",
+      "Removed wmainfo-py dependency that was causing Docker build failures."
+    ],
+    "improvements": [
+      "Preset cards now fully functional - click any album cover to load preset values into all sliders.",
+      "Auto-select 'AJW Recommended' preset on startup with values pre-loaded.",
+      "Added responsive tab layout - tabs stack in 2 columns on mobile devices.",
+      "Added audio player container to Results tab for processed audio playback.",
+      "Removed dropdown preset selector - UI is now 100% card-based.",
+      "Improved error messages - warnings changed to informational logs where appropriate.",
+      "Added cache-busting to PWA icons (uninstall/reinstall to see new icon).",
+      "Better version loading fallback - shows 'dev' instead of crashing."
+    ]
+  },
   "0.9.5.3": {
     "date": "2025-12-08",
     "highlights": [

@@ -74,7 +74,6 @@ class VinylApp {
 
     // Setup UI
     this.setupFileUpload();
-    this.setupPresetSelector();
     this.setupPresetCards(); // Wire up preset card clicks
     this.setupCustomControls();
     this.setupLEDIndicators(); // Setup LED indicators for toggle switches
@@ -900,7 +899,7 @@ class VinylApp {
     const presetSelector = document.getElementById('presetSelector');
 
     if (!presetSelector) {
-      console.warn('⚠️ Preset selector not found, skipping setup');
+      console.log('ℹ️ Using preset cards (no dropdown selector)');
       return;
     }
 
@@ -913,73 +912,13 @@ class VinylApp {
   }
 
   /**
-   * Populate preset selector and shelf
+   * Populate preset selector (simplified for card-based UI)
    */
   populatePresetSelector() {
-    const presetSelector = document.getElementById('presetSelector');
-    const presetShelf = document.getElementById('presetShelf');
-
-    if (presetSelector) presetSelector.innerHTML = '';
-    if (presetShelf) presetShelf.innerHTML = '';
-
-    // Preset descriptions for better UX
-    const presetDescriptions = {
-      'AJW Recommended': 'AJW Recommended - Perfect balance',
-      'custom': 'Custom - Full control'
-    };
-
-    // Define preset order
-    const presetOrder = ['AJW Recommended', 'custom'];
-
-    // Get all available presets from API response
-    const availablePresets = Object.keys(this.presets);
-
-    // Create a Set for unique presets to avoid duplicates
-    const uniquePresets = new Set([...presetOrder, ...availablePresets]);
-
-    // Add presets
-    uniquePresets.forEach(preset => {
-      if (this.presets[preset] || preset === 'custom') {
-        // Add to dropdown (hidden but functional)
-        if (presetSelector) {
-          const option = document.createElement('option');
-          option.value = preset;
-          option.textContent = presetDescriptions[preset] || formatPresetName(preset);
-          presetSelector.appendChild(option);
-        }
-
-        // Add to shelf
-        if (presetShelf) {
-          const album = document.createElement('div');
-          album.className = `preset-album ${this.currentPreset === preset ? 'active' : ''}`;
-          album.dataset.preset = preset;
-          album.onclick = () => this.selectPreset(preset);
-
-          // Generate filename from preset name (lowercase, spaces to hyphens)
-          // Collapse multiple non-alphanumeric chars to single hyphen and trim
-          const coverName = preset.toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '');
-          const coverSrc = `assets/covers/${coverName}.png`;
-
-          // Fallback to placeholder if image fails (handled via error event)
-
-          album.innerHTML = `
-            <div class="album-cover-wrapper">
-              <div class="album-record"></div>
-              <img src="${coverSrc}" alt="${preset}" class="album-cover" onerror="this.src='assets/covers/placeholder.jpg'">
-            </div>
-            <div class="album-label">${formatPresetName(preset)}</div>
-          `;
-
-          presetShelf.appendChild(album);
-        }
-      }
-    });
-
-    if (presetSelector) presetSelector.value = this.currentPreset;
-    this.loadPresetValues(this.currentPreset);
-    this.updateCustomControlsVisibility();
+    // Presets are loaded from API and stored in this.presets
+    // UI uses static preset cards in HTML, no dynamic population needed
+    const presetCount = Object.keys(this.presets).length;
+    console.log(`📻 ${presetCount} presets loaded from API`);
   }
 
   /**

@@ -28,9 +28,6 @@ soundfile==0.12.1
 # DRM detection
 mutagen==1.47.0
 
-# WMA format support and DRM detection
-wmainfo-py==0.1.0
-
 # ==============
 # File Handling
 # ==============

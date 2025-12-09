@@ -8,6 +8,13 @@ import { formatTime } from './utils.js';
 export class AudioPlayer {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
+
+    // If container doesn't exist, skip initialization
+    if (!this.container) {
+      console.warn(`⚠️ Audio player container '${containerId}' not found`);
+      return;
+    }
+
     this.audio = null;
     this.isPlaying = false;
     this.currentTime = 0;
@@ -21,6 +28,8 @@ export class AudioPlayer {
    * Render the audio player UI
    */
   render() {
+    if (!this.container) return;
+
     this.container.innerHTML = `
       <div class="audio-player">
         <div class="audio-controls">
@@ -209,6 +218,8 @@ export class AudioPlayer {
    * Show the player
    */
   show() {
+    if (!this.container) return;
+
     console.log('AudioPlayer.show() called');
     console.log('Container:', this.container);
     console.log('Player container:', this.playerContainer);
@@ -223,6 +234,8 @@ export class AudioPlayer {
    * Hide the player
    */
   hide() {
+    if (!this.container) return;
+
     this.container.classList.add('hidden');
     if (this.audio) {
       this.audio.pause();
@@ -265,7 +278,9 @@ export class AudioPlayer {
       this.removeAudioListeners();
       this.audio = null;
     }
-    this.container.innerHTML = '';
+    if (this.container) {
+      this.container.innerHTML = '';
+    }
   }
 
   /**

@@ -75,6 +75,30 @@ def create_app(config_name=None):
             'status': 'spinning 🎵'
         }
     
+    # Version endpoint for frontend
+    @app.route('/version.json')
+    def version_json():
+        """Serve version information for frontend."""
+        import json
+        from pathlib import Path
+        
+        # Read version.json from needle directory
+        version_file = Path(__file__).parent.parent.parent / 'needle' / 'version.json'
+        
+        if version_file.exists():
+            with open(version_file, 'r') as f:
+                version_data = json.load(f)
+            return version_data, 200, {'Content-Type': 'application/json'}
+        else:
+            # Fallback if file doesn't exist
+            return {
+                'version': __version__,
+                'shortVersion': __version__,
+                'dockerTag': __version__,
+                'buildDate': None,
+                'description': 'Version file not found'
+            }, 200, {'Content-Type': 'application/json'}
+    
     # Log startup info
     app.logger.info(f"Vinylfy Table started in {config_name} mode")
     app.logger.info(f"CORS enabled for origins: {app.config['CORS_ORIGINS']}")

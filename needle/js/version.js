@@ -23,7 +23,14 @@ class VersionLoader {
             });
 
             if (!response.ok) {
-                throw new Error(`Failed to fetch version.json: ${response.status}`);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            // Check if response is JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                console.warn(`⚠️ version.json returned ${contentType} instead of JSON - likely 404 or server misconfiguration`);
+                throw new Error('Invalid content type');
             }
 
             const versionData = await response.json();
@@ -43,10 +50,11 @@ class VersionLoader {
 
             return this.version;
         } catch (error) {
-            console.warn('⚠️ Failed to load version from version.json:', error);
+            console.log('ℹ️ Using fallback version (version.json not accessible)');
             // Fallback to default
-            this.version = 'public-beta-1';
-            this.shortVersion = 'public-beta-1';
+            this.version = 'dev';
+            this.shortVersion = 'dev';
+            this.description = 'Development build';
             this.loaded = true;
             return this.version;
         }
