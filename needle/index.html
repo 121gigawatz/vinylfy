@@ -599,6 +599,30 @@
             border-color: var(--color-primary);
             box-shadow: 0 0 20px rgba(218, 129, 55, 0.5);
         }
+
+        /* Responsive: Stack tabs in 2 columns on mobile/tablet */
+        @media (max-width: 768px) {
+            .tab-list {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: var(--space-sm);
+                overflow-x: visible;
+            }
+
+            .tab-button {
+                padding: var(--space-md);
+                font-size: var(--font-size-sm);
+                text-align: center;
+            }
+        }
+
+        /* Keep row layout on desktop */
+        @media (min-width: 769px) {
+            .tab-list {
+                display: flex;
+                flex-wrap: nowrap;
+            }
+        }
     </style>
 </head>
 
@@ -1307,17 +1331,8 @@
             slider.addEventListener('input', updateValue);
         });
 
-        // Preset card selection
-        document.querySelectorAll('.preset-card').forEach(card => {
-            card.addEventListener('click', () => {
-                // Remove selected class from all preset cards
-                document.querySelectorAll('.preset-card').forEach(c => {
-                    c.classList.remove('selected');
-                });
-                // Add selected class to clicked card
-                card.classList.add('selected');
-            });
-        });
+        // Preset card selection - handled by app.js
+        // (Visual selection + value loading integrated)
 
         // Fetch and display latest release notes
         async function loadReleaseNotes() {

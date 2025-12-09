@@ -75,6 +75,7 @@ class VinylApp {
     // Setup UI
     this.setupFileUpload();
     this.setupPresetSelector();
+    this.setupPresetCards(); // Wire up preset card clicks
     this.setupCustomControls();
     this.setupLEDIndicators(); // Setup LED indicators for toggle switches
     this.setupProcessButton();
@@ -602,10 +603,72 @@ class VinylApp {
       const data = await api.getPresets();
       this.presets = data.presets;
       this.populatePresetSelector();
+
+      // Auto-select and load the default preset (AJW Recommended)
+      this.selectDefaultPreset();
     } catch (error) {
       console.error('Failed to load presets:', error);
       showToast('Failed to load presets', 'error');
     }
+  }
+
+  /**
+   * Select and load the default preset on startup
+   */
+  selectDefaultPreset() {
+    // Find the AJW Recommended preset card
+    const presetCards = document.querySelectorAll('.preset-card');
+    const defaultCard = Array.from(presetCards).find(card =>
+      card.dataset.preset === 'AJW Recommended'
+    );
+
+    if (defaultCard) {
+      // Add visual selection
+      defaultCard.classList.add('selected');
+      console.log('📻 Auto-selected default preset: AJW Recommended');
+
+      // Load the preset values
+      this.loadPresetValues('AJW Recommended');
+    } else {
+      console.warn('⚠️ Default preset card not found');
+    }
+  }
+
+  /**
+   * Setup preset card click handlers
+   */
+  setupPresetCards() {
+    const presetCards = document.querySelectorAll('.preset-card');
+
+    presetCards.forEach(card => {
+      card.addEventListener('click', () => {
+        const presetName = card.dataset.preset;
+
+        if (!presetName) {
+          console.warn('⚠️ Preset card missing data-preset attribute');
+          return;
+        }
+
+        // Remove selection from all cards
+        presetCards.forEach(c => c.classList.remove('selected'));
+
+        // Select this card
+        card.classList.add('selected');
+
+        // Handle custom vs named preset
+        if (presetName.toLowerCase() === 'custom') {
+          // Switch to custom mode but keep current values
+          this.currentPreset = 'custom';
+          console.log('📻 Switched to Custom mode');
+        } else {
+          // Load the preset values
+          this.currentPreset = presetName;
+          this.loadPresetValues(presetName);
+        }
+      });
+    });
+
+    console.log(`✅ Setup ${presetCards.length} preset cards`);
   }
 
   /**
@@ -935,6 +998,7 @@ class VinylApp {
     }
 
     const preset = this.presets[presetName];
+    console.log(`📻 Loading preset: ${presetName}`, preset);
 
     // Set flag to prevent auto-switching to custom
     this.isLoadingPreset = true;
@@ -947,6 +1011,8 @@ class VinylApp {
 
     // Reset flag
     this.isLoadingPreset = false;
+
+    console.log(`✅ Preset loaded. EQ values: Bass=${preset.bass || 0}, Mid=${preset.mid || 0}, Treble=${preset.treble || 0}`);
   }
 
   /**
@@ -1306,6 +1372,11 @@ class VinylApp {
    */
   async fetchGitHubStars(owner, repo) {
     const starNumber = document.getElementById('starNumber');
+
+    // If element doesn't exist, skip (simplified UI)
+    if (!starNumber) {
+      return;
+    }
 
     try {
       // Check cache first (cache for 1 hour)

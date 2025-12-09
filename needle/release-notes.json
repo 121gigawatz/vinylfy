@@ -1,11 +1,22 @@
 {
-  "Public Beta": {
+  "0.9.5.3": {
     "date": "2025-12-08",
     "highlights": [
-      "Continued bug fixes with UI and backend."
+      "Full preset integration - click any preset card to automatically load values into all sliders!",
+      "AJW Recommended preset now auto-selected on startup with values pre-loaded.",
+      "Responsive tab layout - tabs now stack in 2 columns on mobile devices for better usability."
     ],
     "bugfixes": [
-      "Addressed CORS issues with backend."
+      "Fixed GitHub star counter crash when element doesn't exist in simplified UI.",
+      "Fixed inline slider value update crash with proper null safety checks.",
+      "Added comprehensive null safety throughout the app to prevent crashes on missing UI elements.",
+      "Addressed CORS configuration issues with backend."
+    ],
+    "improvements": [
+      "Preset cards now fully functional - click to select AND load values.",
+      "Custom preset card allows manual slider adjustments while maintaining current values.",
+      "Added debug logging for preset loading to help diagnose EQ value issues.",
+      "Improved mobile/tablet UI with responsive 2-column tab layout."
     ]
   },
   "Public Beta 2": {
