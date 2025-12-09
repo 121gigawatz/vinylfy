@@ -1,4 +1,14 @@
 {
+  "0.9.6.3": {
+    "date": "2025-12-09",
+    "highlights": [
+      "🔧 Critical Bugfix Release"
+    ],
+    "bugfixes": [
+      "🐛 Fixed 'Please select an audio file first' error appearing when a file was already loaded. Root cause: duplicate VinylApp instances causing state isolation.",
+      "🔄 Fixed double file selection dialog appearing in Chrome when clicking the drop zone. Added debounce protection to prevent re-triggering."
+    ]
+  },
   "0.9.6.2": {
     "date": "2025-12-09",
     "highlights": [

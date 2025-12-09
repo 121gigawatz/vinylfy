@@ -615,21 +615,35 @@ class VinylApp {
     const fileInput = document.getElementById('audioFile');
     const consoleDisplay = document.getElementById('consoleDisplay');
 
+    // Flag to prevent double-triggering file dialog (Chrome issue)
+    let isFileDialogOpen = false;
+
     // Click to upload
     consoleDisplay.addEventListener('click', (e) => {
       // Don't trigger if clicking on the file input itself (bubbling)
-      if (e.target !== fileInput) {
+      if (e.target !== fileInput && !isFileDialogOpen) {
+        isFileDialogOpen = true;
         // Safari requires the click to be directly on the input or triggered closely
         // Sometimes display:none inhibits this.
         fileInput.click();
+
+        // Reset flag after a short delay to allow dialog to fully open/close
+        // This prevents Chrome from re-triggering the dialog on dismiss
+        setTimeout(() => {
+          isFileDialogOpen = false;
+        }, 500);
       }
     });
 
     // Keyboard support
     consoleDisplay.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
+      if ((e.key === 'Enter' || e.key === ' ') && !isFileDialogOpen) {
         e.preventDefault();
+        isFileDialogOpen = true;
         fileInput.click();
+        setTimeout(() => {
+          isFileDialogOpen = false;
+        }, 500);
       }
     });
 
@@ -1889,7 +1903,7 @@ class VinylApp {
                             Preset: ${presetName}</p>
                         <div style="display: flex; gap: var(--space-lg); font-size: var(--font-size-sm); color: var(--color-text-muted);">
                             <span id="playerTimeTotal">⏱ --:--</span>
-                            <span>🎚 ${result.format.toUpperCase()}</span>
+                            <span>🎚 Multi-format</span>
                             <span>📊 ${filesize}</span>
                         </div>
                     </div>
@@ -1935,6 +1949,125 @@ class VinylApp {
                 </div>
             </div>
 
+            <!-- Processing Details Card -->
+            <div class="glass-card">
+                <div class="glass-card-header">
+                    <h3 class="glass-card-title">Processing Details</h3>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-lg);">
+                    <div style="padding: var(--space-md); background: var(--glass-bg-light); border-radius: var(--radius-md); border: 1px solid var(--glass-border);">
+                        <div style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--space-xs);">Original File</div>
+                        <div style="font-weight: var(--font-weight-semibold); color: var(--color-text-primary); word-break: break-all;">${filename}</div>
+                    </div>
+
+                    <div style="padding: var(--space-md); background: var(--glass-bg-light); border-radius: var(--radius-md); border: 1px solid var(--glass-border);">
+                        <div style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--space-xs);">File Size</div>
+                        <div style="font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">${filesize}</div>
+                    </div>
+
+                    <div style="padding: var(--space-md); background: var(--glass-bg-light); border-radius: var(--radius-md); border: 1px solid var(--glass-border);">
+                        <div style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--space-xs);">Processing Time</div>
+                        <div style="font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">${result.processing_time || '—'}</div>
+                    </div>
+
+                    <div style="padding: var(--space-md); background: var(--glass-bg-light); border-radius: var(--radius-md); border: 1px solid var(--glass-border);">
+                        <div style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--space-xs);">Preset Applied</div>
+                        <div style="font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">${presetName}</div>
+                    </div>
+                </div>
+
+                <!-- Applied Effects Summary -->
+                <div style="margin-top: var(--space-xl); padding: var(--space-lg); background: var(--glass-bg-vinyl); border-radius: var(--radius-lg); border: 1px solid var(--glass-border-vibrant);">
+                    <h4 style="color: var(--color-primary); margin-bottom: var(--space-md);">Applied Effects</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-md); font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                        <div>📊 <strong>Noise:</strong> ${(this.customSettings.noise_intensity * 100).toFixed(0)}%</div>
+                        <div>💥 <strong>Pop:</strong> ${(this.customSettings.pop_intensity * 100).toFixed(0)}%</div>
+                        <div>🌀 <strong>Flutter:</strong> ${(this.customSettings.wow_flutter_intensity * 1000).toFixed(1)}‰</div>
+                        <div>🎛 <strong>Distortion:</strong> ${(this.customSettings.distortion_amount * 100).toFixed(0)}%</div>
+                        <div>🎚 <strong>Bass:</strong> ${this.customSettings.bass >= 0 ? '+' : ''}${this.customSettings.bass.toFixed(1)} dB</div>
+                        <div>🎵 <strong>Treble:</strong> ${this.customSettings.treble >= 0 ? '+' : ''}${this.customSettings.treble.toFixed(1)} dB</div>
+                        <div>🔊 <strong>RIAA:</strong> ${this.customSettings.frequency_response ? 'Enabled' : 'Disabled'}</div>
+                        <div>📡 <strong>Stereo:</strong> ${this.customSettings.stereo_width.toFixed(2)}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metadata Editor Card -->
+            <div class="glass-card">
+                <div class="glass-card-header">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 class="glass-card-title">🎵 Track Metadata</h3>
+                            <p class="glass-card-subtitle">Edit metadata before downloading</p>
+                        </div>
+                        <button id="resultsMetadataEditBtn" class="btn-glass" style="padding: var(--space-md) var(--space-xl); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); border: 2px solid rgba(218, 129, 55, 0.4); border-radius: var(--radius-full); background: transparent;">
+                            Edit
+                        </button>
+                    </div>
+                </div>
+
+                <div id="resultsMetadataForm" style="display: grid; gap: var(--space-md);">
+                    <!-- Track Title -->
+                    <div style="display: grid; gap: var(--space-xs);">
+                        <label for="resultsMetaTitle" style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary);">
+                            Track Title
+                        </label>
+                        <input type="text" id="resultsMetaTitle" value="${this.editedMetadata?.title || this.originalMetadata?.title || filename}" disabled class="results-metadata-input" style="background: var(--glass-bg-medium); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: var(--space-sm) var(--space-md); color: var(--color-text-primary); font-size: var(--font-size-base); transition: all 0.3s ease;">
+                    </div>
+
+                    <!-- Artist -->
+                    <div style="display: grid; gap: var(--space-xs);">
+                        <label for="resultsMetaArtist" style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary);">
+                            Artist
+                        </label>
+                        <input type="text" id="resultsMetaArtist" value="${this.editedMetadata?.artist || this.originalMetadata?.artist || 'Unknown Artist'}" disabled class="results-metadata-input" style="background: var(--glass-bg-medium); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: var(--space-sm) var(--space-md); color: var(--color-text-primary); font-size: var(--font-size-base); transition: all 0.3s ease;">
+                    </div>
+
+                    <!-- Album -->
+                    <div style="display: grid; gap: var(--space-xs);">
+                        <label for="resultsMetaAlbum" style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary);">
+                            Album
+                        </label>
+                        <input type="text" id="resultsMetaAlbum" value="${this.editedMetadata?.album || this.originalMetadata?.album || 'Vinyl Collection'}" disabled class="results-metadata-input" style="background: var(--glass-bg-medium); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: var(--space-sm) var(--space-md); color: var(--color-text-primary); font-size: var(--font-size-base); transition: all 0.3s ease;">
+                    </div>
+
+                    <!-- Year and Genre in 2-column grid -->
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: var(--space-md);">
+                        <div style="display: grid; gap: var(--space-xs);">
+                            <label for="resultsMetaYear" style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary);">
+                                Year
+                            </label>
+                            <input type="text" id="resultsMetaYear" value="${this.editedMetadata?.year || this.originalMetadata?.year || new Date().getFullYear()}" disabled class="results-metadata-input" style="background: var(--glass-bg-medium); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: var(--space-sm) var(--space-md); color: var(--color-text-primary); font-size: var(--font-size-base); transition: all 0.3s ease;">
+                        </div>
+                        <div style="display: grid; gap: var(--space-xs);">
+                            <label for="resultsMetaGenre" style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary);">
+                                Genre
+                            </label>
+                            <input type="text" id="resultsMetaGenre" value="${this.editedMetadata?.genre || this.originalMetadata?.genre || ''}" disabled class="results-metadata-input" style="background: var(--glass-bg-medium); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: var(--space-sm) var(--space-md); color: var(--color-text-primary); font-size: var(--font-size-base); transition: all 0.3s ease;">
+                        </div>
+                    </div>
+
+                    <!-- Comment -->
+                    <div style="display: grid; gap: var(--space-xs);">
+                        <label for="resultsMetaComment" style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary);">
+                            Comment
+                        </label>
+                        <textarea id="resultsMetaComment" disabled class="results-metadata-input" rows="2" style="background: var(--glass-bg-medium); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: var(--space-sm) var(--space-md); color: var(--color-text-primary); font-size: var(--font-size-base); resize: vertical; font-family: inherit; transition: all 0.3s ease;">Processed with Vinylfy using ${presetName} preset</textarea>
+                    </div>
+
+                    <!-- Save and Cancel buttons (initially hidden) -->
+                    <div id="resultsMetadataActionButtons" style="display: none; grid-template-columns: 1fr 1fr; gap: var(--space-md);">
+                        <button id="resultsMetadataSaveBtn" class="btn-glass btn-glass-primary" style="border-radius: var(--radius-full);">
+                            💾 Save Changes
+                        </button>
+                        <button id="resultsMetadataCancelBtn" class="btn-glass" style="border-radius: var(--radius-full);">
+                            ❌ Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Download Options Card -->
             <div class="glass-card">
                 <div class="glass-card-header">
@@ -1943,14 +2076,38 @@ class VinylApp {
                 </div>
 
                 <div id="downloadButtonsContainerDynamic">
-                    <!-- Buttons will be injected here if we want dynamic generation, but for now we put buttons directly -->
-                    <div style="display: flex; gap: var(--space-md); margin-bottom: var(--space-md); flex-wrap: wrap; justify-content: center;">
-                        <a href="${result.downloadUrl}" download="${result.filename}" class="btn-glass-primary" style="text-decoration: none; padding: var(--space-lg) var(--space-2xl); border-radius: var(--radius-full); display: inline-flex; align-items: center; gap: var(--space-sm);">
-                            <span style="font-size: 1.5rem;">⬇️</span>
-                            <span style="font-weight: bold;">Download Processed Audio</span>
-                        </a>
+                    <!-- Format-specific download buttons -->
+                    <div style="display: flex; gap: var(--space-md); margin-bottom: var(--space-lg); flex-wrap: wrap; justify-content: center;">
+                        <button id="downloadMp3Btn" class="btn-glass" style="flex: 1; min-width: 100px; max-width: 150px; padding: var(--space-lg); border-radius: var(--radius-lg); text-align: center; cursor: pointer;">
+                            <strong style="font-size: var(--font-size-xl); display: block;">MP3</strong>
+                            <strong id="mp3Size" style="font-size: var(--font-size-sm); opacity: 0.9; display: block; margin-top: var(--space-xs);">${result.formats?.mp3?.size_formatted || '—'}</strong>
+                            <span style="font-size: var(--font-size-xs); opacity: 0.7; display: block; margin-top: var(--space-xs);">High quality</span>
+                        </button>
+                        <button id="downloadWavBtn" class="btn-glass" style="flex: 1; min-width: 100px; max-width: 150px; padding: var(--space-lg); border-radius: var(--radius-lg); text-align: center; cursor: pointer;">
+                            <strong style="font-size: var(--font-size-xl); display: block;">WAV</strong>
+                            <strong id="wavSize" style="font-size: var(--font-size-sm); opacity: 0.9; display: block; margin-top: var(--space-xs);">${result.formats?.wav?.size_formatted || '—'}</strong>
+                            <span style="font-size: var(--font-size-xs); opacity: 0.7; display: block; margin-top: var(--space-xs);">Lossless audio</span>
+                        </button>
+                        <button id="downloadFlacBtn" class="btn-glass" style="flex: 1; min-width: 100px; max-width: 150px; padding: var(--space-lg); border-radius: var(--radius-lg); text-align: center; cursor: pointer;">
+                            <strong style="font-size: var(--font-size-xl); display: block;">FLAC</strong>
+                            <strong id="flacSize" style="font-size: var(--font-size-sm); opacity: 0.9; display: block; margin-top: var(--space-xs);">${result.formats?.flac?.size_formatted || '—'}</strong>
+                            <span style="font-size: var(--font-size-xs); opacity: 0.7; display: block; margin-top: var(--space-xs);">Compressed lossless</span>
+                        </button>
+                        <button id="downloadAacBtn" class="btn-glass" style="flex: 1; min-width: 100px; max-width: 150px; padding: var(--space-lg); border-radius: var(--radius-lg); text-align: center; cursor: pointer;">
+                            <strong style="font-size: var(--font-size-xl); display: block;">M4A</strong>
+                            <strong id="aacSize" style="font-size: var(--font-size-sm); opacity: 0.9; display: block; margin-top: var(--space-xs);">${result.formats?.aac?.size_formatted || '—'}</strong>
+                            <span style="font-size: var(--font-size-xs); opacity: 0.7; display: block; margin-top: var(--space-xs);">Apple/iTunes</span>
+                        </button>
                     </div>
-                     <div style="text-align: center; margin-top: var(--space-md);">
+                    
+                    <!-- Download All Formats button -->
+                    <div style="text-align: center; margin-bottom: var(--space-lg);">
+                        <button id="downloadAllBtn" class="btn-glass-primary" style="width: 100%; max-width: 400px; padding: var(--space-lg); border-radius: var(--radius-full); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold);">
+                            📦 Download All Formats (ZIP)
+                        </button>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: var(--space-md);">
                         <button class="btn-glass" onclick="document.querySelector('[data-tab=process]').click()">Process Another File</button>
                     </div>
                 </div>
@@ -2048,6 +2205,145 @@ class VinylApp {
             @keyframes spin { 100% { transform: rotate(360deg); } }
         `;
       document.head.appendChild(style);
+    }
+
+    // --- Download Button Handlers ---
+    const fileId = result.file_id;
+
+    // MP3 download
+    const mp3Btn = document.getElementById('downloadMp3Btn');
+    if (mp3Btn) {
+      mp3Btn.onclick = () => this.downloadFormat(fileId, 'mp3');
+    }
+
+    // WAV download
+    const wavBtn = document.getElementById('downloadWavBtn');
+    if (wavBtn) {
+      wavBtn.onclick = () => this.downloadFormat(fileId, 'wav');
+    }
+
+    // FLAC download
+    const flacBtn = document.getElementById('downloadFlacBtn');
+    if (flacBtn) {
+      flacBtn.onclick = () => this.downloadFormat(fileId, 'flac');
+    }
+
+    // AAC/M4A download
+    const aacBtn = document.getElementById('downloadAacBtn');
+    if (aacBtn) {
+      aacBtn.onclick = () => this.downloadFormat(fileId, 'aac');
+    }
+
+    // Download All Formats (ZIP)
+    const downloadAllBtn = document.getElementById('downloadAllBtn');
+    if (downloadAllBtn) {
+      downloadAllBtn.onclick = async () => {
+        try {
+          showToast('Preparing ZIP archive...', 'info');
+          downloadAllBtn.disabled = true;
+          downloadAllBtn.innerHTML = '<span class="spinner spinner-sm"></span> Preparing...';
+
+          const response = await fetch(`/api/download-all/${fileId}`);
+          if (!response.ok) {
+            throw new Error(`Download failed: ${response.statusText}`);
+          }
+
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${this.selectedFile?.name?.replace(/\.[^/.]+$/, '') || 'vinylfy'}_all_formats.zip`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          showToast('ZIP download started! 🎉', 'success');
+        } catch (error) {
+          console.error('ZIP download failed:', error);
+          showToast(`Download failed: ${error.message}`, 'error');
+        } finally {
+          downloadAllBtn.disabled = false;
+          downloadAllBtn.innerHTML = '📦 Download All Formats (ZIP)';
+        }
+      };
+    }
+
+    // --- Inline Metadata Editor Handlers ---
+    const metadataEditBtn = document.getElementById('resultsMetadataEditBtn');
+    const metadataSaveBtn = document.getElementById('resultsMetadataSaveBtn');
+    const metadataCancelBtn = document.getElementById('resultsMetadataCancelBtn');
+    const metadataActionButtons = document.getElementById('resultsMetadataActionButtons');
+    const metadataInputs = document.querySelectorAll('.results-metadata-input');
+
+    // Toggle metadata edit mode
+    const toggleMetadataEdit = (enable) => {
+      metadataInputs.forEach(input => {
+        input.disabled = !enable;
+        if (enable) {
+          input.style.background = 'var(--glass-bg-light)';
+          input.style.borderColor = 'var(--color-primary)';
+        } else {
+          input.style.background = 'var(--glass-bg-medium)';
+          input.style.borderColor = 'var(--glass-border)';
+        }
+      });
+
+      if (enable) {
+        metadataEditBtn.style.background = 'var(--gradient-primary)';
+        metadataEditBtn.style.color = 'white';
+        metadataActionButtons.style.display = 'grid';
+      } else {
+        metadataEditBtn.style.background = 'transparent';
+        metadataEditBtn.style.color = '';
+        metadataActionButtons.style.display = 'none';
+      }
+    };
+
+    if (metadataEditBtn) {
+      metadataEditBtn.onclick = () => {
+        const isCurrentlyDisabled = metadataInputs[0]?.disabled;
+        toggleMetadataEdit(isCurrentlyDisabled);
+      };
+    }
+
+    if (metadataSaveBtn) {
+      metadataSaveBtn.onclick = () => {
+        // Update edited metadata from form fields
+        this.editedMetadata = {
+          ...this.editedMetadata,
+          title: document.getElementById('resultsMetaTitle')?.value || '',
+          artist: document.getElementById('resultsMetaArtist')?.value || '',
+          album: document.getElementById('resultsMetaAlbum')?.value || '',
+          year: document.getElementById('resultsMetaYear')?.value || '',
+          genre: document.getElementById('resultsMetaGenre')?.value || '',
+          comment: document.getElementById('resultsMetaComment')?.value || ''
+        };
+
+        toggleMetadataEdit(false);
+        showToast('Metadata saved! Changes will be applied to downloads.', 'success');
+      };
+    }
+
+    if (metadataCancelBtn) {
+      metadataCancelBtn.onclick = () => {
+        // Reset form fields to original/edited metadata
+        const titleInput = document.getElementById('resultsMetaTitle');
+        const artistInput = document.getElementById('resultsMetaArtist');
+        const albumInput = document.getElementById('resultsMetaAlbum');
+        const yearInput = document.getElementById('resultsMetaYear');
+        const genreInput = document.getElementById('resultsMetaGenre');
+        const commentInput = document.getElementById('resultsMetaComment');
+
+        if (titleInput) titleInput.value = this.editedMetadata?.title || this.originalMetadata?.title || filename;
+        if (artistInput) artistInput.value = this.editedMetadata?.artist || this.originalMetadata?.artist || 'Unknown Artist';
+        if (albumInput) albumInput.value = this.editedMetadata?.album || this.originalMetadata?.album || 'Vinyl Collection';
+        if (yearInput) yearInput.value = this.editedMetadata?.year || this.originalMetadata?.year || new Date().getFullYear();
+        if (genreInput) genreInput.value = this.editedMetadata?.genre || this.originalMetadata?.genre || '';
+        if (commentInput) commentInput.value = `Processed with Vinylfy using ${presetName} preset`;
+
+        toggleMetadataEdit(false);
+      };
     }
   }
 
@@ -2994,13 +3290,7 @@ console.log('💡 Available commands:');
 console.log('   • vinylDiagnostics() - Run connection diagnostics');
 console.log('   • vinylClearCache() - Clear all caches and service workers');
 
-// Initialize app when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    new VinylApp();
-  });
-} else {
-  new VinylApp();
-}
+// NOTE: VinylApp is instantiated in index.html to ensure only one instance exists
+// DO NOT create another instance here, as it causes selectedFile state issues
 
 export default VinylApp;
