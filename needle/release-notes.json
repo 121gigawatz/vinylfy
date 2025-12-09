@@ -1,4 +1,16 @@
 {
+  "0.9.6.2": {
+    "date": "2025-12-09",
+    "highlights": [
+      "🎨 Restored High-Fidelity Vinyl Glass Player Design from Developer Preview.",
+      "💿 Added spinning vinyl animation and waveform visualization to Results tab.",
+      "🖼️ Integrated dynamic album artwork display in the new player layout."
+    ],
+    "bugfixes": [
+      "⚡ Fixed issue where 'Start Processing' button could trigger duplicate events or erroneous 'Please Load File' warnings.",
+      "🔗 Fixed download and preview URL generation in Results tab."
+    ]
+  },
   "0.9.6.1": {
     "date": "2025-12-09",
     "highlights": [

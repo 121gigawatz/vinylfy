@@ -1200,9 +1200,9 @@ class VinylApp {
       return;
     }
 
-    processBtn.addEventListener('click', () => {
+    processBtn.onclick = () => {
       this.processAudio();
-    });
+    };
   }
 
   /**
@@ -1803,94 +1803,251 @@ class VinylApp {
    * Show processing results in new Results Tab
    */
   showResults(result) {
-    const fileNameDisplay = document.getElementById('resultFileNameDisplay');
-    const downloadButtonsContainer = document.getElementById('downloadButtonsContainer');
-    const resultsArtwork = document.getElementById('resultsArtwork');
-    const activeState = document.getElementById('resultsActiveState');
-    const emptyState = document.getElementById('resultsEmptyState');
+    const resultsSection = document.getElementById('resultsSection');
+    const resultsEmptyState = document.getElementById('resultsEmptyState');
+    const container = document.getElementById('tab-results'); // The main tab container
 
-    if (emptyState) emptyState.classList.add('hidden');
-    if (activeState) activeState.classList.remove('hidden');
+    // Ensure tab is active
+    document.querySelector('[data-tab="results"]').click();
 
-    if (!downloadButtonsContainer) {
-      console.warn('⚠️ Download buttons container not found');
-      return;
+    // Compute URLs
+    const downloadUrl = api.getDownloadURL(result.file_id);
+    const previewUrl = `${api.getPreviewURL(result.file_id)}?t=${Date.now()}`;
+    result.downloadUrl = downloadUrl;
+    result.previewUrl = previewUrl;
+
+    // Clear previous audio if any
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio = null;
     }
 
-    // 1. Update File Info
-    if (fileNameDisplay) {
-      const originalName = result.original_filename || 'Audio';
-      const presetName = typeof formatPresetName === 'function' ? formatPresetName(result.preset) : result.preset;
-      fileNameDisplay.innerHTML = `<strong>${originalName}</strong> <span style="opacity:0.7">(${presetName})</span>`;
-    }
+    // Get metadata and artwork
+    const filename = result.filename || this.selectedFile.name;
+    const filesize = formatFileSize(this.selectedFile.size);
+    const presetName = typeof formatPresetName === 'function' ? formatPresetName(result.preset) : result.preset;
 
-    // 2. Update Artwork
-    if (resultsArtwork) {
-      let artworkUrl = 'assets/icons/icon-192x192.png'; // Default Fallback
-
-      try {
-        if (this.uploadedArtwork && this.uploadedArtwork.data) {
-          const blob = new Blob([this.uploadedArtwork.data], { type: this.uploadedArtwork.format });
-          artworkUrl = URL.createObjectURL(blob);
-        } else if (this.originalMetadata && this.originalMetadata.picture && this.originalMetadata.picture.data) {
-          const picture = this.originalMetadata.picture;
-          const byteArray = new Uint8Array(picture.data);
-          const blob = new Blob([byteArray], { type: picture.format || 'image/jpeg' });
-          artworkUrl = URL.createObjectURL(blob);
-        }
-      } catch (e) {
-        console.warn('Failed to load artwork for results:', e);
+    // Artwork handling
+    let artworkSrc = 'assets/covers/default.png';
+    try {
+      if (this.uploadedArtwork && this.uploadedArtwork.data) {
+        const blob = new Blob([this.uploadedArtwork.data], { type: this.uploadedArtwork.format });
+        artworkSrc = URL.createObjectURL(blob);
+      } else if (this.originalMetadata && this.originalMetadata.picture && this.originalMetadata.picture.data) {
+        const picture = this.originalMetadata.picture;
+        const byteArray = new Uint8Array(picture.data);
+        const blob = new Blob([byteArray], { type: picture.format || 'image/jpeg' });
+        artworkSrc = URL.createObjectURL(blob);
       }
-      resultsArtwork.src = artworkUrl;
+    } catch (e) {
+      console.warn('Failed to load artwork for results:', e);
     }
 
-    // 3. Initialize Audio Player
-    if (this.audioPlayer) {
-      const previewUrl = `${api.getPreviewURL(result.file_id)}?t=${Date.now()}`;
-      console.log('🎵 Loading audio player:', previewUrl);
-      this.audioPlayer.load(previewUrl);
+    // Generate Waveform Bars (Randomized for visual effect)
+    let waveformHtml = '';
+    for (let i = 0; i < 40; i++) {
+      const height = Math.floor(Math.random() * 60) + 30; // 30% to 90%
+      waveformHtml += `<div style="flex: 1; height: ${height}%; background: linear-gradient(to top, var(--color-primary), var(--color-accent)); border-radius: 2px;"></div>`;
     }
 
-    // 3. Render Download Buttons
-    let buttonsHTML = '<div style="display: flex; gap: var(--space-md); margin-bottom: var(--space-md); flex-wrap: wrap;">';
+    // Construct the UI HTML based on preview-main.html design
+    const uiHtml = `
+            <!-- Success Message -->
+            <div class="glass-card"
+                style="text-align: center; padding: var(--space-xl); background: var(--glass-bg-amber); margin-bottom: var(--space-xl);">
+                <span style="font-size: 3rem;">✅</span>
+                <h2 style="margin: var(--space-md) 0; color: var(--color-primary);">Processing Complete!</h2>
+                <p style="color: var(--color-text-secondary);">Your audio has been successfully vinylfied</p>
+            </div>
 
-    const formats = ['mp3', 'wav', 'flac', 'aac'];
-    formats.forEach(format => {
-      if (result.formats[format]) {
-        const formatData = result.formats[format];
-        buttonsHTML += `
-            <button class="btn-glass format-download-btn" 
-                    data-file-id="${result.file_id}" 
-                    data-format="${format}"
-                    style="flex: 1; min-width: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0;">
-              <span style="font-weight: bold;">${format.toUpperCase()}</span>
-              <small style="opacity: 0.7; font-size: 0.8em;">${formatData.size_formatted}</small>
-            </button>
-          `;
+            <!-- Media Player Card -->
+            <div class="glass-card">
+                <div class="glass-card-header">
+                    <h3 class="glass-card-title">Audio Player</h3>
+                    <p class="glass-card-subtitle">Preview your vinylfied track</p>
+                </div>
+
+                <!-- Album Art & Track Info -->
+                <div style="display: grid; grid-template-columns: 180px 1fr; gap: var(--space-xl); margin-bottom: var(--space-xl); align-items: center;">
+                    <!-- Album Art -->
+                    <div style="position: relative;">
+                        <div style="width: 180px; height: 180px; border-radius: var(--radius-lg); background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); display: flex; align-items: center; justify-content: center; border: 2px solid var(--glass-border-vibrant); box-shadow: var(--shadow-glass-lg); overflow: hidden;">
+                            <img src="${artworkSrc}" style="width: 100%; height: 100%; object-fit: cover;" alt="Album Art">
+                        </div>
+                        <!-- Spinning vinyl animation indicator -->
+                        <div id="vinylSpinner" style="position: absolute; bottom: -10px; right: -10px; width: 40px; height: 40px; background: var(--gradient-primary); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; border: 2px solid var(--color-bg-primary); box-shadow: 0 0 20px rgba(218, 129, 55, 0.6);">
+                            <span style="font-size: 1.2rem;">🎵</span>
+                        </div>
+                    </div>
+
+                    <!-- Track Info -->
+                    <div style="display: flex; flex-direction: column; justify-content: center;">
+                        <h3 style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); margin-bottom: var(--space-sm); color: var(--color-text-primary); word-break: break-all;">
+                            ${filename}
+                        </h3>
+                        <p style="font-size: var(--font-size-lg); color: var(--color-text-secondary); margin-bottom: var(--space-md);">
+                            Preset: ${presetName}</p>
+                        <div style="display: flex; gap: var(--space-lg); font-size: var(--font-size-sm); color: var(--color-text-muted);">
+                            <span id="playerTimeTotal">⏱ --:--</span>
+                            <span>🎚 ${result.format.toUpperCase()}</span>
+                            <span>📊 ${filesize}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Waveform Visualization -->
+                <div style="margin-bottom: var(--space-xl);">
+                    <div style="height: 60px; background: var(--glass-bg-heavy); border-radius: var(--radius-md); border: 1px solid var(--glass-border); padding: var(--space-sm); display: flex; align-items: center; gap: 2px; overflow: hidden;">
+                        ${waveformHtml}
+                    </div>
+                </div>
+
+                <!-- Playback Progress -->
+                <div style="margin-bottom: var(--space-lg);">
+                    <div style="display: flex; justify-content: space-between; font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--space-sm);">
+                        <span id="playerTimeCurrent">0:00</span>
+                        <span id="playerTimeDuration">0:00</span>
+                    </div>
+                    <div id="playerProgressBarContainer" style="height: 6px; background: var(--glass-bg-heavy); border-radius: var(--radius-full); border: 1px solid var(--glass-border); overflow: hidden; cursor: pointer;">
+                        <div id="playerProgressBar" style="width: 0%; height: 100%; background: var(--gradient-primary); border-radius: var(--radius-full); transition: width 0.1s linear;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Playback Controls -->
+                <div style="display: flex; justify-content: center; align-items: center; gap: var(--space-lg);">
+                    <button class="btn-glass" id="playerRewindBtn" style="width: 50px; height: 50px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: var(--font-size-xl);">
+                        ⏮
+                    </button>
+                    <button class="btn-glass-primary" id="playerPlayBtn" style="width: 70px; height: 70px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: var(--font-size-2xl); box-shadow: var(--shadow-glass-lg), 0 0 30px rgba(218, 129, 55, 0.5);">
+                        ▶
+                    </button>
+                    <button class="btn-glass" id="playerForwardBtn" style="width: 50px; height: 50px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: var(--font-size-xl);">
+                        ⏭
+                    </button>
+                </div>
+
+                <!-- Volume Control -->
+                <div style="margin-top: var(--space-xl); display: flex; align-items: center; gap: var(--space-md); max-width: 300px; margin-left: auto; margin-right: auto;">
+                    <span style="font-size: var(--font-size-lg);">🔉</span>
+                    <input type="range" class="glass-slider" id="playerVolumeSlider" min="0" max="100" value="80" style="flex: 1;">
+                    <span id="playerVolumeText" style="font-size: var(--font-size-sm); color: var(--color-text-muted); font-family: monospace; min-width: 40px;">80%</span>
+                </div>
+            </div>
+
+            <!-- Download Options Card -->
+            <div class="glass-card">
+                <div class="glass-card-header">
+                    <h3 class="glass-card-title">Download Your Vinylfied Track</h3>
+                    <p class="glass-card-subtitle">Choose your preferred format</p>
+                </div>
+
+                <div id="downloadButtonsContainerDynamic">
+                    <!-- Buttons will be injected here if we want dynamic generation, but for now we put buttons directly -->
+                    <div style="display: flex; gap: var(--space-md); margin-bottom: var(--space-md); flex-wrap: wrap; justify-content: center;">
+                        <a href="${result.downloadUrl}" download="${result.filename}" class="btn-glass-primary" style="text-decoration: none; padding: var(--space-lg) var(--space-2xl); border-radius: var(--radius-full); display: inline-flex; align-items: center; gap: var(--space-sm);">
+                            <span style="font-size: 1.5rem;">⬇️</span>
+                            <span style="font-weight: bold;">Download Processed Audio</span>
+                        </a>
+                    </div>
+                     <div style="text-align: center; margin-top: var(--space-md);">
+                        <button class="btn-glass" onclick="document.querySelector('[data-tab=process]').click()">Process Another File</button>
+                    </div>
+                </div>
+            </div>
+    `;
+
+    // Replace container content
+    if (resultsEmptyState) resultsEmptyState.style.display = 'none';
+
+    // We purposefully overwrite the innerHTML of the results tab container to render this specific layout
+    container.innerHTML = uiHtml;
+
+    // --- Audio Logic ---
+    const audio = new Audio(result.previewUrl);
+    this.currentAudio = audio;
+    audio.volume = 0.8;
+
+    const playBtn = document.getElementById('playerPlayBtn');
+    const rewindBtn = document.getElementById('playerRewindBtn');
+    const forwardBtn = document.getElementById('playerForwardBtn');
+    const progressBar = document.getElementById('playerProgressBar');
+    const progressBarContainer = document.getElementById('playerProgressBarContainer');
+    const timeCurrent = document.getElementById('playerTimeCurrent');
+    const timeDuration = document.getElementById('playerTimeDuration');
+    const timeTotal = document.getElementById('playerTimeTotal');
+    const volumeSlider = document.getElementById('playerVolumeSlider');
+    const volumeText = document.getElementById('playerVolumeText');
+    const vinylSpinner = document.getElementById('vinylSpinner');
+
+    // Play/Pause
+    playBtn.onclick = () => {
+      if (audio.paused) {
+        audio.play();
+        playBtn.innerHTML = '⏸';
+        vinylSpinner.style.animation = 'spin 2s linear infinite';
+      } else {
+        audio.pause();
+        playBtn.innerHTML = '▶';
+        vinylSpinner.style.animation = 'none';
+      }
+    };
+
+    // Seek Buttons
+    rewindBtn.onclick = () => audio.currentTime = Math.max(0, audio.currentTime - 10);
+    forwardBtn.onclick = () => audio.currentTime = Math.min(audio.duration, audio.currentTime + 10);
+
+    // Time Update
+    audio.addEventListener('timeupdate', () => {
+      if (!isNaN(audio.duration)) {
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progressBar.style.width = `${percent}%`;
+
+        const curMins = Math.floor(audio.currentTime / 60);
+        const curSecs = Math.floor(audio.currentTime % 60).toString().padStart(2, '0');
+        timeCurrent.textContent = `${curMins}:${curSecs}`;
       }
     });
 
-    buttonsHTML += '</div>';
-
-    // Download All button
-    buttonsHTML += `
-        <button id="downloadAllBtn" class="btn-glass btn-glass-primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: var(--space-sm);">
-          <span>📦</span> Download All Formats (ZIP)
-        </button>
-      `;
-
-    downloadButtonsContainer.innerHTML = buttonsHTML;
-
-    // Wire up events
-    document.querySelectorAll('.format-download-btn').forEach(btn => {
-      btn.onclick = () => {
-        this.downloadFormat(btn.dataset.fileId, btn.dataset.format);
-      };
+    // Metadata Loaded
+    audio.addEventListener('loadedmetadata', () => {
+      const durMins = Math.floor(audio.duration / 60);
+      const durSecs = Math.floor(audio.duration % 60).toString().padStart(2, '0');
+      timeDuration.textContent = `${durMins}:${durSecs}`;
+      timeTotal.textContent = `⏱ ${durMins}:${durSecs}`;
     });
 
-    const downloadAllBtn = document.getElementById('downloadAllBtn');
-    if (downloadAllBtn) {
-      downloadAllBtn.onclick = () => this.downloadAllFormats(result.file_id);
+    // Seek Click
+    progressBarContainer.onclick = (e) => {
+      const rect = progressBarContainer.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const width = rect.width;
+      const percent = x / width;
+      audio.currentTime = percent * audio.duration;
+    };
+
+    // Volume
+    volumeSlider.oninput = (e) => {
+      const val = e.target.value;
+      audio.volume = val / 100;
+      volumeText.textContent = `${val}%`;
+    };
+
+    // Ended
+    audio.addEventListener('ended', () => {
+      playBtn.innerHTML = '▶';
+      vinylSpinner.style.animation = 'none';
+      progressBar.style.width = '0%';
+    });
+
+    // Define spin animation if not exists
+    if (!document.getElementById('spinStyle')) {
+      const style = document.createElement('style');
+      style.id = 'spinStyle';
+      style.textContent = `
+            @keyframes spin { 100% { transform: rotate(360deg); } }
+        `;
+      document.head.appendChild(style);
     }
   }
 
