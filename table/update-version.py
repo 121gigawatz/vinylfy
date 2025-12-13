@@ -100,6 +100,49 @@ def format_version_for_display(version):
     return version
 
 
+def update_service_worker_version(version):
+    """Update version in needle/service-worker.js"""
+    sw_file = Path(__file__).parent.parent / 'needle' / 'service-worker.js'
+    
+    if not sw_file.exists():
+        print(f"⚠️  Service worker not found at {sw_file}")
+        return False
+    
+    content = sw_file.read_text()
+    original_content = content
+    
+    import re
+    
+    # Update CACHE_NAME
+    content = re.sub(
+        r"const CACHE_NAME = '[^']*';",
+        f"const CACHE_NAME = 'vinylfy-v{version}';",
+        content
+    )
+    
+    # Update RUNTIME_CACHE
+    content = re.sub(
+        r"const RUNTIME_CACHE = '[^']*';",
+        f"const RUNTIME_CACHE = 'vinylfy-runtime-v{version}';",
+        content
+    )
+    
+    # Update VERSION
+    content = re.sub(
+        r"const VERSION = '[^']*';",
+        f"const VERSION = '{version}';",
+        content
+    )
+    
+    if content != original_content:
+        sw_file.write_text(content)
+        print(f"✅ Updated service worker version to: {version}")
+        return True
+    else:
+        print(f"ℹ️  Service worker version already up to date")
+        return False
+
+
 def main():
     """Main version update workflow."""
     print("=" * 60)
@@ -117,6 +160,7 @@ def main():
         updates = []
         updates.append(deploy_version_to_needle(version_data))
         updates.append(update_backend_version(version))
+        updates.append(update_service_worker_version(version))
         
         print()
         print("=" * 60)
@@ -124,6 +168,7 @@ def main():
             print("✅ Version deployment complete!")
             print(f"📦 Version: {version}")
             print("💡 Frontend will load version.json dynamically at runtime")
+            print("💡 Service worker cache will refresh on next visit")
         else:
             print(f"ℹ️  All files already at latest version: {version}")
         print("=" * 60)
@@ -140,3 +185,4 @@ def main():
 
 if __name__ == '__main__':
     exit(main())
+

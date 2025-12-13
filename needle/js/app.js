@@ -40,6 +40,89 @@ class VinylApp {
     this.editedMetadata = null;
     this.isMetadataEditMode = false;
     this.uploadedArtwork = null;
+    // Slider Config for user-friendly UX
+    this.sliderConfig = {
+      noiseIntensity: {
+        displayMin: 0,
+        displayMax: 100,
+        actualMin: 0,
+        actualMax: 0.1,
+        unit: '%',
+        settingKey: 'noise_intensity'
+      },
+      popIntensity: {
+        displayMin: 0,
+        displayMax: 100,
+        actualMin: 0,
+        actualMax: 1.0,
+        unit: '%',
+        settingKey: 'pop_intensity'
+      },
+      wowFlutterIntensity: {
+        displayMin: 0,
+        displayMax: 100,
+        actualMin: 0,
+        actualMax: 0.01,
+        unit: '%',
+        settingKey: 'wow_flutter_intensity'
+      },
+      distortionAmount: {
+        displayMin: 0,
+        displayMax: 100,
+        actualMin: 0,
+        actualMax: 1.0,
+        unit: '%',
+        settingKey: 'distortion_amount'
+      },
+      steroWidth: {
+        displayMin: 0,
+        displayMax: 100,
+        actualMin: 0,
+        actualMax: 1.0,
+        unit: '%',
+        settingKey: 'stero_width'
+      },
+      bass: {
+        displayMin: -5,
+        displayMax: 5,
+        actualMin: -5,
+        actualMax: 5,
+        unit: ' dB',
+        settingKey: 'bass'
+      },
+      mid: {
+        displayMin: -5,
+        displayMax: 5,
+        actualMin: -5,
+        actualMax: 5,
+        unit: ' dB',
+        settingKey: 'mid'
+      },
+      treble: {
+        displayMin: -5,
+        displayMax: 5,
+        actualMin: -5,
+        actualMax: 5,
+        unit: ' dB',
+        settingKey: 'treble'
+      },
+      hpfCutoff: {
+        displayMin: 20,
+        displayMax: 500,
+        actualMin: 20,
+        actualMax: 500,
+        unit: ' Hz',
+        settingKey: 'hpf_cutoff'
+      },
+      lpfCutoff: {
+        displayMin: 1,
+        displayMax: 20,
+        actualMin: 100,
+        actualMax: 20000,
+        unit: ' kHz',
+        settingKey: 'lpf_cutoff'
+      }
+    };
 
     // Cache update modal flag (session-based)
     this.cacheModalDismissed = sessionStorage.getItem('cacheModalDismissed') === 'true';
@@ -56,6 +139,12 @@ class VinylApp {
     // Wait for version to load (happens in background on import)
     this.appVersion = await versionLoader.waitForLoad();
     console.log(`📦 App version: ${this.appVersion}`);
+
+    // Update footer version display
+    const footerVersion = document.getElementById('footerVersion');
+    if (footerVersion) {
+      footerVersion.textContent = `Version ${this.appVersion}`;
+    }
 
     // Check for version mismatch and show modal if needed
     await this.checkCacheVersion();
@@ -967,172 +1056,88 @@ class VinylApp {
       });
     }
 
-    // Surface noise intensity
-    const noiseIntensity = document.getElementById('noiseIntensity');
-    const noiseIntensityValue = document.getElementById('noiseIntensityValue');
-
-    if (noiseIntensity && noiseIntensityValue) {
-      noiseIntensity.addEventListener('input', (e) => {
-        const value = parseFloat(e.target.value);
-        this.customSettings.noise_intensity = value;
-        const valueText = value.toFixed(3);
-        noiseIntensityValue.textContent = valueText;
-        // Update ARIA attributes
-        e.target.setAttribute('aria-valuenow', value);
-        e.target.setAttribute('aria-valuetext', valueText);
-        this.switchToCustomPreset();
-      });
-    }
-
-    // Pop intensity slider
-    const popIntensity = document.getElementById('popIntensity');
-    const popIntensityValue = document.getElementById('popIntensityValue');
-
-    if (popIntensity && popIntensityValue) {
-      popIntensity.addEventListener('input', (e) => {
-        const value = parseFloat(e.target.value);
-        this.customSettings.pop_intensity = value;
-        const valueText = value.toFixed(2);
-        popIntensityValue.textContent = valueText;
-        // Update ARIA attributes
-        e.target.setAttribute('aria-valuenow', value);
-        e.target.setAttribute('aria-valuetext', valueText);
-        this.switchToCustomPreset();
-      });
-    }
-
-    // Wow/Flutter intensity
-    const wowFlutterIntensity = document.getElementById('wowFlutterIntensity');
-    const wowFlutterValue = document.getElementById('wowFlutterValue');
-
-    if (wowFlutterIntensity && wowFlutterValue) {
-      wowFlutterIntensity.addEventListener('input', (e) => {
-        const value = parseFloat(e.target.value);
-        this.customSettings.wow_flutter_intensity = value;
-        const valueText = value.toFixed(4);
-        wowFlutterValue.textContent = valueText;
-        // Update ARIA attributes
-        e.target.setAttribute('aria-valuenow', value);
-        e.target.setAttribute('aria-valuetext', valueText);
-        this.switchToCustomPreset();
-      });
-    }
-
-    // Harmonic distortion amount
-    const distortionAmount = document.getElementById('distortionAmount');
-    const distortionValue = document.getElementById('distortionValue');
-
-    if (distortionAmount && distortionValue) {
-      distortionAmount.addEventListener('input', (e) => {
-        const value = parseFloat(e.target.value);
-        this.customSettings.distortion_amount = value;
-        const valueText = value.toFixed(2);
-        distortionValue.textContent = valueText;
-        // Update ARIA attributes
-        e.target.setAttribute('aria-valuenow', value);
-        e.target.setAttribute('aria-valuetext', valueText);
-        this.switchToCustomPreset();
-      });
-    }
-
-    // Stereo width
-    const stereoWidth = document.getElementById('stereoWidth');
-    const stereoWidthValue = document.getElementById('stereoWidthValue');
-
-    if (stereoWidth && stereoWidthValue) {
-      stereoWidth.addEventListener('input', (e) => {
-        const value = parseFloat(e.target.value);
-        this.customSettings.stereo_width = value;
-        const valueText = value.toFixed(2);
-        stereoWidthValue.textContent = valueText;
-        // Update ARIA attributes
-        e.target.setAttribute('aria-valuenow', value);
-        e.target.setAttribute('aria-valuetext', valueText);
-        this.switchToCustomPreset();
-      });
-    }
-
-    // Bass EQ
-    const bassSlider = document.getElementById('bass');
-    const bassValue = document.getElementById('bassValue');
-
-    if (bassSlider && bassValue) {
-      bassSlider.addEventListener('input', (e) => {
-        const value = parseFloat(e.target.value);
-        this.customSettings.bass = value;
-        const valueText = `${value.toFixed(1)} dB`;
-        bassValue.textContent = valueText;
-        e.target.setAttribute('aria-valuenow', value);
-        e.target.setAttribute('aria-valuetext', valueText);
-        this.switchToCustomPreset();
-      });
-    }
-
-    // Mid EQ
-    const midSlider = document.getElementById('mid');
-    const midValue = document.getElementById('midValue');
-
-    if (midSlider && midValue) {
-      midSlider.addEventListener('input', (e) => {
-        const value = parseFloat(e.target.value);
-        this.customSettings.mid = value;
-        const valueText = `${value.toFixed(1)} dB`;
-        midValue.textContent = valueText;
-        e.target.setAttribute('aria-valuenow', value);
-        e.target.setAttribute('aria-valuetext', valueText);
-        this.switchToCustomPreset();
-      });
-    }
-
-    // Treble EQ
-    const trebleSlider = document.getElementById('treble');
-    const trebleValue = document.getElementById('trebleValue');
-
-    if (trebleSlider && trebleValue) {
-      trebleSlider.addEventListener('input', (e) => {
-        const value = parseFloat(e.target.value);
-        this.customSettings.treble = value;
-        const valueText = `${value.toFixed(1)} dB`;
-        trebleValue.textContent = valueText;
-        e.target.setAttribute('aria-valuenow', value);
-        e.target.setAttribute('aria-valuetext', valueText);
-        this.switchToCustomPreset();
-      });
-    }
+    // Setup all sliders with two-way binding
+    this.setupSliderWithInput('noiseIntensity', 'noiseIntensityValue');
+    this.setupSliderWithInput('popIntensity', 'popIntensityValue');
+    this.setupSliderWithInput('wowFlutterIntensity', 'wowFlutterValue');
+    this.setupSliderWithInput('distortionAmount', 'distortionValue');
+    this.setupSliderWithInput('stereoWidth', 'stereoWidthValue');
+    this.setupSliderWithInput('bass', 'bassValue');
+    this.setupSliderWithInput('mid', 'midValue');
+    this.setupSliderWithInput('treble', 'trebleValue');
+    this.setupSliderWithInput('hpfCutoff', 'hpfCutoffValue');
+    this.setupSliderWithInput('lpfCutoff', 'lpfCutoffValue');
 
     console.log('✅ Custom controls setup complete');
+  }
 
-    // High-Pass Filter
-    const hpfCutoff = document.getElementById('hpfCutoff');
-    const hpfCutoffValue = document.getElementById('hpfCutoffValue');
+  /**
+   * Setup a slider with two-way binding to an input field
+   * @param {string} sliderId - The slider element ID
+   * @param {string} inputId - The input element ID for the value display
+   */
+  setupSliderWithInput(sliderId, inputId) {
+    const slider = document.getElementById(sliderId);
+    const valueInput = document.getElementById(inputId);
+    const config = this.sliderConfig[sliderId];
 
-    if (hpfCutoff && hpfCutoffValue) {
-      hpfCutoff.addEventListener('input', (e) => {
-        const value = parseInt(e.target.value);
-        this.customSettings.hpf_cutoff = value;
-        const valueText = this.formatFrequency(value);
-        hpfCutoffValue.textContent = valueText;
-        e.target.setAttribute('aria-valuenow', value);
-        e.target.setAttribute('aria-valuetext', valueText);
-        this.switchToCustomPreset();
-      });
+    if (!slider || !valueInput) {
+      console.warn(`⚠️ Slider or input not found: ${sliderId}, ${inputId}`);
+      return;
     }
 
-    // Low-Pass Filter
-    const lpfCutoff = document.getElementById('lpfCutoff');
-    const lpfCutoffValue = document.getElementById('lpfCutoffValue');
-
-    if (lpfCutoff && lpfCutoffValue) {
-      lpfCutoff.addEventListener('input', (e) => {
-        const value = parseInt(e.target.value);
-        this.customSettings.lpf_cutoff = value;
-        const valueText = this.formatFrequency(value);
-        lpfCutoffValue.textContent = valueText;
-        e.target.setAttribute('aria-valuenow', value);
-        e.target.setAttribute('aria-valuetext', valueText);
-        this.switchToCustomPreset();
-      });
+    if (!config) {
+      console.warn(`⚠️ No config found for slider: ${sliderId}`);
+      return;
     }
+
+    // Slider → Input: When slider changes, update input and store actual value
+    slider.addEventListener('input', (e) => {
+      const displayValue = parseFloat(e.target.value);
+      valueInput.value = displayValue;
+
+      // Convert to actual value and store
+      const actualValue = this.displayToActual(sliderId, displayValue);
+      this.customSettings[config.settingKey] = actualValue;
+
+      // Update ARIA
+      e.target.setAttribute('aria-valuenow', displayValue);
+      e.target.setAttribute('aria-valuetext', `${displayValue}${config.unit}`);
+
+      this.switchToCustomPreset();
+    });
+
+    // Input → Slider: When input changes, validate and update slider
+    valueInput.addEventListener('change', (e) => {
+      let displayValue = parseFloat(e.target.value);
+
+      // Handle NaN
+      if (isNaN(displayValue)) {
+        displayValue = config.displayMin;
+      }
+
+      // Clamp to valid range
+      displayValue = Math.max(config.displayMin, Math.min(config.displayMax, displayValue));
+
+      // Update both UI elements
+      slider.value = displayValue;
+      valueInput.value = displayValue;
+
+      // Convert to actual value and store
+      const actualValue = this.displayToActual(sliderId, displayValue);
+      this.customSettings[config.settingKey] = actualValue;
+
+      // Update ARIA
+      slider.setAttribute('aria-valuenow', displayValue);
+      slider.setAttribute('aria-valuetext', `${displayValue}${config.unit}`);
+
+      this.switchToCustomPreset();
+    });
+
+    // Select all text on focus for easy typing
+    valueInput.addEventListener('focus', () => {
+      valueInput.select();
+    });
   }
 
   /**
@@ -1777,12 +1782,18 @@ class VinylApp {
     const progressBar = document.getElementById('progressBar');
     const progressPercent = document.getElementById('progressPercent');
     const processingStatus = document.getElementById('processingStatus');
+    const processBtn = document.getElementById('processBtn');
 
     if (!progressBar || !progressPercent || !processingStatus) return;
 
     // Update progress bar width
     progressBar.style.width = `${percent}%`;
     progressPercent.textContent = `${Math.round(percent)}%`;
+
+    // Update START button to show progress
+    if (processBtn && percent > 0 && percent < 100) {
+      processBtn.innerHTML = `<span class="btn-text">Processing... ${Math.round(percent)}%</span>`;
+    }
 
     // Update status text based on progress
     if (percent >= 0 && percent <= 33) {
@@ -1793,6 +1804,9 @@ class VinylApp {
       processingStatus.textContent = 'Putting down the needle...';
     } else if (percent >= 100) {
       processingStatus.textContent = 'Vinylfy Complete!';
+      if (processBtn) {
+        processBtn.innerHTML = '<span class="btn-text">Complete!</span>';
+      }
     }
   }
 
@@ -2135,8 +2149,9 @@ class VinylApp {
                         </button>
                     </div>
                     
-                    <div style="text-align: center; margin-top: var(--space-md);">
-                        <button class="btn-glass" onclick="document.querySelector('[data-tab=process]').click()">Process Another File</button>
+                    <div style="display: flex; gap: var(--space-md); justify-content: center; flex-wrap: wrap; margin-top: var(--space-md);">
+                        <button id="changeSettingsBtn" class="btn-glass">Change Settings</button>
+                        <button id="discardBtn" class="btn-glass" style="color: var(--color-error, #ef4444);">Discard & Start New</button>
                     </div>
                 </div>
             </div>
@@ -2311,6 +2326,90 @@ class VinylApp {
         } finally {
           downloadAllBtn.disabled = false;
           downloadAllBtn.innerHTML = 'Download All Formats (ZIP)';
+        }
+      };
+    }
+
+    // --- Change Settings Button ---
+    const changeSettingsBtn = document.getElementById('changeSettingsBtn');
+    if (changeSettingsBtn) {
+      changeSettingsBtn.onclick = () => {
+        // Stop audio if playing
+        if (this.currentAudio) {
+          this.currentAudio.pause();
+          this.currentAudio.currentTime = 0;
+        }
+        // Switch to presets tab
+        document.querySelector('[data-tab="presets"]').click();
+      };
+    }
+
+    // --- Discard & Start New Button ---
+    const discardBtn = document.getElementById('discardBtn');
+    if (discardBtn) {
+      discardBtn.onclick = async () => {
+        const confirmed = confirm(
+          'Are you sure you want to discard this file?\n\n' +
+          'This will delete the processed audio from the server and reset your session. ' +
+          'This action cannot be undone.'
+        );
+
+        if (!confirmed) return;
+
+        try {
+          discardBtn.disabled = true;
+          discardBtn.textContent = 'Discarding...';
+
+          // Stop audio if playing
+          if (this.currentAudio) {
+            this.currentAudio.pause();
+            this.currentAudio = null;
+          }
+
+          // Delete file from server
+          if (fileId) {
+            await api.deleteFile(fileId);
+          }
+
+          // Clear processed file ID
+          this.processedFileId = null;
+
+          // Clear selected file
+          this.selectedFile = null;
+          const audioFileInput = document.getElementById('audioFile');
+          if (audioFileInput) audioFileInput.value = '';
+
+          // Reset console display to show default state
+          const consoleDisplay = document.getElementById('consoleDisplay');
+          const defaultState = consoleDisplay?.querySelector('.default-state');
+          const filenameDisplay = consoleDisplay?.querySelector('.filename-display');
+          if (defaultState) defaultState.classList.remove('hidden');
+          if (filenameDisplay) filenameDisplay.classList.add('hidden');
+
+          // Reset process button
+          const processBtn = document.getElementById('processBtn');
+          if (processBtn) {
+            processBtn.innerHTML = '<span class="btn-text">START</span>';
+            processBtn.disabled = true;
+            processBtn.classList.remove('active');
+          }
+
+          // Reset metadata
+          this.originalMetadata = null;
+          this.editedMetadata = null;
+          this.uploadedArtwork = null;
+
+          // Switch to process tab
+          document.querySelector('[data-tab="process"]').click();
+
+          showToast('File discarded. Ready for a new upload!', 'success');
+
+        } catch (error) {
+          console.error('Discard failed:', error);
+          showToast(`Discard failed: ${error.message}`, 'error');
+        } finally {
+          discardBtn.disabled = false;
+          discardBtn.textContent = 'Discard & Start New';
         }
       };
     }
@@ -2848,6 +2947,47 @@ class VinylApp {
   }
 
   /**
+   * Convert display value to actual values in sliders for the API calls
+   * @param {string} sliderId - The slider ID (e.g. 'noiseIntensity')
+   * @param {number} displayValue - The display value (e.g. 2) in the UI
+   * @returns {number} The actual value (e.g. 0.02) for the API call
+   */
+  displayToActual(sliderId, displayValue) {
+    const config = this.sliderConfig[sliderId];
+    if (!config) return displayValue;
+
+    // If display value and acutal ranges are equal, no conversion needed
+    if (config.displayMin === config.actualMin && config.displayMax === config.actualMax) {
+      return displayValue;
+    }
+
+    // Linear conversion from display rane to actual range
+    const ratio = (displayValue - config.displayMin) / (config.displayMax - config.displayMin);
+    return config.actualMin + ratio * (config.actualMax - config.actualMin);
+  }
+
+  /**
+   * Convert actual value to display value for sliders in UI
+   * @param {string} sliderId - The slider ID (e.g. 'noiseIntensity')
+   * @param {number} actualValue - The actual value (e.g. 0.02) from the API response
+   * @returns {number} The display value (e.g. 2) for the UI
+   */
+
+  actualToDisplay(sliderId, actualValue) {
+    const config = this.sliderConfig[sliderId];
+    if (!config) return actualValue;
+
+    // If display value and acutal ranges are equal, no conversion needed
+    if (config.displayMin === config.actualMin && config.displayMax === config.actualMax) {
+      return actualValue;
+    }
+
+    // Linear conversion from actual range to display range
+    const ratio = (actualValue - config.actualMin) / (config.actualMax - config.actualMin);
+    return Math.round(config.displayMin + ratio * (config.displayMax - config.displayMin));
+  }
+
+  /**
    * Setup PWA functionality
    */
   setupPWA() {
@@ -3143,113 +3283,42 @@ class VinylApp {
       riaaBtn.setAttribute('aria-pressed', this.customSettings.frequency_response);
     }
 
-    const noiseIntensity = document.getElementById('noiseIntensity');
-    const noiseIntensityValue = document.getElementById('noiseIntensityValue');
-    const popIntensity = document.getElementById('popIntensity');
-    const popIntensityValue = document.getElementById('popIntensityValue');
-    const wowFlutterIntensity = document.getElementById('wowFlutterIntensity');
-    const wowFlutterValue = document.getElementById('wowFlutterValue');
-    const distortionAmount = document.getElementById('distortionAmount');
-    const distortionValue = document.getElementById('distortionValue');
-    const stereoWidth = document.getElementById('stereoWidth');
-    const stereoWidthValue = document.getElementById('stereoWidthValue');
+    // Update all sliders using the config
+    this.updateSliderFromActualValue('noiseIntensity', 'noiseIntensityValue', this.customSettings.noise_intensity);
+    this.updateSliderFromActualValue('popIntensity', 'popIntensityValue', this.customSettings.pop_intensity);
+    this.updateSliderFromActualValue('wowFlutterIntensity', 'wowFlutterValue', this.customSettings.wow_flutter_intensity);
+    this.updateSliderFromActualValue('distortionAmount', 'distortionValue', this.customSettings.distortion_amount);
+    this.updateSliderFromActualValue('stereoWidth', 'stereoWidthValue', this.customSettings.stereo_width);
+    this.updateSliderFromActualValue('bass', 'bassValue', this.customSettings.bass || 0);
+    this.updateSliderFromActualValue('mid', 'midValue', this.customSettings.mid || 0);
+    this.updateSliderFromActualValue('treble', 'trebleValue', this.customSettings.treble || 0);
+    this.updateSliderFromActualValue('hpfCutoff', 'hpfCutoffValue', this.customSettings.hpf_cutoff || 30);
+    this.updateSliderFromActualValue('lpfCutoff', 'lpfCutoffValue', this.customSettings.lpf_cutoff || 15000);
+  }
 
-    // Noise intensity
-    if (noiseIntensity && noiseIntensityValue) {
-      noiseIntensity.value = this.customSettings.noise_intensity;
-      noiseIntensityValue.textContent = this.customSettings.noise_intensity.toFixed(3);
-      noiseIntensity.setAttribute('aria-valuenow', this.customSettings.noise_intensity);
-      noiseIntensity.setAttribute('aria-valuetext', this.customSettings.noise_intensity.toFixed(3));
-    }
+  /**
+   * Update a slider and its input from an actual (API) value
+   * @param {string} sliderId - The slider element ID
+   * @param {string} inputId - The input element ID
+   * @param {number} actualValue - The actual value from settings/API
+   */
+  updateSliderFromActualValue(sliderId, inputId, actualValue) {
+    const slider = document.getElementById(sliderId);
+    const valueInput = document.getElementById(inputId);
+    const config = this.sliderConfig[sliderId];
 
-    // Pop intensity
-    if (popIntensity && popIntensityValue) {
-      popIntensity.value = this.customSettings.pop_intensity;
-      popIntensityValue.textContent = this.customSettings.pop_intensity.toFixed(2);
-      popIntensity.setAttribute('aria-valuenow', this.customSettings.pop_intensity);
-      popIntensity.setAttribute('aria-valuetext', this.customSettings.pop_intensity.toFixed(2));
-    }
+    if (!slider || !valueInput || !config) return;
 
-    // Wow flutter intensity
-    if (wowFlutterIntensity && wowFlutterValue) {
-      wowFlutterIntensity.value = this.customSettings.wow_flutter_intensity;
-      wowFlutterValue.textContent = this.customSettings.wow_flutter_intensity.toFixed(4);
-      wowFlutterIntensity.setAttribute('aria-valuenow', this.customSettings.wow_flutter_intensity);
-      wowFlutterIntensity.setAttribute('aria-valuetext', this.customSettings.wow_flutter_intensity.toFixed(4));
-    }
+    // Convert actual value to display value
+    const displayValue = this.actualToDisplay(sliderId, actualValue);
 
-    // Distortion amount
-    if (distortionAmount && distortionValue) {
-      distortionAmount.value = this.customSettings.distortion_amount;
-      distortionValue.textContent = this.customSettings.distortion_amount.toFixed(2);
-      distortionAmount.setAttribute('aria-valuenow', this.customSettings.distortion_amount);
-      distortionAmount.setAttribute('aria-valuetext', this.customSettings.distortion_amount.toFixed(2));
-    }
+    // Update UI
+    slider.value = displayValue;
+    valueInput.value = displayValue;
 
-    // Stereo width
-    if (stereoWidth && stereoWidthValue) {
-      stereoWidth.value = this.customSettings.stereo_width;
-      stereoWidthValue.textContent = this.customSettings.stereo_width.toFixed(2);
-      stereoWidth.setAttribute('aria-valuenow', this.customSettings.stereo_width);
-      stereoWidth.setAttribute('aria-valuetext', this.customSettings.stereo_width.toFixed(2));
-    }
-
-    // Bass EQ
-    const bassSlider = document.getElementById('bass');
-    const bassValue = document.getElementById('bassValue');
-    if (bassSlider && bassValue) {
-      bassSlider.value = this.customSettings.bass || 0;
-      const bassValueText = `${(this.customSettings.bass || 0).toFixed(1)} dB`;
-      bassValue.textContent = bassValueText;
-      bassSlider.setAttribute('aria-valuenow', this.customSettings.bass || 0);
-      bassSlider.setAttribute('aria-valuetext', bassValueText);
-    }
-
-    // Mid EQ
-    const midSlider = document.getElementById('mid');
-    const midValue = document.getElementById('midValue');
-    if (midSlider && midValue) {
-      midSlider.value = this.customSettings.mid || 0;
-      const midValueText = `${(this.customSettings.mid || 0).toFixed(1)} dB`;
-      midValue.textContent = midValueText;
-      midSlider.setAttribute('aria-valuenow', this.customSettings.mid || 0);
-      midSlider.setAttribute('aria-valuetext', midValueText);
-    }
-
-    // Treble EQ
-    const trebleSlider = document.getElementById('treble');
-    const trebleValue = document.getElementById('trebleValue');
-    if (trebleSlider && trebleValue) {
-      trebleSlider.value = this.customSettings.treble || 0;
-      const trebleValueText = `${(this.customSettings.treble || 0).toFixed(1)} dB`;
-      trebleValue.textContent = trebleValueText;
-      trebleSlider.setAttribute('aria-valuenow', this.customSettings.treble || 0);
-      trebleSlider.setAttribute('aria-valuetext', trebleValueText);
-    }
-
-    // High-Pass Filter
-    const hpfCutoff = document.getElementById('hpfCutoff');
-    const hpfCutoffValue = document.getElementById('hpfCutoffValue');
-    if (hpfCutoff && hpfCutoffValue) {
-      hpfCutoff.value = this.customSettings.hpf_cutoff || 30;
-      const hpfValueText = this.formatFrequency(this.customSettings.hpf_cutoff || 30);
-      hpfCutoffValue.textContent = hpfValueText;
-      hpfCutoff.setAttribute('aria-valuenow', this.customSettings.hpf_cutoff || 30);
-      hpfCutoff.setAttribute('aria-valuetext', hpfValueText);
-      hpfCutoff.disabled = false; // Always enabled
-    }
-
-    // Low-Pass Filter
-    const lpfCutoff = document.getElementById('lpfCutoff');
-    const lpfCutoffValue = document.getElementById('lpfCutoffValue');
-    if (lpfCutoff && lpfCutoffValue) {
-      lpfCutoff.value = this.customSettings.lpf_cutoff || 15000;
-      const lpfValueText = this.formatFrequency(this.customSettings.lpf_cutoff || 15000);
-      lpfCutoffValue.textContent = lpfValueText;
-      lpfCutoff.setAttribute('aria-valuenow', this.customSettings.lpf_cutoff || 15000);
-      lpfCutoff.setAttribute('aria-valuetext', lpfValueText);
-      lpfCutoff.disabled = false; // Always enabled
-    }
+    // Update ARIA
+    slider.setAttribute('aria-valuenow', displayValue);
+    slider.setAttribute('aria-valuetext', `${displayValue}${config.unit}`);
   }
 
   /**

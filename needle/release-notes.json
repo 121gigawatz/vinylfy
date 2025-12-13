@@ -1,4 +1,29 @@
 {
+  "0.9.7": {
+    "date": "2025-12-12",
+    "highlights": [
+      "User-Friendly Slider Controls: All sliders now show intuitive 0-100% ranges instead of decimal values.",
+      "Editable Slider Values: Click on any slider value to type in a specific number - sliders update automatically.",
+      "Two-Way Slider Binding: Type a value or drag the slider - both stay in sync with automatic range validation.",
+      "Enhanced Configure Tab: Updated control labels and added valid ranges to all description sections."
+    ],
+    "bugfixes": [
+      "Fixed class closure bug in app.js that broke multiple methods after adding conversion functions.",
+      "Fixed CSS lint warning by adding standard 'appearance' property for browser compatibility.",
+      "Removed CD emoji (💿) from Results empty state - replaced with sad face emoticon.",
+      "Removed music emoji (🎵) from Select Audio File drop zone - replaced with up arrow icon."
+    ],
+    "improvements": [
+      "Slider values use display-to-actual conversion: users see friendly numbers, API receives correct values.",
+      "Bass/Mid/Treble EQ sliders kept at actual -5 to +5 dB range for audio professionals.",
+      "LPF slider now shows 1-20 kHz (converts to 1000-20000 Hz for API).",
+      "Added .glass-slider-input CSS class with hover (orange tint) and focus (solid orange) states.",
+      "Hidden number input spinners for cleaner slider value appearance.",
+      "Slider labels updated: 'Noise' → 'Noise Intensity', 'Pop' → 'Pop Intensity', etc.",
+      "Description panels now show valid ranges: e.g., 'Noise Intensity... (Valid range: 0-100%)'.",
+      "Font family for slider values changed from monospace to match UI for consistency."
+    ]
+  },
   "0.9.6.4": {
     "date": "2025-12-09",
     "highlights": [

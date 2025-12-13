@@ -316,7 +316,7 @@
         /* Tab Navigation */
         .tab-navigation {
             position: sticky;
-            top: 70px;
+            top: 85px;
             z-index: var(--z-sticky);
             background: var(--glass-bg-light);
             backdrop-filter: var(--backdrop-blur) var(--backdrop-saturate);
@@ -643,7 +643,25 @@
                     </div>
                 </div>
                 <div style="display: flex; gap: var(--space-sm); align-items: center;">
-                    <!-- PWA Install Button (Removed) -->
+                    <!-- GitHub Link -->
+                    <a href="https://github.com/121gigawatz/vinylfy" target="_blank" rel="noopener noreferrer"
+                        style="display: flex; align-items: center;" title="View on GitHub">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                            fill="#DA8137">
+                            <path
+                                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                        </svg>
+                    </a>
+                    <!-- Website Link -->
+                    <a href="https://vinylfy.app" target="_blank" rel="noopener noreferrer"
+                        style="display: flex; align-items: center;" title="Visit vinylfy.app">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                            fill="#DA8137">
+                            <path
+                                d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm1 16.057v-3.057h2.994c-.059 1.143-.212 2.24-.456 3.279-.823-.12-1.674-.188-2.538-.222zm1.957 2.162c-.499 1.33-1.159 2.497-1.957 3.456v-3.62c.666.028 1.319.081 1.957.164zm-1.957-7.219v-3.015c.868-.034 1.721-.103 2.548-.224.238 1.027.389 2.111.446 3.239h-2.994zm0-5.014v-3.661c.806.969 1.471 2.15 1.971 3.496-.642.084-1.3.137-1.971.165zm2.703-3.267c1.237.496 2.354 1.228 3.29 2.146-.642.234-1.311.442-2.019.607-.344-.992-.775-1.91-1.271-2.753zm-7.241 13.56c-.244-1.039-.398-2.136-.456-3.279h2.994v3.057c-.865.034-1.714.102-2.538.222zm2.538 1.776v3.62c-.798-.959-1.458-2.126-1.957-3.456.638-.083 1.291-.136 1.957-.164zm-2.994-7.055c.057-1.128.207-2.212.446-3.239.827.121 1.68.19 2.548.224v3.015h-2.994zm1.024-5.179c.5-1.346 1.165-2.527 1.97-3.496v3.661c-.671-.028-1.329-.081-1.97-.165zm-2.005-.35c-.708-.165-1.377-.373-2.018-.607.937-.918 2.053-1.65 3.29-2.146-.496.844-.927 1.762-1.272 2.753zm-.549 1.918c-.264 1.151-.434 2.36-.492 3.611h-3.933c.165-1.658.739-3.197 1.617-4.518.88.361 1.816.67 2.808.907zm.009 9.262c-.988.236-1.92.542-2.797.9-.89-1.328-1.471-2.879-1.637-4.551h3.934c.058 1.265.231 2.488.5 3.651zm.553 1.917c.342.976.768 1.881 1.257 2.712-1.223-.49-2.326-1.211-3.256-2.115.636-.229 1.299-.435 1.999-.597zm9.924 0c.7.163 1.362.367 1.999.597-.931.903-2.034 1.625-3.257 2.116.489-.832.915-1.737 1.258-2.713zm.553-1.917c.27-1.163.442-2.386.501-3.651h3.934c-.167 1.672-.748 3.223-1.638 4.551-.877-.358-1.81-.664-2.797-.9zm.501-5.651c-.058-1.251-.229-2.46-.492-3.611.992-.237 1.929-.546 2.809-.907.877 1.321 1.451 2.86 1.616 4.518h-3.933z" />
+                        </svg>
+                    </a>
+                    <!-- Theme Toggle Buttons -->
                     <button class="btn-glass" id="lightModeBtn" onclick="setTheme('light')">☀️</button>
                     <button class="btn-glass" id="darkModeBtn" onclick="setTheme('dark')">🌙</button>
                 </div>
@@ -961,38 +979,42 @@
                     <div>
                         <div class="glass-slider-group">
                             <div class="glass-slider-label">
-                                <span>Noise</span>
-                                <span id="noiseIntensityValue" class="glass-slider-value">0.020</span>
+                                <span>Noise Intensity</span>
+                                <input type="number" id="noiseIntensityValue"
+                                    class="glass-slider-value glass-slider-input" value="20" min="0" max="100">
                             </div>
-                            <input id="noiseIntensity" type="range" class="glass-slider" min="0" max="0.1" step="0.001"
-                                value="0.02">
+                            <input id="noiseIntensity" type="range" class="glass-slider" min="0" max="100" step="1"
+                                value="20">
                         </div>
 
                         <div class="glass-slider-group">
                             <div class="glass-slider-label">
-                                <span>Pop</span>
-                                <span id="popIntensityValue" class="glass-slider-value">0.60</span>
+                                <span>Pop Intensity</span>
+                                <input type="number" id="popIntensityValue"
+                                    class="glass-slider-value glass-slider-input" value="60" min="0" max="100">
                             </div>
-                            <input id="popIntensity" type="range" class="glass-slider" min="0" max="1" step="0.05"
-                                value="0.6">
+                            <input id="popIntensity" type="range" class="glass-slider" min="0" max="100" step="1"
+                                value="60">
                         </div>
 
                         <div class="glass-slider-group">
                             <div class="glass-slider-label">
-                                <span>Flutter</span>
-                                <span id="wowFlutterValue" class="glass-slider-value">0.0010</span>
+                                <span>Wow & Flutter</span>
+                                <input type="number" id="wowFlutterValue" class="glass-slider-value glass-slider-input"
+                                    value="10" min="0" max="100">
                             </div>
-                            <input id="wowFlutterIntensity" type="range" class="glass-slider" min="0" max="0.01"
-                                step="0.0001" value="0.001">
+                            <input id="wowFlutterIntensity" type="range" class="glass-slider" min="0" max="100" step="1"
+                                value="10">
                         </div>
 
                         <div class="glass-slider-group">
                             <div class="glass-slider-label">
-                                <span>Distortion</span>
-                                <span id="distortionValue" class="glass-slider-value">0.15</span>
+                                <span>Distortion Amount</span>
+                                <input type="number" id="distortionValue" class="glass-slider-value glass-slider-input"
+                                    value="15" min="0" max="100">
                             </div>
-                            <input id="distortionAmount" type="range" class="glass-slider" min="0" max="1" step="0.01"
-                                value="0.15">
+                            <input id="distortionAmount" type="range" class="glass-slider" min="0" max="100" step="1"
+                                value="15">
                         </div>
                     </div>
 
@@ -1009,16 +1031,19 @@
                         <ul
                             style="list-style: none; padding-left: 0; color: var(--color-text-secondary); line-height: 1.75;">
                             <li style="margin-bottom: var(--space-sm);"><strong
-                                    style="color: var(--color-text-primary);">Noise:</strong> Adds surface noise and
-                                static for that classic vinyl hiss</li>
+                                    style="color: var(--color-text-primary);">Noise Intensity:</strong> Adds surface
+                                noise and
+                                static for that classic vinyl hiss. <em>(Valid range: 0-100%)</em></li>
                             <li style="margin-bottom: var(--space-sm);"><strong
-                                    style="color: var(--color-text-primary);">Pop:</strong> Creates random pops and
-                                crackles from dust and scratches</li>
+                                    style="color: var(--color-text-primary);">Pop Intensity:</strong> Creates random
+                                pops and
+                                crackles from dust and scratches. <em>(Valid range: 0-100%)</em></li>
                             <li style="margin-bottom: var(--space-sm);"><strong
-                                    style="color: var(--color-text-primary);">Flutter:</strong> Simulates wow and
-                                flutter from turntable speed variations</li>
-                            <li><strong style="color: var(--color-text-primary);">Distortion:</strong> Adds harmonic
-                                warmth and analog saturation</li>
+                                    style="color: var(--color-text-primary);">Wow & Flutter:</strong> Simulates wow and
+                                flutter from turntable speed variations. <em>(Valid range: 0-100%)</em></li>
+                            <li><strong style="color: var(--color-text-primary);">Distortion Amount:</strong> Adds
+                                harmonic
+                                warmth and analog saturation. <em>(Valid range: 0-100%)</em></li>
                         </ul>
                     </div>
                 </div>
@@ -1036,7 +1061,8 @@
                         <div class="glass-slider-group">
                             <div class="glass-slider-label">
                                 <span>Bass</span>
-                                <span id="bassValue" class="glass-slider-value">0.0 dB</span>
+                                <input type="number" id="bassValue" class="glass-slider-value glass-slider-input"
+                                    value="0" min="-5" max="5" step="0.1">
                             </div>
                             <input id="bass" type="range" class="glass-slider" min="-5" max="5" step="0.1" value="0">
                         </div>
@@ -1044,7 +1070,8 @@
                         <div class="glass-slider-group">
                             <div class="glass-slider-label">
                                 <span>Mid</span>
-                                <span id="midValue" class="glass-slider-value">0.0 dB</span>
+                                <input type="number" id="midValue" class="glass-slider-value glass-slider-input"
+                                    value="0" min="-5" max="5" step="0.1">
                             </div>
                             <input id="mid" type="range" class="glass-slider" min="-5" max="5" step="0.1" value="0">
                         </div>
@@ -1052,7 +1079,8 @@
                         <div class="glass-slider-group">
                             <div class="glass-slider-label">
                                 <span>Treble</span>
-                                <span id="trebleValue" class="glass-slider-value">0.0 dB</span>
+                                <input type="number" id="trebleValue" class="glass-slider-value glass-slider-input"
+                                    value="0" min="-5" max="5" step="0.1">
                             </div>
                             <input id="treble" type="range" class="glass-slider" min="-5" max="5" step="0.1" value="0">
                         </div>
@@ -1071,13 +1099,14 @@
                         <ul
                             style="list-style: none; padding-left: 0; color: var(--color-text-secondary); line-height: 1.75;">
                             <li style="margin-bottom: var(--space-sm);"><strong
-                                    style="color: var(--color-text-primary);">Bass:</strong> Low frequencies (20-250 Hz)
-                                - adds depth and warmth</li>
+                                    style="color: var(--color-text-primary);">Bass:</strong> Low frequencies
+                                add depth and warmth. <em>(Valid range: -5 to +5 dB)</em></li>
                             <li style="margin-bottom: var(--space-sm);"><strong
-                                    style="color: var(--color-text-primary);">Mid:</strong> Middle frequencies (250-4000
-                                Hz) - defines vocals and instruments</li>
+                                    style="color: var(--color-text-primary);">Mid:</strong> Middle frequencies
+                                define vocals and instruments. <em>(Valid range: -5 to +5 dB)</em></li>
                             <li><strong style="color: var(--color-text-primary);">Treble:</strong> High frequencies
-                                (4000-20000 Hz) - controls clarity and brightness</li>
+                                control clarity and brightness. <em>(Valid range: -5 to +5 dB)</em>
+                            </li>
                         </ul>
 
                         <p
@@ -1099,7 +1128,8 @@
                         <div class="glass-slider-group">
                             <div class="glass-slider-label">
                                 <span>High-Pass Filter</span>
-                                <span id="hpfCutoffValue" class="glass-slider-value">30 Hz</span>
+                                <input type="number" id="hpfCutoffValue" class="glass-slider-value glass-slider-input"
+                                    value="30" min="20" max="500" step="10">
                             </div>
                             <input id="hpfCutoff" type="range" class="glass-slider" min="20" max="500" step="10"
                                 value="30">
@@ -1108,19 +1138,21 @@
                         <div class="glass-slider-group">
                             <div class="glass-slider-label">
                                 <span>Low-Pass Filter</span>
-                                <span id="lpfCutoffValue" class="glass-slider-value">15.0 kHz</span>
+                                <input type="number" id="lpfCutoffValue" class="glass-slider-value glass-slider-input"
+                                    value="15" min="1" max="20">
                             </div>
-                            <input id="lpfCutoff" type="range" class="glass-slider" min="1000" max="20000" step="100"
-                                value="15000">
+                            <input id="lpfCutoff" type="range" class="glass-slider" min="1" max="20" step="1"
+                                value="15">
                         </div>
 
                         <div class="glass-slider-group">
                             <div class="glass-slider-label">
                                 <span>Stereo Width</span>
-                                <span id="stereoWidthValue" class="glass-slider-value">0.70</span>
+                                <input type="number" id="stereoWidthValue" class="glass-slider-value glass-slider-input"
+                                    value="70" min="0" max="100">
                             </div>
-                            <input id="stereoWidth" type="range" class="glass-slider" min="0" max="1" step="0.05"
-                                value="0.7">
+                            <input id="stereoWidth" type="range" class="glass-slider" min="0" max="100" step="1"
+                                value="70">
                         </div>
 
                         <!-- RIAA Toggle -->
@@ -1156,15 +1188,19 @@
                             style="list-style: none; padding-left: 0; color: var(--color-text-secondary); line-height: 1.75;">
                             <li style="margin-bottom: var(--space-sm);"><strong
                                     style="color: var(--color-text-primary);">High-Pass Filter:</strong> Removes rumble
-                                and low-frequency noise below the set frequency</li>
+                                and low-frequency noise below the set cutoff frequency. <em>(Valid range:20-500 Hz)</em>
+                            </li>
                             <li style="margin-bottom: var(--space-sm);"><strong
                                     style="color: var(--color-text-primary);">Low-Pass Filter:</strong> Cuts ultra-high
-                                frequencies that vinyl can't reproduce (typically 15-16 kHz)</li>
+                                frequencies that vinyl can't reproduce. <em>(Valid range:1-20 kHz)</em></li>
                             <li style="margin-bottom: var(--space-sm);"><strong
                                     style="color: var(--color-text-primary);">Stereo Width:</strong> Adjusts the
-                                separation between left and right channels</li>
+                                separation between left and right channels. Set the value to 0% for full mono, and 100%
+                                for full stereo.</li>
                             <li><strong style="color: var(--color-text-primary);">RIAA Curve:</strong> The
-                                industry-standard equalization curve used in vinyl production since 1954</li>
+                                industry-standard equalization curve used in vinyl production since 1954.
+                                <em>(On/Off)</em>
+                            </li>
                         </ul>
 
                         <p
@@ -1199,7 +1235,7 @@
                 <div id="consoleDisplay"
                     style="text-align: center; padding: var(--space-3xl); border: 2px dashed var(--glass-border); border-radius: var(--radius-xl); background: var(--glass-bg-light); cursor: pointer; transition: all var(--transition-base);"
                     role="button" tabindex="0" aria-label="Click to select audio file or drag and drop">
-                    <p style="font-size: 3rem;">🎵</p>
+                    <p style="font-size: 4rem;">&#11014;</p>
                     <p style="margin: var(--space-md) 0; color: var(--color-text-primary);" class="drop-zone-text">Click
                         or Drop Audio File Here</p>
                     <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary);"
@@ -1214,7 +1250,7 @@
             <div class="glass-card" style="text-align: center; padding: var(--space-3xl);">
                 <!-- Empty State -->
                 <div id="resultsEmptyState">
-                    <span style="font-size: 4rem;">💿</span>
+                    <span style="font-size: 4rem;">&#58;&#40;</span>
                     <h3 style="margin: var(--space-lg) 0;">No Results Yet</h3>
                     <p style="margin-bottom: var(--space-xl);">Process an audio file to see your results here. <span
                             onclick="document.querySelector('[data-tab=process]').click()"
@@ -1222,7 +1258,6 @@
                             File</span></p>
                 </div>
 
-                <!-- Active Results State -->
                 <!-- Active Results State -->
                 <div id="resultsActiveState" class="hidden">
                     <h3 style="margin-bottom: var(--space-md);">Processing Complete! 🎵</h3>
@@ -1280,15 +1315,12 @@
                             certainly hope you enjoy it!
                         </p>
                     </div>
-
                     <div>
-                        <h3 style="color: var(--color-primary); margin-bottom: var(--space-md);">Features</h3>
+                        <h3 style="color: var(--color-primary); margin-bottom: var(--space-md);">Quick Links</h3>
                         <ul style="list-style: none; color: var(--color-text-secondary); line-height: 1.75;">
-                            <li>Authentic vinyl sound</li>
-                            <li>Fast processing</li>
-                            <li>Privacy first</li>
-                            <li>PWA ready</li>
-                            <li>Accessible</li>
+                            <li><a href="" target="_blank">GitHub</a></li> <!-- TODO for v1.0: Add GitHub link -->
+                            <li><a href="" target="_blank">Documentation</a></li>
+                            <!-- TODO for v1.0: Add Documentation link -->
                         </ul>
                     </div>
                 </div>
@@ -1461,6 +1493,14 @@
             <p
                 style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-md);">
                 Made with ❤️ for AJW and vinyl enthusiasts.
+            </p>
+            <p id="footerVersion"
+                style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-md);">
+            </p>
+            <p
+                style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-md);">
+                Authentic Vinyl Sound | Fast Processing | Open Source | Mobile Ready | PWA Support | Accessibility Built
+                In
             </p>
         </div>
     </footer>

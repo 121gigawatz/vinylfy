@@ -61,7 +61,7 @@
 
 .tab-navigation {
     position: sticky;
-    top: 70px;
+    top: 85px;
     /* Account for header height */
     z-index: var(--z-sticky);
     background: var(--glass-bg-light);
@@ -310,7 +310,42 @@
 .glass-slider-value {
     color: var(--color-primary);
     font-weight: var(--font-weight-semibold);
-    font-family: var(--font-family-mono);
+}
+
+/* Editable slider value input */
+.glass-slider-input {
+    width: 70px;
+    padding: 4px 8px;
+    background: var(--glass-bg-light);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    text-align: right;
+    transition: all var(--transition-fast);
+}
+
+.glass-slider-input:hover {
+    border-color: rgba(218, 129, 55, 0.5);
+}
+
+.glass-slider-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: var(--glass-bg-medium);
+}
+
+/* Hide number input spinners */
+.glass-slider-input::-webkit-outer-spin-button,
+.glass-slider-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.glass-slider-input[type=number] {
+    appearance: textfield;
+    -moz-appearance: textfield;
 }
 
 .glass-slider {
