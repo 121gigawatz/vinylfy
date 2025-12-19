@@ -61,7 +61,7 @@
 
 .tab-navigation {
     position: sticky;
-    top: 85px;
+    top: 80px;
     /* Account for header height */
     z-index: var(--z-sticky);
     background: var(--glass-bg-light);
@@ -69,13 +69,21 @@
     -webkit-backdrop-filter: var(--backdrop-blur) var(--backdrop-saturate);
     border-bottom: 1px solid var(--glass-border);
     margin-bottom: var(--space-xl);
+    padding-top: var(--space-sm);
+}
+
+/* Center tabs within navigation - ignore container constraints */
+.tab-navigation .container {
+    max-width: none;
+    padding: 0;
 }
 
 .tab-list {
     display: flex;
     gap: var(--space-sm);
-    padding: var(--space-md) 0;
+    padding: var(--space-md) var(--space-lg);
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 /* Stack tabs in 2 columns on tablets and smaller */
@@ -83,6 +91,7 @@
     .tab-list {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
+        padding: var(--space-md);
     }
 }
 
@@ -250,6 +259,18 @@
     margin-top: var(--space-xs);
 }
 
+/* Glass Card Links - theme-aware colors */
+.glass-card a {
+    color: var(--color-text-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color var(--transition-fast);
+}
+
+.glass-card a:hover {
+    color: var(--color-primary);
+}
+
 /* ========================================
    MODERN CONTROLS
    ======================================== */
@@ -314,26 +335,28 @@
 
 /* Editable slider value input */
 .glass-slider-input {
-    width: 70px;
-    padding: 4px 8px;
-    background: var(--glass-bg-light);
-    border: 1px solid var(--glass-border);
+    width: 85px;
+    padding: 6px 10px;
+    background: transparent;
+    border: 1px solid var(--color-primary);
     border-radius: var(--radius-sm);
     color: var(--color-primary);
     font-weight: var(--font-weight-semibold);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
     text-align: right;
     transition: all var(--transition-fast);
 }
 
 .glass-slider-input:hover {
-    border-color: rgba(218, 129, 55, 0.5);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 4px rgba(218, 129, 55, 0.3);
 }
 
 .glass-slider-input:focus {
     outline: none;
     border-color: var(--color-primary);
-    background: var(--glass-bg-medium);
+    box-shadow: 0 0 6px rgba(218, 129, 55, 0.4);
+    background: transparent;
 }
 
 /* Hide number input spinners */

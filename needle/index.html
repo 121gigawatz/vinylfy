@@ -316,20 +316,48 @@
         /* Tab Navigation */
         .tab-navigation {
             position: sticky;
-            top: 85px;
+            top: 80px;
             z-index: var(--z-sticky);
             background: var(--glass-bg-light);
             backdrop-filter: var(--backdrop-blur) var(--backdrop-saturate);
             -webkit-backdrop-filter: var(--backdrop-blur) var(--backdrop-saturate);
             border-bottom: 1px solid var(--glass-border);
             margin-bottom: var(--space-xl);
+            padding-top: var(--space-sm);
+        }
+
+        /* Mobile: smaller header means smaller top offset */
+        @media (max-width: 768px) {
+            .tab-navigation {
+                top: 70px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tab-navigation {
+                top: 60px;
+            }
+        }
+
+        .tab-navigation .container {
+            max-width: none;
+            padding: 0;
         }
 
         .tab-list {
             display: flex;
             gap: var(--space-sm);
-            padding: var(--space-md) 0;
-            overflow-x: auto;
+            padding: var(--space-md) var(--space-lg);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 900px) {
+            .tab-list {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                padding: var(--space-md);
+            }
         }
 
         .tab-button {
@@ -1302,17 +1330,15 @@
                     <div>
                         <h3 style="color: var(--color-primary); margin-bottom: var(--space-md);">The Vinyly Story</h3>
                         <p>Vinylfy was orignally created as a peronsal project for the original creator's daughter, an
-                            avid vinyl lover who
-                            loved to listen to her favorite albums on vinyl. Interested in programming, she asked her
-                            father to create a tool
-                            that would allow her to convert her favorite digital files into vinyl records. The creator,
-                            being a software engineer,
-                            set out to create a tool that would allow her to convert her favorite digital files to sound
-                            like her favoriate sound.
+                            avid vinyl lover who loved to listen to her favorite albums on vinyl. The creator set out to
+                            create a tool that would allow her to convert her digital files to sound like vinyl records.
+                            You'll find her influence in the presets screen as "AJW Recommended".
                             <br>
                             <br>
-                            You'll find her influence in the presets screen as "AJW Recommended". We
-                            certainly hope you enjoy it!
+                            Vinylfy is now an open source project available to anyone who wants to make their own
+                            digital music
+                            sound like vinyl records. Any contributions are welcome! See our contributions information
+                            on GitHub.
                         </p>
                     </div>
                     <div>
