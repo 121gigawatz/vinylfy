@@ -1,7 +1,7 @@
 {
-  "version": "0.9.7",
-  "shortVersion": "0.9.7",
-  "dockerTag": "0.9.7",
-  "buildDate": "2025-12-12",
-  "description": "Many bugfixes, UI enhancements, and placeholders for future features"
+  "version": "0.9.9",
+  "shortVersion": "0.9.9",
+  "dockerTag": "0.9.9",
+  "buildDate": "2025-12-25",
+  "description": "Last Beta"
 }
