@@ -36,10 +36,10 @@ class Config:
         'AJW Recommended': {
             'frequency_response': True,
             'surface_noise': True,
-            'noise_intensity': 0.18,
+            'noise_intensity': 0.018,
             'pop_intensity': 0.86,
             'wow_flutter': True,
-            'wow_flutter_intensity': 0.019,
+            'wow_flutter_intensity': 0.0019,
             'harmonic_distortion': True,
             'distortion_amount': 0.34,
             'stereo_reduction': True,
