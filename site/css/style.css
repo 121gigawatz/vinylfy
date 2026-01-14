@@ -1,0 +1,555 @@
+/* ========================================
+   VINYLFY "PRO" THEME (Apple Aesthetic)
+   ======================================== */
+
+:root {
+    /* Core Measurements */
+    --max-width: 980px;
+    /* Apple standard container */
+    --max-width-wide: 1200px;
+    --nav-height: 44px;
+
+    /* Colors - Deep Dark Theme */
+    --bg-body: #000000;
+    --bg-secondary: #121212;
+    --bg-card: #1c1c1e;
+
+    --text-primary: #f5f5f7;
+    --text-secondary: #86868b;
+    --text-tertiary: #6e6e73;
+
+    /* Brand Colors - Warm Vinyl */
+    --brand-primary: #FF9F0A;
+    /* Apple orange-ish */
+    --brand-gradient: linear-gradient(135deg, #FF9F0A 0%, #FFD60A 100%);
+    --brand-glow: 0 0 20px rgba(255, 159, 10, 0.4);
+
+    /* Glass Effect */
+    --glass-nav: rgba(0, 0, 0, 0.8);
+    --glass-card: rgba(28, 28, 30, 0.6);
+    --border-glass: rgba(255, 255, 255, 0.1);
+
+    /* Typography */
+    --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Base Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-body);
+    font-family: var(--font-stack);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.4;
+    overflow-x: hidden;
+}
+
+/* ========================================
+   TYPOGRAPHY
+   ======================================== */
+h1,
+h2,
+h3 {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+p {
+    font-weight: 400;
+    letter-spacing: 0;
+}
+
+.text-gradient {
+    background: var(--brand-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.section-head {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.eyebrow {
+    color: var(--brand-primary);
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.headline {
+    font-size: 48px;
+    line-height: 1.08;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.subheadline {
+    font-size: 21px;
+    line-height: 1.38;
+    font-weight: 400;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 20px auto 0;
+}
+
+/* ========================================
+   LAYOUT & GRID
+   ======================================== */
+.container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.section {
+    padding: 100px 0;
+}
+
+/* Bento Grid */
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 columns for better balance */
+    grid-auto-rows: minmax(320px, auto);
+    gap: 24px;
+}
+
+/* Bento Card */
+.card {
+    background: var(--bg-card);
+    border-radius: 28px;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card:hover {
+    transform: scale(1.02);
+}
+
+/* Card Variations */
+.col-span-2 {
+    grid-column: span 2;
+}
+
+.col-span-3 {
+    grid-column: span 3;
+}
+
+.row-span-2 {
+    grid-row: span 2;
+}
+
+.card-content {
+    z-index: 2;
+}
+
+.card-title {
+    font-size: 28px;
+    margin-bottom: 12px;
+}
+
+.card-text {
+    font-size: 17px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.card-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.card-icon img {
+    height: 256px;
+    /* Slightly larger than font icon */
+    width: auto;
+    object-fit: contain;
+}
+
+/* Glass Overlay on cards */
+.card-glass {
+    background: rgba(40, 40, 45, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Orange Accent Card (Border Style) */
+.card-orange {
+    background: var(--bg-card);
+    /* Revert to dark background */
+    border: 2px solid var(--brand-primary);
+    /* Add orange border */
+    box-shadow: 0 0 20px rgba(255, 159, 10, 0.15);
+    /* Subtle glowing effect */
+}
+
+/* Ensure text colors match the dark theme */
+.card-orange .card-text {
+    color: var(--text-secondary);
+}
+
+.card-orange .card-title {
+    color: var(--text-primary);
+}
+
+/* ========================================
+   NAVIGATION
+   ======================================== */
+.nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 64px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 9999;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nav-inner {
+    max-width: var(--max-width-wide);
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.nav-brand {
+    font-weight: 600;
+    font-size: 28px;
+    color: #fff;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+}
+
+.nav-links>a {
+    color: #dedede;
+    text-decoration: none;
+    font-size: 24px;
+    margin-left: 24px;
+    transition: color 0.2s;
+}
+
+.nav-links>a:hover {
+    color: #fff;
+}
+
+/* ========================================
+   HERO SECTION
+   ======================================== */
+/* ========================================
+   HERO SECTION
+   ======================================== */
+.hero {
+    padding-top: 140px;
+    padding-bottom: 100px;
+    background: radial-gradient(circle at 30% 50%, rgba(255, 159, 10, 0.1) 0%, rgba(0, 0, 0, 0) 60%);
+    overflow: hidden;
+    /* Prevent slider overflow */
+}
+
+/* Grid Layout for Hero */
+.hero .container {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    /* Allow right col to size to content */
+    gap: 80px;
+    /* Increased gap */
+    align-items: center;
+    max-width: 1400px;
+    /* Widen container specifically for Hero */
+}
+
+.hero-text {
+    text-align: left;
+    max-width: 100%;
+}
+
+.hero h1 {
+    font-size: 64px;
+    line-height: 1.05;
+    font-weight: 700;
+    margin-bottom: 24px;
+}
+
+.hero p {
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    max-width: 90%;
+    margin-bottom: 32px;
+}
+
+/* Buttons */
+.btn-group {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 24px;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background: #fff;
+    color: #000;
+}
+
+.btn-primary:hover {
+    background: #f2f2f2;
+}
+
+.btn-link {
+    color: var(--brand-primary);
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+}
+
+/* Showcase Slider */
+.hero-showcase {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+    /* Clip slides */
+}
+
+.showcase-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.showcase-slide {
+    position: absolute;
+    inset: 0;
+    transition: transform 0.5s ease-in-out;
+    transform: translateX(100%);
+    /* Start off-screen right */
+
+    /* Glass Card styling */
+    background: rgba(28, 28, 30, 0.4);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+}
+
+.showcase-slide.active {
+    transform: translateX(0);
+    /* Center */
+    z-index: 2;
+}
+
+.showcase-slide.prev-slide {
+    transform: translateX(-100%);
+    /* Move off-screen left */
+    z-index: 1;
+}
+
+/* Slider Navigation */
+.slider-nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    /* Approx footer height */
+    z-index: 20;
+    pointer-events: none;
+    /* Let clicks pass through to footer text if needed */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.slider-arrow {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
+    /* Re-enable clicks */
+    transition: all 0.2s;
+    color: #fff;
+    font-size: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.slider-arrow:hover {
+    background: var(--brand-primary);
+    color: #000;
+    transform: scale(1.1);
+}
+
+/* Slide Content */
+.slide-visual {
+    flex: 1;
+    width: 100%;
+    /* Ensure full width */
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    /* Removing padding for edge-to-edge fit */
+}
+
+.slide-visual img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    margin: auto;
+    /* Extra centering enforcement */
+    object-fit: contain;
+    /* Ensures entire image is visible */
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+}
+
+.slide-placeholder-text {
+    display: none;
+    /* Hide placeholder text */
+    color: #444;
+    font-weight: 500;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.slide-footer {
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.6);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.slide-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--brand-primary);
+    margin-bottom: 4px;
+}
+
+.slide-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 900px) {
+    .bento-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
+
+    .col-span-2,
+    .col-span-3 {
+        grid-column: auto;
+    }
+
+    /* Hero Updates */
+    .hero .container {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 40px;
+    }
+
+    .hero-text {
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .hero p {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .btn-group {
+        justify-content: center;
+    }
+
+    .hero-showcase {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .hero h1 {
+        font-size: 48px;
+    }
+}
+
+@media (max-width: 800px) {
+    .bento-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
+
+    .col-span-2,
+    .col-span-3 {
+        grid-column: auto;
+    }
+
+    .hero h1 {
+        font-size: 48px;
+    }
+
+    .hero p {
+        font-size: 20px;
+    }
+}

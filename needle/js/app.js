@@ -74,13 +74,13 @@ class VinylApp {
         unit: '%',
         settingKey: 'distortion_amount'
       },
-      steroWidth: {
+      stereoWidth: {
         displayMin: 0,
         displayMax: 100,
         actualMin: 0,
         actualMax: 1.0,
         unit: '%',
-        settingKey: 'stero_width'
+        settingKey: 'stereo_width'
       },
       bass: {
         displayMin: -5,

@@ -11,14 +11,14 @@ class Config:
     # Flask settings
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'vinylfy-secret-key-change-me'
     DEBUG = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
-    MAX_FILE_SIZE = int(os.environ.get('MAX_UPLOAD_MB', '25'))
-    PROCESSED_FILES_TTL_HOURS = int(os.environ.get('FILE_TTL_HOURS', '1'))
+    MAX_FILE_SIZE = int(os.environ.get('MAX_UPLOAD_SIZE', '25'))
+    PROCESSED_FILES_TTL_HOURS = float(os.environ.get('FILE_TTL_HOURS', '1'))
 
     # File Upload Settings
     MAX_CONTENT_LENGTH = MAX_FILE_SIZE * 1024 * 1024 # Default 25MB
     UPLOAD_FOLDER = Path('/tmp/vinylfy/uploads')
     PROCESSED_FILES_DIR = Path('/tmp/vinylfy/processed')
-    PROCESSED_FILES_TTL_HOURS = 0.5
+    # PROCESSED_FILES_TTL_HOURS removed (duplicate)
     ALLOWED_EXTENSIONS = {'wav', 'mp3', 'flac', 'ogg', 'm4a', 'aac'}
     ALLOWED_OUTPUT_FORMATS = {'wav', 'mp3', 'aac', 'flac', 'ogg'}
 

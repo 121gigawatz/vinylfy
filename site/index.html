@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinylfy</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/apple-touch-icon.png">
+    <style>
+        .hero p,
+        .subheadline,
+        .card-text,
+        .card-orange .card-text {
+            color: #fff;
+        }
+
+        .card-title,
+        .card-orange .card-title {
+            color: var(--brand-primary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="#" class="nav-brand" style="display: flex; align-items: center; gap: 12px;">
+                <img src="assets/icons/apple-touch-icon.png" alt="Vinylfy"
+                    style="width: 28px; height: 28px; border-radius: 6px;">
+                Vinylfy
+            </a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="docs.html">Docs</a>
+                <a href="https://github.com/121gigawatz/vinylfy" style="color: var(--brand-primary);">View on GitHub</a>
+                <div style="margin-left: 24px; transform: scale(0.7); transform-origin: center right;">
+                    <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
+                        data-name="bmc-button" data-slug="121gigawatz" data-color="#FFDD00" data-emoji=""
+                        data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000"
+                        data-font-color="#000000" data-coffee-color="#ffffff"></script>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="container">
+            <!-- Left Column: Text -->
+            <div class="hero-text">
+                <span class="eyebrow">Available Now</span>
+                <h1>Vinyl <span class="text-gradient">sound.</span><br>Digital <span class="text-gradient">soul.</span>
+                </h1>
+                <p>Transform your digital audio into warm, authentic vinyl records instantly in your browser. Made for
+                    vinyl lovers.</p>
+                <div class="btn-group">
+                    <a href="docs.html#quickstart" class="btn btn-primary">Install</a>
+                    <a href="#features" class="btn btn-link">Features ></a>
+                </div>
+            </div>
+
+            <!-- Right Column: Showcase Slider -->
+            <div class="hero-showcase">
+                <div class="showcase-container" id="heroSlider">
+                    <!-- Slide 1 -->
+                    <div class="showcase-slide active">
+                        <div class="slide-visual">
+                            <img src="assets/screenshots/vinylfy-presets-screenshot.png"
+                                alt="vinylfy-presets-screenshot" class="slide-image">
+                        </div>
+                        <div class="slide-footer">
+                            <div class="slide-title">Pick your favorite vinyl era</div>
+                            <div class="slide-desc">Vinylfy includes presets for every era of vinyl.</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 2 -->
+                    <div class="showcase-slide">
+                        <div class="slide-visual">
+                            <img src="assets/screenshots/vinylfy-controls.png" alt="vinylfy-controls-screenshot"
+                                class="slide-image">
+                        </div>
+                        <div class="slide-footer">
+                            <div class="slide-title">Customize Your Sound</div>
+                            <div class="slide-desc">Customize your sound with our advanced controls.</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3 -->
+                    <div class="showcase-slide">
+                        <div class="slide-visual">
+                            <img src="assets/screenshots/vinylfy-audio-player.png" alt="vinylfy-player"
+                                class="slide-image">
+                        </div>
+                        <div class="slide-footer">
+                            <div class="slide-title">Preview In Your Browser</div>
+                            <div class="slide-desc">Preview your audio directly in your browser with a beautiful UI.
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Slide 4 -->
+                    <div class="showcase-slide">
+                        <div class="slide-visual">
+                            <img src="assets/screenshots/vinylfy-metadata.png" alt="vinylfy-metadata-manager"
+                                class="slide-image">
+                        </div>
+                        <div class="slide-footer">
+                            <div class="slide-title">Full Metadata Management</div>
+                            <div class="slide-desc">Create, edit, and manage your metadata, cover art, and more..</div>
+                        </div>
+                    </div>
+                    <!-- Slide 5 -->
+                    <div class="showcase-slide">
+                        <div class="slide-visual">
+                            <img src="assets/screenshots/vinylfy-multi-file-types.png" alt="vinylfy-multi-file-types"
+                                class="slide-image">
+                        </div>
+                        <div class="slide-footer">
+                            <div class="slide-title">Download In Multiple Formats</div>
+                            <div class="slide-desc">Download your vinyl in multiple formats, including MP3, WAV, and
+                                more. Not sure
+                                which one to use? Download all formats in a single zip file.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Arrows -->
+                <div class="slider-nav">
+                    <div class="slider-arrow" id="prevBtn">&#10094;</div>
+                    <div class="slider-arrow" id="nextBtn">&#10095;</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.showcase-slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            let current = 0;
+            let slideInterval;
+
+            function goToSlide(index, direction) {
+                if (!direction) {
+                    direction = index > current ? 'next' : 'prev';
+                    if (current === 0 && index === slides.length - 1) direction = 'prev';
+                    if (current === slides.length - 1 && index === 0) direction = 'next';
+                }
+
+                const fromSlide = slides[current];
+                const toSlide = slides[index];
+
+                // Remove transition temporarily for the incoming slide to position it correctly
+                toSlide.style.transition = 'none';
+
+                if (direction === 'next') {
+                    // Moving Forward:
+                    // 1. 'toSlide' needs to start at Right (Default)
+                    toSlide.classList.remove('prev-slide', 'active');
+
+                    // Force reflow to apply position
+                    void toSlide.offsetWidth;
+
+                    // Restore transition
+                    toSlide.style.transition = '';
+
+                    // 2. 'fromSlide' goes Left
+                    fromSlide.classList.remove('active');
+                    fromSlide.classList.add('prev-slide');
+
+                    // 3. 'toSlide' goes Center
+                    toSlide.classList.add('active');
+
+                } else {
+                    // Moving Backward:
+                    // 1. 'toSlide' needs to start at Left (prev-slide)
+                    toSlide.classList.remove('active');
+                    toSlide.classList.add('prev-slide');
+
+                    // Force reflow
+                    void toSlide.offsetWidth;
+
+                    // Restore transition
+                    toSlide.style.transition = '';
+
+                    // 2. 'fromSlide' goes Right (Default)
+                    fromSlide.classList.remove('active', 'prev-slide');
+
+                    // 3. 'toSlide' goes Center
+                    toSlide.classList.remove('prev-slide');
+                    toSlide.classList.add('active');
+                }
+
+                current = index;
+            }
+
+            function nextSlide() {
+                let next = (current + 1) % slides.length;
+                goToSlide(next, 'next');
+            }
+
+            function prevSlide() {
+                let prev = (current - 1 + slides.length) % slides.length;
+                goToSlide(prev, 'prev');
+            }
+
+            // Auto Play
+            function startSlide() {
+                stopSlide(); // Clear existing
+                slideInterval = setInterval(nextSlide, 5000);
+            }
+
+            function stopSlide() {
+                if (slideInterval) clearInterval(slideInterval);
+            }
+
+            // Event Listeners
+            nextBtn.addEventListener('click', () => {
+                stopSlide();
+                nextSlide();
+                startSlide();
+            });
+
+            prevBtn.addEventListener('click', () => {
+                stopSlide();
+                prevSlide();
+                startSlide();
+            });
+
+            // Start
+            startSlide();
+        });
+    </script>
+
+    <!-- Bento Grid Features -->
+    <section class="section" id="features">
+        <div class="container">
+            <div class="section-head">
+                <h2 class="headline">Sounds like the <span class="text-gradient">real thing.</span></h2>
+                <p class="subheadline">Vinylfy's advanced audio processing engine simulates every nuance of vinyl
+                    playback.
+                </p>
+            </div>
+
+            <div class="bento-grid">
+                <!-- Card 1: Processing -->
+                <div class="card card-orange">
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <img src="assets/icons/real-time-icon.png" alt="Real-time Processing">
+                        </div>
+                        <h3 class="card-title">Real-time Processing</h3>
+                        <p class="card-text">Vinylfy processes audio directly in your browser using WebAudio API for
+                            instant feedback. Simply upload your digital audio file and transform it within a few
+                            clicks. Preview your audio before downloading directly from your browser with playback
+                            controls.</p>
+                    </div>
+                </div>
+
+                <!-- Card 2: Formats -->
+                <div class="card card-orange">
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <img src="assets/icons/vinylfy-formats-icon.png" alt="All Formats">
+                        </div>
+                        <h3 class="card-title">All Formats</h3>
+                        <p class="card-text">Vinylfy supports the major audio formats including MP3, WAV, FLAC, and AAC.
+                            Upload
+                            your digital audio as a MP3 and download it as a AAC file. The choice is yours.
+                        </p>
+                    </div>
+                </div>
+                <!-- Card 3: Presets -->
+                <div class="card card-orange">
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <img src="assets/icons/vinylfy-presets-icon.png" alt="Era-Specific Presets">
+                        </div>
+                        <h3 class="card-title">Era-Specific Presets</h3>
+                        <p class="card-text">Travel through time with presets tuned to replicate the specific sound
+                            signatures of the 1920s, 1950s, 1970s, and more. From 1920s Big Band to modern vinyl,
+                            Vinylfy's presets
+                            can make your digital audio sound like it was recorded on vinyl. For audiophile who want
+                            total control,
+                            Vinylfy also offers a custom preset builder that allows you to dial in to your preferred
+                            sound.
+                        </p>
+                    </div>
+                </div>
+                <!-- Card 4: Equalizer -->
+                <div class="card card-orange">
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <img src="assets/icons/vinylfy-equalizer-icon.png" alt="Customize Your Sound">
+                        </div>
+                        <h3 class="card-title">Customize Your Sound</h3>
+                        <p class="card-text">Vinylfy includes a built-in equalizer that allows you to fine-tune your
+                            audio to match your desired sound. From pops and crackles, to stereo separation, to
+                            frequency response, Vinylfy gives you the tools you need to get the sound you want.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card card-orange">
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <img src="assets/icons/vinylfy-metadata-icon.png" alt="Manage Metadata">
+                        </div>
+                        <h3 class="card-title">Manage Metadata</h3>
+                        <p class="card-text">Vinylfy allows you to manage metadata for your outputted audio files.
+                            You can add, edit, and remove metadata from your audio files. Want to give your "vinylfied"
+                            audio file a
+                            new name? Or add a new artist or album? Vinylfy has you covered. You can also add a cover
+                            art image to your audio file.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 4: Web Based -->
+                <div class="card card-orange">
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <img src="assets/icons/vinylfy-multi-device-icon.png" alt="Works On Any Device">
+                        </div>
+                        <h3 class="card-title">Works On Any Device</h3>
+                        <p class="card-text">Vinylfy is a web app, so it works on any device with a web browser. PWA
+                            support allows you to install it on your device and use it like a native app.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 5: PWA Support -->
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Row: Detail -->
+    <section class="section" style="background: #000;">
+        <div class="container">
+            <div class="section-head">
+                <span class="eyebrow">Precision Control</span>
+                <h2 class="headline"><span class="text-gradient">Tweak every crackle.</span></h2>
+                <p class="subheadline">For the audiophiles who need total control, dial in the exact amount of dust,
+                    wear, warp, and mechanical noise.</p>
+            </div>
+
+            <!-- Feature Preview -->
+            <div
+                style="width: 100%; height: auto; aspect-ratio: 16/9; background: #1c1c1e; border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;">
+                <img src="assets/screenshots/configuration-screenshot.png" alt="Configuration Screenshot"
+                    style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        </div>
+    </section>
+
+    <!-- Open Source Section -->
+    <section class="section" style="border-top: 1px solid rgba(255,255,255,0.05);">
+        <div class="container" style="text-align: center;">
+            <div class="section-head">
+                <span class="eyebrow">Community Driven</span>
+                <h2 class="headline">Open source at its <span class="text-gradient">core.</span></h2>
+                <p class="subheadline">Vinylfy is open source at its core. We believe everyone should have access
+                    to enjoy a vinyl experience. Inspect the code, contribute features, or self-host your own version.
+                    Vinylfy
+                    is licensed under the AGPLv3 license.</p>
+            </div>
+
+            <a href="https://github.com/121gigawatz/vinylfy" class="btn btn-primary"
+                style="background: #333; color: white; border: 1px solid #444;">
+                <span style="margin-right: 8px;">★</span> Star on GitHub
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="border-top: 1px solid #1c1c1e; padding: 40px 0; font-size: 12px; color: #666;">
+        <div class="container" style="display: flex; justify-content: space-between;">
+            <div>
+                <p>Copyright &copy; 2026 Brett Watz (121gigawatz). All rights reserved.</p>
+            </div>
+            <div style="display: flex; gap: 20px;">
+                <a href="https://github.com/121gigawatz/vinylfy" style="color: #666; text-decoration: none;">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>
