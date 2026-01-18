@@ -344,9 +344,11 @@ p {
 .hero-showcase {
     position: relative;
     width: 600px;
-    height: 600px;
+    /* Restore fixed width for Desktop */
     max-width: 100%;
+    aspect-ratio: 1/1;
     margin: 0 auto;
+    /* Ensure centering by default */
     overflow: hidden;
     /* Clip slides */
 }
@@ -526,6 +528,7 @@ p {
 
     .hero-showcase {
         max-width: 500px;
+        width: 100%;
         margin: 0 auto;
     }
 
@@ -551,5 +554,83 @@ p {
 
     .hero p {
         font-size: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+
+    /* Navigation Stack */
+    .nav {
+        height: auto;
+        padding: 15px 0;
+    }
+
+    .nav-inner {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .nav-links>a {
+        margin-left: 0;
+        font-size: 16px;
+    }
+
+    /* Target the BMC button container */
+    .nav-links>div {
+        margin-left: 0 !important;
+        transform-origin: center !important;
+    }
+
+    /* Hero Adjustments */
+    .hero {
+        padding-top: 220px;
+        /* Increased to account for taller nav */
+        padding-bottom: 60px;
+    }
+
+    .hero h1 {
+        font-size: 36px;
+        margin-bottom: 16px;
+    }
+
+    .hero p {
+        font-size: 18px;
+    }
+
+    .hero-showcase {
+        /* Square aspect ratio for mobile too, or fixed height if preferred */
+        height: auto;
+        aspect-ratio: 1/1;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* Typography */
+    .headline {
+        font-size: 32px;
+    }
+
+    .subheadline {
+        font-size: 18px;
+    }
+
+    .card {
+        padding: 24px;
+        border-radius: 20px;
+    }
+
+    .card-title {
+        font-size: 24px;
+    }
+
+    .card-icon img {
+        height: 180px;
     }
 }
