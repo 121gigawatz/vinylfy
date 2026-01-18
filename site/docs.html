@@ -293,11 +293,29 @@
         @media (max-width: 768px) {
             .docs-layout {
                 grid-template-columns: 1fr;
+                gap: 24px;
+                padding-left: 20px;
+                padding-right: 20px;
             }
 
             .docs-sidebar {
                 display: none;
-                /* Mobile menu behavior can be added later */
+            }
+
+            .docs-content p,
+            .docs-content li {
+                font-size: 18px;
+                line-height: 1.7;
+            }
+
+            .docs-content h1 {
+                font-size: 36px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .docs-layout {
+                padding-top: 220px;
             }
         }
 
@@ -448,105 +466,107 @@ docker run -d -p 8888:8888 --name vinylfy ghcr.io/121gigawatz/vinylfy:latest
                     environment
                     variables that are used by Vinylfy.
                 </p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Variable</th>
-                            <th>Description</th>
-                            <th>Default Value</th>
-                            <th>Required To Be Changed</th>
-                            <th>Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>FLASK_ENV</td>
-                            <td>The environment in which the application will run.</td>
-                            <td>production</td>
-                            <td>No</td>
-                            <td>Must be 'development', 'testing', or 'production'. Not recommended to set to
-                                'development' or 'testing' in production.</td>
-                        </tr>
-                        <tr>
-                            <td>DEBUG_MODE</td>
-                            <td>Whether or not the application will run in debug mode.</td>
-                            <td>false</td>
-                            <td>No</td>
-                            <td>Not recommended to set to 'true' in production.</td>
-                        </tr>
-                        <tr>
-                            <td>SECRET_KEY</td>
-                            <td>The secret key used by the application.</td>
-                            <td>your-secret-key-here-change-in-production</td>
-                            <td>Yes</td>
-                            <td>Must be a random string of characters. Not recommended to set to
-                                'your-secret-key-here-change-in-production' in production. Please ensure you update
-                                this
-                                for your security.</td>
-                        </tr>
-                        <tr>
-                            <td>PORT</td>
-                            <td>The port on which the application will run.</td>
-                            <td>8888</td>
-                            <td>No</td>
-                            <td>Must be a number between 1024 and 65535.</td>
-                        </tr>
-                        <tr>
-                            <td>MAX_UPLOAD_SIZE</td>
-                            <td>The maximum file size in MB that can be uploaded.</td>
-                            <td>25</td>
-                            <td>No</td>
-                            <td>Can be any positive integer. If planning to upload large files (such as WAV files),
-                                consider increasing this value.</td>
-                        </tr>
-                        <tr>
-                            <td>FILE_TTL_HOURS</td>
-                            <td>The time-to-live for files in hours.</td>
-                            <td>1</td>
-                            <td>No</td>
-                            <td>Can be any positive integer. Files will be automatically deleted after this time,
-                                regardless
-                                if they are processed or still in use. This is to prevent the storage of files that
-                                are
-                                no longer
-                                needed.
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>CORS_ORIGINS</td>
-                            <td>The origins that are allowed to access the API.</td>
-                            <td>*</td>
-                            <td>No</td>
-                            <td>Can be any string. If set to '*', all origins are allowed. Otherwise, only the
-                                specified
-                                origins are allowed.
-                                If using a reverse proxy, include the FQDN or IP the browser uses. IMPORTANT:
-                                Origins
-                                must be `protocol://domain:port` (NO trailing slash or path!).
-                                Examples:
-                                <ul>
-                                    <li>http://localhost:5500</li>
-                                    <li>https://yourdomain.com</li>
-                                    <li>https://yourdomain.com/api</li>
-                                </ul>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>DOCKER_CPU_LIMIT</td>
-                            <td>The CPU limit for the application.</td>
-                            <td>2.0</td>
-                            <td>No</td>
-                            <td>Must be a positive integer</td>
-                        </tr>
-                        <tr>
-                            <td>DOCKER_MEMORY_LIMIT</td>
-                            <td>The memory limit for the application.</td>
-                            <td>1G</td>
-                            <td>No</td>
-                            <td>Must be a positive integer. Use G for gigabytes and M for megabytes.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Variable</th>
+                                <th>Description</th>
+                                <th>Default Value</th>
+                                <th>Required To Be Changed</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>FLASK_ENV</td>
+                                <td>The environment in which the application will run.</td>
+                                <td>production</td>
+                                <td>No</td>
+                                <td>Must be 'development', 'testing', or 'production'. Not recommended to set to
+                                    'development' or 'testing' in production.</td>
+                            </tr>
+                            <tr>
+                                <td>DEBUG_MODE</td>
+                                <td>Whether or not the application will run in debug mode.</td>
+                                <td>false</td>
+                                <td>No</td>
+                                <td>Not recommended to set to 'true' in production.</td>
+                            </tr>
+                            <tr>
+                                <td>SECRET_KEY</td>
+                                <td>The secret key used by the application.</td>
+                                <td>your-secret-key-here-change-in-production</td>
+                                <td>Yes</td>
+                                <td>Must be a random string of characters. Not recommended to set to
+                                    'your-secret-key-here-change-in-production' in production. Please ensure you update
+                                    this
+                                    for your security.</td>
+                            </tr>
+                            <tr>
+                                <td>PORT</td>
+                                <td>The port on which the application will run.</td>
+                                <td>8888</td>
+                                <td>No</td>
+                                <td>Must be a number between 1024 and 65535.</td>
+                            </tr>
+                            <tr>
+                                <td>MAX_UPLOAD_SIZE</td>
+                                <td>The maximum file size in MB that can be uploaded.</td>
+                                <td>25</td>
+                                <td>No</td>
+                                <td>Can be any positive integer. If planning to upload large files (such as WAV files),
+                                    consider increasing this value.</td>
+                            </tr>
+                            <tr>
+                                <td>FILE_TTL_HOURS</td>
+                                <td>The time-to-live for files in hours.</td>
+                                <td>1</td>
+                                <td>No</td>
+                                <td>Can be any positive integer. Files will be automatically deleted after this time,
+                                    regardless
+                                    if they are processed or still in use. This is to prevent the storage of files that
+                                    are
+                                    no longer
+                                    needed.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CORS_ORIGINS</td>
+                                <td>The origins that are allowed to access the API.</td>
+                                <td>*</td>
+                                <td>No</td>
+                                <td>Can be any string. If set to '*', all origins are allowed. Otherwise, only the
+                                    specified
+                                    origins are allowed.
+                                    If using a reverse proxy, include the FQDN or IP the browser uses. IMPORTANT:
+                                    Origins
+                                    must be `protocol://domain:port` (NO trailing slash or path!).
+                                    Examples:
+                                    <ul>
+                                        <li>http://localhost:5500</li>
+                                        <li>https://yourdomain.com</li>
+                                        <li>https://yourdomain.com/api</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>DOCKER_CPU_LIMIT</td>
+                                <td>The CPU limit for the application.</td>
+                                <td>2.0</td>
+                                <td>No</td>
+                                <td>Must be a positive integer</td>
+                            </tr>
+                            <tr>
+                                <td>DOCKER_MEMORY_LIMIT</td>
+                                <td>The memory limit for the application.</td>
+                                <td>1G</td>
+                                <td>No</td>
+                                <td>Must be a positive integer. Use G for gigabytes and M for megabytes.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 </br>
                 <p>First, create a .env file in the root directory of the project.</p>
                 <pre><code>
@@ -784,307 +804,310 @@ docker compose up -d
                     is a table
                     of all of the presets and their settings.
                 </p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Preset<br>Name</th>
-                            <th>Noise<br>Intensity<br>(%)</th>
-                            <th>Pop<br>Intensity<br>(%)</th>
-                            <th>Wow &<br>Flutter<br>(%)</th>
-                            <th>Distortion<br>Amount<br>(%)</th>
-                            <th>Bass<br>(db)</th>
-                            <th>Mids<br>(db)</th>
-                            <th>Treble<br>(db)</th>
-                            <th>Low<br>Pass<br>Filter<br>(Hz)</th>
-                            <th>High<br>Pass<br>Filter<br>(Hz)</th>
-                            <th>Stereo<br>Width<br>(%)</th>
-                            <th>RIAA<br>Curve</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>AJW<br>Recommended</td>
-                            <td>18</td>
-                            <td>86</td>
-                            <td>19</td>
-                            <td>34</td>
-                            <td>0.7</td>
-                            <td>1.7</td>
-                            <td>1.7</td>
-                            <td>15</td>
-                            <td>120</td>
-                            <td>70</td>
-                            <td>Yes</td>
-                        </tr>
-                        <tr>
-                            <td>1920's<br>Jazz</td>
-                            <td>95</td>
-                            <td>90</td>
-                            <td>90</td>
-                            <td>85</td>
-                            <td>-5</td>
-                            <td>5</td>
-                            <td>5</td>
-                            <td>4</td>
-                            <td>250</td>
-                            <td>0</td>
-                            <td>No</td>
-                        </tr>
-                        <tr>
-                            <td>1930's<br> Swing</td>
-                            <td>85</td>
-                            <td>75</td>
-                            <td>90</td>
-                            <td>70</td>
-                            <td>-4</td>
-                            <td>4</td>
-                            <td>-4</td>
-                            <td>150</td>
-                            <td>6</td>
-                            <td>0</td> <!-- Stereo Width -->
-                            <td>No</td> <!-- RIAA Curve -->
-                        </tr>
-                        <tr>
-                            <td>1940's<br> Big Band</td>
-                            <td>75</td>
-                            <td>65</td>
-                            <td>60</td>
-                            <td>60</td>
-                            <td>-2</td>
-                            <td>3</td>
-                            <td>-3</td>
-                            <td>100</td>
-                            <td>9</td>
-                            <td>0</td> <!-- Stereo Width -->
-                            <td>No</td> <!-- RIAA Curve -->
-                        </tr>
-                        <tr>
-                            <td>1950's<br>Rock &<br>Roll</td>
-                            <td>55</td>
-                            <td>55</td>
-                            <td>40</td>
-                            <td>50</td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>-1</td>
-                            <td>60</td>
-                            <td>10</td>
-                            <td>0</td> <!-- Stereo Width -->
-                            <td>Yes</td> <!-- RIAA Curve -->
-                        </tr>
-                        <tr>
-                            <td>1950's<br>Rhythm &<br>Blues</td>
-                            <td>55</td>
-                            <td>50</td>
-                            <td>35</td>
-                            <td>55</td>
-                            <td>2</td>
-                            <td>2</td>
-                            <td>-2</td>
-                            <td>50</td>
-                            <td>9</td>
-                            <td>0</td> <!-- Stereo Width -->
-                            <td>Yes</td> <!-- RIAA Curve -->
-                        </tr>
-                        <tr>
-                            <td>1960's<br>Pop</td>
-                            <td>45</td>
-                            <td>35</td>
-                            <td>30</td>
-                            <td>35</td>
-                            <td>-1</td>
-                            <td>2</td>
-                            <td>2</td>
-                            <td>40</td>
-                            <td>14</td>
-                            <td>60</td> <!-- Stereo Width -->
-                            <td>Yes</td> <!-- RIAA Curve -->
-                        </tr>
-                        <tr>
-                            <td>1960's<br>Psychedelic</td>
-                            <td>40</td>
-                            <td>40</td>
-                            <td>45</td>
-                            <td>45</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>30</td>
-                            <td>15</td>
-                            <td>90</td> <!-- Stereo Width -->
-                            <td>Yes</td> <!-- RIAA Curve -->
-                        </tr>
-                        <tr>
-                            <td>1970's<br>Rock</td>
-                            <td>30</td>
-                            <td>20</td>
-                            <td>20</td>
-                            <td>25</td>
-                            <td>2</td>
-                            <td>0</td>
-                            <td>1</td>
-                            <td>30</td>
-                            <td>18</td>
-                            <td>95</td> <!-- Stereo Width -->
-                            <td>Yes</td> <!-- RIAA Curve -->
-                        </tr>
-                        <tr>
-                            <td>1970's<br>Disco</td>
-                            <td>25</td>
-                            <td>10</td>
-                            <td>10</td>
-                            <td>15</td>
-                            <td>4</td>
-                            <td>-1</td>
-                            <td>3</td>
-                            <td>20</td>
-                            <td>20</td>
-                            <td>100</td> <!-- Stereo Width -->
-                            <td>Yes</td> <!-- RIAA Curve -->
-                        </tr>
-                        <tr>
-                            <td>1970's<br>Funk</td>
-                            <td>35</td>
-                            <td>25</td>
-                            <td>15</td>
-                            <td>30</td>
-                            <td>3</td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>20</td>
-                            <td>19</td>
-                            <td>95</td> <!-- Stereo Width -->
-                            <td>Yes</td> <!-- RIAA Curve -->
-                        </tr>
-                        <tr>
-                            <td>1980's<br>New<br>Wave</td>
-                            <td>20</td>
-                            <td>15</td>
-                            <td>10</td>
-                            <td>10</td>
-                            <td>-1</td>
-                            <td>1</td>
-                            <td>4</td>
-                            <td>40</td>
-                            <td>20</td>
-                            <td>100</td> <!-- Stereo Width -->
-                            <td>Yes</td> <!-- RIAA Curve -->
-                        </tr>
-                        <tr>
-                            <td>1980's<br>Metal</td>
-                            <td>35</td>
-                            <td>30</td>
-                            <td>10</td>
-                            <td>45</td>
-                            <td>-1</td>
-                            <td>-2</td>
-                            <td>3</td>
-                            <td>40</td>
-                            <td>18</td>
-                            <td>90</td> <!-- Stereo Width -->
-                            <td>Yes</td> <!-- RIAA Curve -->
-                        </tr>
-                        <tr>
-                            <td>1990's<br>Alternative</td>
-                            <td>50</td>
-                            <td>35</td>
-                            <td>20</td>
-                            <td>40</td>
-                            <td>2</td>
-                            <td>-1</td>
-                            <td>1</td>
-                            <td>30</td>
-                            <td>19</td>
-                            <td>85</td> <!-- Stereo Width -->
-                            <td>Yes</td> <!-- RIAA Curve -->
-                        </tr>
-                        <tr>
-                            <td>1990's<br>Hip-Hop</td>
-                            <td>45</td>
-                            <td>40</td>
-                            <td>5</td>
-                            <td>30</td>
-                            <td>5</td>
-                            <td>0</td>
-                            <td>1</td>
-                            <td>20</td>
-                            <td>18</td>
-                            <td>80</td> <!-- Stereo Width -->
-                            <td>Yes</td> <!-- RIAA Curve -->
-                        </tr>
-                        <tr>
-                            <td>2000's<br>Pop</td>
-                            <td>40</td>
-                            <td>20</td>
-                            <td>10</td>
-                            <td>20</td>
-                            <td>3</td>
-                            <td>1</td>
-                            <td>4</td>
-                            <td>20</td>
-                            <td>20</td>
-                            <td>95</td> <!-- Stereo Width -->
-                            <td>Yes</td> <!-- RIAA Curve -->
-                        </tr>
-                        <tr>
-                            <td>2000's<br>Indie</td>
-                            <td>55</td>
-                            <td>30</td>
-                            <td>25</td>
-                            <td>50</td>
-                            <td>1</td>
-                            <td>3</td>
-                            <td>-1</td>
-                            <td>40</td>
-                            <td>16</td>
-                            <td>90</td> <!-- Stereo Width -->
-                            <td>Yes</td> <!-- RIAA Curve -->
-                        </tr>
-                        <tr>
-                            <td>2010's<br>Pop</td>
-                            <td>2</td>
-                            <td>10</td>
-                            <td>10</td>
-                            <td>10</td>
-                            <td>3</td>
-                            <td>0</td>
-                            <td>5</td>
-                            <td>20</td>
-                            <td>20</td>
-                            <td>100</td> <!-- Stereo Width -->
-                            <td>Yes</td> <!-- RIAA Curve -->
-                        </tr>
-                        <tr>
-                            <td>2010's<br>Electronic</td>
-                            <td>2</td>
-                            <td>5</td>
-                            <td>5</td>
-                            <td>5</td>
-                            <td>5</td>
-                            <td>-2</td>
-                            <td>4</td>
-                            <td>15</td>
-                            <td>20</td>
-                            <td>85</td> <!-- Stereo Width -->
-                            <td>Yes</td> <!-- RIAA Curve -->
-                        </tr>
-                        <tr>
-                            <td>2020's<br>Modern<br>Vinyl</td>
-                            <td>5</td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>2</td>
-                            <td>1</td>
-                            <td>0</td>
-                            <td>1</td>
-                            <td>20</td>
-                            <td>20</td>
-                            <td>100</td> <!-- Stereo Width -->
-                            <td>Yes</td> <!-- RIAA Curve -->
-                        </tr>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Preset<br>Name</th>
+                                <th>Noise<br>Intensity<br>(%)</th>
+                                <th>Pop<br>Intensity<br>(%)</th>
+                                <th>Wow &<br>Flutter<br>(%)</th>
+                                <th>Distortion<br>Amount<br>(%)</th>
+                                <th>Bass<br>(db)</th>
+                                <th>Mids<br>(db)</th>
+                                <th>Treble<br>(db)</th>
+                                <th>Low<br>Pass<br>Filter<br>(Hz)</th>
+                                <th>High<br>Pass<br>Filter<br>(Hz)</th>
+                                <th>Stereo<br>Width<br>(%)</th>
 
-                    </tbody>
-                </table>
+                                <th>RIAA<br>Curve</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>AJW<br>Recommended</td>
+                                <td>18</td>
+                                <td>86</td>
+                                <td>19</td>
+                                <td>34</td>
+                                <td>0.7</td>
+                                <td>1.7</td>
+                                <td>1.7</td>
+                                <td>15</td>
+                                <td>120</td>
+                                <td>70</td>
+                                <td>Yes</td>
+                            </tr>
+                            <tr>
+                                <td>1920's<br>Jazz</td>
+                                <td>95</td>
+                                <td>90</td>
+                                <td>90</td>
+                                <td>85</td>
+                                <td>-5</td>
+                                <td>5</td>
+                                <td>5</td>
+                                <td>4</td>
+                                <td>250</td>
+                                <td>0</td>
+                                <td>No</td>
+                            </tr>
+                            <tr>
+                                <td>1930's<br> Swing</td>
+                                <td>85</td>
+                                <td>75</td>
+                                <td>90</td>
+                                <td>70</td>
+                                <td>-4</td>
+                                <td>4</td>
+                                <td>-4</td>
+                                <td>150</td>
+                                <td>6</td>
+                                <td>0</td> <!-- Stereo Width -->
+                                <td>No</td> <!-- RIAA Curve -->
+                            </tr>
+                            <tr>
+                                <td>1940's<br> Big Band</td>
+                                <td>75</td>
+                                <td>65</td>
+                                <td>60</td>
+                                <td>60</td>
+                                <td>-2</td>
+                                <td>3</td>
+                                <td>-3</td>
+                                <td>100</td>
+                                <td>9</td>
+                                <td>0</td> <!-- Stereo Width -->
+                                <td>No</td> <!-- RIAA Curve -->
+                            </tr>
+                            <tr>
+                                <td>1950's<br>Rock &<br>Roll</td>
+                                <td>55</td>
+                                <td>55</td>
+                                <td>40</td>
+                                <td>50</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>-1</td>
+                                <td>60</td>
+                                <td>10</td>
+                                <td>0</td> <!-- Stereo Width -->
+                                <td>Yes</td> <!-- RIAA Curve -->
+                            </tr>
+                            <tr>
+                                <td>1950's<br>Rhythm &<br>Blues</td>
+                                <td>55</td>
+                                <td>50</td>
+                                <td>35</td>
+                                <td>55</td>
+                                <td>2</td>
+                                <td>2</td>
+                                <td>-2</td>
+                                <td>50</td>
+                                <td>9</td>
+                                <td>0</td> <!-- Stereo Width -->
+                                <td>Yes</td> <!-- RIAA Curve -->
+                            </tr>
+                            <tr>
+                                <td>1960's<br>Pop</td>
+                                <td>45</td>
+                                <td>35</td>
+                                <td>30</td>
+                                <td>35</td>
+                                <td>-1</td>
+                                <td>2</td>
+                                <td>2</td>
+                                <td>40</td>
+                                <td>14</td>
+                                <td>60</td> <!-- Stereo Width -->
+                                <td>Yes</td> <!-- RIAA Curve -->
+                            </tr>
+                            <tr>
+                                <td>1960's<br>Psychedelic</td>
+                                <td>40</td>
+                                <td>40</td>
+                                <td>45</td>
+                                <td>45</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>30</td>
+                                <td>15</td>
+                                <td>90</td> <!-- Stereo Width -->
+                                <td>Yes</td> <!-- RIAA Curve -->
+                            </tr>
+                            <tr>
+                                <td>1970's<br>Rock</td>
+                                <td>30</td>
+                                <td>20</td>
+                                <td>20</td>
+                                <td>25</td>
+                                <td>2</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>30</td>
+                                <td>18</td>
+                                <td>95</td> <!-- Stereo Width -->
+                                <td>Yes</td> <!-- RIAA Curve -->
+                            </tr>
+                            <tr>
+                                <td>1970's<br>Disco</td>
+                                <td>25</td>
+                                <td>10</td>
+                                <td>10</td>
+                                <td>15</td>
+                                <td>4</td>
+                                <td>-1</td>
+                                <td>3</td>
+                                <td>20</td>
+                                <td>20</td>
+                                <td>100</td> <!-- Stereo Width -->
+                                <td>Yes</td> <!-- RIAA Curve -->
+                            </tr>
+                            <tr>
+                                <td>1970's<br>Funk</td>
+                                <td>35</td>
+                                <td>25</td>
+                                <td>15</td>
+                                <td>30</td>
+                                <td>3</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>20</td>
+                                <td>19</td>
+                                <td>95</td> <!-- Stereo Width -->
+                                <td>Yes</td> <!-- RIAA Curve -->
+                            </tr>
+                            <tr>
+                                <td>1980's<br>New<br>Wave</td>
+                                <td>20</td>
+                                <td>15</td>
+                                <td>10</td>
+                                <td>10</td>
+                                <td>-1</td>
+                                <td>1</td>
+                                <td>4</td>
+                                <td>40</td>
+                                <td>20</td>
+                                <td>100</td> <!-- Stereo Width -->
+                                <td>Yes</td> <!-- RIAA Curve -->
+                            </tr>
+                            <tr>
+                                <td>1980's<br>Metal</td>
+                                <td>35</td>
+                                <td>30</td>
+                                <td>10</td>
+                                <td>45</td>
+                                <td>-1</td>
+                                <td>-2</td>
+                                <td>3</td>
+                                <td>40</td>
+                                <td>18</td>
+                                <td>90</td> <!-- Stereo Width -->
+                                <td>Yes</td> <!-- RIAA Curve -->
+                            </tr>
+                            <tr>
+                                <td>1990's<br>Alternative</td>
+                                <td>50</td>
+                                <td>35</td>
+                                <td>20</td>
+                                <td>40</td>
+                                <td>2</td>
+                                <td>-1</td>
+                                <td>1</td>
+                                <td>30</td>
+                                <td>19</td>
+                                <td>85</td> <!-- Stereo Width -->
+                                <td>Yes</td> <!-- RIAA Curve -->
+                            </tr>
+                            <tr>
+                                <td>1990's<br>Hip-Hop</td>
+                                <td>45</td>
+                                <td>40</td>
+                                <td>5</td>
+                                <td>30</td>
+                                <td>5</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>20</td>
+                                <td>18</td>
+                                <td>80</td> <!-- Stereo Width -->
+                                <td>Yes</td> <!-- RIAA Curve -->
+                            </tr>
+                            <tr>
+                                <td>2000's<br>Pop</td>
+                                <td>40</td>
+                                <td>20</td>
+                                <td>10</td>
+                                <td>20</td>
+                                <td>3</td>
+                                <td>1</td>
+                                <td>4</td>
+                                <td>20</td>
+                                <td>20</td>
+                                <td>95</td> <!-- Stereo Width -->
+                                <td>Yes</td> <!-- RIAA Curve -->
+                            </tr>
+                            <tr>
+                                <td>2000's<br>Indie</td>
+                                <td>55</td>
+                                <td>30</td>
+                                <td>25</td>
+                                <td>50</td>
+                                <td>1</td>
+                                <td>3</td>
+                                <td>-1</td>
+                                <td>40</td>
+                                <td>16</td>
+                                <td>90</td> <!-- Stereo Width -->
+                                <td>Yes</td> <!-- RIAA Curve -->
+                            </tr>
+                            <tr>
+                                <td>2010's<br>Pop</td>
+                                <td>2</td>
+                                <td>10</td>
+                                <td>10</td>
+                                <td>10</td>
+                                <td>3</td>
+                                <td>0</td>
+                                <td>5</td>
+                                <td>20</td>
+                                <td>20</td>
+                                <td>100</td> <!-- Stereo Width -->
+                                <td>Yes</td> <!-- RIAA Curve -->
+                            </tr>
+                            <tr>
+                                <td>2010's<br>Electronic</td>
+                                <td>2</td>
+                                <td>5</td>
+                                <td>5</td>
+                                <td>5</td>
+                                <td>5</td>
+                                <td>-2</td>
+                                <td>4</td>
+                                <td>15</td>
+                                <td>20</td>
+                                <td>85</td> <!-- Stereo Width -->
+                                <td>Yes</td> <!-- RIAA Curve -->
+                            </tr>
+                            <tr>
+                                <td>2020's<br>Modern<br>Vinyl</td>
+                                <td>5</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>20</td>
+                                <td>20</td>
+                                <td>100</td> <!-- Stereo Width -->
+                                <td>Yes</td> <!-- RIAA Curve -->
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
 
                 <h2 id="processing">4. Process Your File</h2>
                 <p>When you are happy with your settings, click the large "Process" button. This sends your file to
@@ -1106,7 +1129,8 @@ docker compose up -d
                 </div>
 
                 <h2 id="preview">5. Preview Results</h2>
-                <p>Once processing is complete, you will be automatically be redirected to the Results tab. In this tab,
+                <p>Once processing is complete, you will be automatically be redirected to the Results tab. In this
+                    tab,
                     you will see three sections: Audio Player, Processing Details, Track Metadata, and Download.
                     <br></br>
                     The Audio Player allows you to listen to the processed file through your browser. <br></br>
@@ -1130,15 +1154,18 @@ docker compose up -d
                 </div>
 
                 <h2 id="manage-metadata">6. Manage Metadata</h2>
-                <p>If the uploaded file has metadata already embedded, it will be displayed in the metadata area. If you
+                <p>If the uploaded file has metadata already embedded, it will be displayed in the metadata area. If
+                    you
                     wish to change any metadata, or if no metadata exists,
                     click the Edit button to update the track metadata. Use the metadata editor to update the Track
                     Title, Artist, Album, Year, Genre, and any Comments.
                     You can also upload custom Cover Art which will be embedded into the final file. By default, the
                     comments field will include "Processed with Vinylfy using the [Preset Name] preset".
-                    However, you can remove this comment if you wish, and/or add your own custom comment.<br></br> When
+                    However, you can remove this comment if you wish, and/or add your own custom comment.<br></br>
+                    When
                     finished, click the "Save" button to save your metadata. Note that
-                    the metadata will not be saved until you click the "Save" button. The metadata will be embedded into
+                    the metadata will not be saved until you click the "Save" button. The metadata will be embedded
+                    into
                     the file upon download.</p>
                 <div class="docs-img-container" onclick="openLightbox(this.querySelector('img').src)"
                     style="width: 100%; height: auto; aspect-ratio: 16/9; margin-top: 16px; margin-bottom: 32px; background: #1c1c1e; border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; padding: 20px;">
@@ -1162,7 +1189,8 @@ docker compose up -d
                     track in a specific format, or a ZIP file containing multiple formats if needed.<br></br>
                     In this section, you can select the format you would like to download. Each format shows an
                     estimated size of the downloaded file.
-                    <br></br> If you would like to change your settings, click the "Change Settings" button. If you have
+                    <br></br> If you would like to change your settings, click the "Change Settings" button. If you
+                    have
                     another track to process, or would like to start over, click the "Discard & Start Over" button.
                 </p>
                 <div class="docs-img-container" onclick="openLightbox(this.querySelector('img').src)"
@@ -1191,7 +1219,8 @@ docker compose up -d
                         </svg>
                     </div>
                     <div class="faq-answer">
-                        <p>Thank you for enjoying Vinylfy! If you would like to support the project, you can donate to
+                        <p>Thank you for enjoying Vinylfy! If you would like to support the project, you can donate
+                            to
                             the project using the "Buy Me a Coffee" link at the top of the page.
                             Any amount is appreciated and will help support the development of new features and
                             improvements to the project. We appreciate your support!
@@ -1208,7 +1237,8 @@ docker compose up -d
                             </svg>
                         </div>
                         <div class="faq-answer">
-                            <p>Currently, Vinylfy processes one file at a time to ensure the highest quality output for
+                            <p>Currently, Vinylfy processes one file at a time to ensure the highest quality output
+                                for
                                 each track.</p>
                         </div>
                     </div>
@@ -1221,7 +1251,8 @@ docker compose up -d
                             </svg>
                         </div>
                         <div class="faq-answer">
-                            <p>Yes! But you will need to have Docker installed on your system to use it, and access via
+                            <p>Yes! But you will need to have Docker installed on your system to use it, and access
+                                via
                                 localhost to the Docker container.</p>
                         </div>
                     </div>
@@ -1237,7 +1268,8 @@ docker compose up -d
                             <p>Yes. Vinylfy can be used in any browser, and supports Progressive Web App (PWA)
                                 installation on your mobile desktop. You can also use it on your mobile device by
                                 opening it in a browser.
-                                Vinylfy has been tested on iOS, iPadOS, as well as desktop browsers such as Chrome and
+                                Vinylfy has been tested on iOS, iPadOS, as well as desktop browsers such as Chrome
+                                and
                                 Safari.
                             </p>
                         </div>
@@ -1252,7 +1284,8 @@ docker compose up -d
                         </div>
                         <div class="faq-answer">
                             <p>Your files are processed locally within your Docker container and are never
-                                sent to any external servers. Files are automatically deleted after the configured TTL
+                                sent to any external servers. Files are automatically deleted after the configured
+                                TTL
                                 (Time To Live). For aboslute security, we recommend implementing best practices if
                                 Vinylfy is exposed to the internet. Please review the section above for more
                                 information.</p>
@@ -1267,9 +1300,11 @@ docker compose up -d
                             </svg>
                         </div>
                         <div class="faq-answer">
-                            <p>Vinlyfy includes validation to ensure that only audio files with no DRM (digital rights
+                            <p>Vinlyfy includes validation to ensure that only audio files with no DRM (digital
+                                rights
                                 management) are uploaded to Vinylfy.
-                                You are responsible for ensuring you conform to any applicable laws and regulations when
+                                You are responsible for ensuring you conform to any applicable laws and regulations
+                                when
                                 using Vinylfy.
                             </p>
                         </div>
@@ -1297,7 +1332,8 @@ docker compose up -d
                             </svg>
                         </div>
                         <div class="faq-answer">
-                            <p>Currently Vinylfy is not available for use on the internet. You will need to set it up
+                            <p>Currently Vinylfy is not available for use on the internet. You will need to set it
+                                up
                                 using Docker.
                             </p>
                         </div>
