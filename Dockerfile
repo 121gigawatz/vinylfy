@@ -2,7 +2,7 @@
 # Build complete backend (table) and frontend (needle)
 
 # 1 - Backend Dependencies
-FROM python:3.11-slim
+FROM python:3.11-slim AS builder
 
 WORKDIR /build
 
@@ -20,6 +20,7 @@ COPY table/requirements.txt /build/
 RUN pip install --no-cache-dir -r /build/requirements.txt
 
 # 2 - Final Image
+FROM python:3.11-slim
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -38,8 +39,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Copy Python packages from builder
-COPY --from=python:3.11-slim /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-COPY --from=python:3.11-slim /usr/local/bin /usr/local/bin
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy backend application
 COPY table/app /app/table/app
