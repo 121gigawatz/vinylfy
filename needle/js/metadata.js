@@ -168,7 +168,7 @@ async function writeFLACMetadata(audioBlob, metadata) {
     if (metadata.composer) flac.setTag('COMPOSER', metadata.composer);
 
     // Add "Processed by Vinylfy" tag
-    flac.setTag('ENCODER', 'Vinylfy - https://github.com/121gigawatz/vinylfy');
+    flac.setTag('ENCODER', 'Vinylfy - https://github.com/121gigawatz/vinylfy-app');
 
     // Add album artwork if available
     if (metadata.picture && metadata.picture.data) {
@@ -242,7 +242,7 @@ function createMP4Metadata(metadata) {
   }
 
   // Encoder/software
-  atoms.push(createDataAtom('©too', 'Vinylfy - https://github.com/121gigawatz/vinylfy'));
+  atoms.push(createDataAtom('©too', 'Vinylfy - https://github.com/121gigawatz/vinylfy-app'));
 
   // Album artwork
   if (metadata.picture && metadata.picture.data) {
