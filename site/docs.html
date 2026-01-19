@@ -58,6 +58,10 @@
 
         .docs-content {
             max-width: 800px;
+            min-width: 0;
+            /* Critical for grid item shrinking */
+            overflow-wrap: break-word;
+            /* Prevent text overflow */
         }
 
         .docs-content h1 {
@@ -93,6 +97,7 @@
             margin-bottom: 16px;
             font-size: 16px;
             line-height: 1.6;
+            word-wrap: break-word;
         }
 
         .docs-content ul,
@@ -112,6 +117,7 @@
             color: var(--brand-primary);
             text-decoration: none;
             transition: opacity 0.2s;
+            word-break: break-all;
         }
 
         .docs-content a:hover {
@@ -126,6 +132,7 @@
             font-family: 'SF Mono', Monaco, Consolas, monospace;
             font-size: 0.9em;
             color: #ff9f0a;
+            word-break: break-word;
         }
 
         .docs-content pre {
@@ -135,6 +142,7 @@
             overflow-x: auto;
             margin-bottom: 24px;
             border: 1px solid rgba(255, 255, 255, 0.05);
+            max-width: 100%;
         }
 
         .docs-content pre code {
@@ -142,6 +150,9 @@
             padding: 0;
             color: #d1d1d1;
             font-size: 14px;
+            word-break: normal;
+            /* Preserve code formatting */
+            white-space: pre;
         }
 
         /* Table Styles */
@@ -294,8 +305,9 @@
             .docs-layout {
                 grid-template-columns: 1fr;
                 gap: 24px;
-                padding-left: 20px;
-                padding-right: 20px;
+                /* Removed redundant padding since .container already handles it */
+                padding-left: 0;
+                padding-right: 0;
             }
 
             .docs-sidebar {
@@ -304,12 +316,14 @@
 
             .docs-content p,
             .docs-content li {
-                font-size: 18px;
-                line-height: 1.7;
+                font-size: 16px;
+                /* Optimized for mobile reading */
+                line-height: 1.6;
             }
 
             .docs-content h1 {
-                font-size: 36px;
+                font-size: 32px;
+                /* Slightly smaller for mobile */
             }
         }
 
