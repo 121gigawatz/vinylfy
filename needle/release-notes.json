@@ -13,5 +13,18 @@
     "improvements": [
       ""
     ]
+  },
+  "1.1.0": {
+    "date": "2026-01-19",
+    "highlights": [
+      "Added auto generation of SECRET_KEY environment variable if not changed from default."
+    ],
+    "bugfixes": [
+      "Corrected documentation for SECRET_KEY environment variable.",
+      "Cleaned up some spelling and grammar errors in documentation."
+    ],
+    "improvements": [
+      "Improved responsiveness of the documentation page for smaller screens."
+    ]
   }
 }

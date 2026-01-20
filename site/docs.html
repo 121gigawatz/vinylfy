@@ -462,10 +462,15 @@
                     up, deploying, and customizing your own instance of Vinylfy.</p>
 
                 <h2 id="quickstart">Quick Start</h2>
-                <p>Vinylfy is a web application that can be run on any local server via Docker. The easiet way to
+                <p>Vinylfy is a web application that can be run on any local server via Docker. The best way to
                     get
-                    started is to use Docker Compose with a environment variables.</p>
-                <p>You can deploy Vinylfy with default settings through either Docker Hub or GHCR.</p>
+                    started is to use Docker Compose with environment variables.</p>
+                <p>You can deploy Vinylfy with default settings through either Docker Hub or GHCR. Vinylfy will
+                    automatically generate a
+                    secure secret key for you. However, this key will be regenerated on every restart, so it is
+                    recommended to set a custom
+                    secret key in production via the environment variable <code>SECRET_KEY</code> and Docker Compose.
+                </p>
                 <p>Via Docker Hub:</p>
                 <pre><code>
 docker run -d -p 8888:8888 --name vinylfy 121gigawatz/vinylfy:latest
@@ -511,11 +516,11 @@ docker run -d -p 8888:8888 --name vinylfy ghcr.io/121gigawatz/vinylfy:latest
                                 <td>SECRET_KEY</td>
                                 <td>The secret key used by the application.</td>
                                 <td>your-secret-key-here-change-in-production</td>
-                                <td>Yes</td>
-                                <td>Must be a random string of characters. Not recommended to set to
-                                    'your-secret-key-here-change-in-production' in production. Please ensure you update
-                                    this
-                                    for your security.</td>
+                                <td>Recommended to change in production</td>
+                                <td>Must be a random string of characters up to 32 characters long. If left blank or
+                                    unchanged from the default, a secret key will be generated automatically. However,
+                                    this key will be regenerated on every restart.
+                                </td>
                             </tr>
                             <tr>
                                 <td>PORT</td>
@@ -670,7 +675,7 @@ services:
             - ./data:/app/data
                 </code></pre>
                 <h2 id="installation">Installation</h2>
-                <p>Navigate to the directory where your dokcer-compose.yml and .env file is stored. Open up a
+                <p>Navigate to the directory where your docker-compose.yml and .env files are stored. Open up a
                     terminal
                     and run
                     the following:</p>
@@ -686,7 +691,7 @@ docker compose up -d
                 <h2 id="security">Security</h2>
                 <p>Vinylfy does not require a login or password to access the application. If exposing this to the
                     internet, we
-                    recommend using either reverse proxy, secure VPN tunnel, or SSO provider to secure access to the
+                    recommend using a reverse proxy, secure VPN tunnel, or SSO provider to secure access to the
                     application. <br></br>
                 <p> Some good options for SSO providers include:</p>
                 <ul>
@@ -719,7 +724,7 @@ docker compose up -d
                 </p> <br></br>
                 <p>Please ensure your reverse proxy is configured to forward the correct headers to the application.
                     <br></br>
-                    Vinylfy includes an nginx.conf file internally for the API. Please do not modify. this file
+                    Vinylfy includes an nginx.conf file internally for the API. Please do not modify this file
                     unless
                     you know what you're doing!
                 </p>
@@ -728,7 +733,7 @@ docker compose up -d
                     application URL (e.g., <code>http://localhost:8888</code> or
                     <code>https://vinylfy.yourdomain.com</code>).
                 </p><br></br>
-                <p>Vinylfy will launch immmediately in your browser. If you are accessing Vinylfy on a mobile device
+                <p>Vinylfy will launch immediately in your browser. If you are accessing Vinylfy on a mobile device
                     for the
                     first time, you will be prompted to install Vinylfy as a Progressive Web App (PWA), if your
                     browser, device, and

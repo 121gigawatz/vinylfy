@@ -5,11 +5,24 @@
 import os
 from pathlib import Path
 
+import secrets
+
 class Config:
     """Base config"""
 
     # Flask settings
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'vinylfy-secret-key-change-me'
+    _env_secret = os.environ.get('SECRET_KEY')
+    _insecure_keys = [
+        'your-secret-key-here-change-in-production',
+        'vinylfy-secret-key-change-me',
+        None,
+        ''
+    ]
+    
+    if _env_secret in _insecure_keys:
+        SECRET_KEY = secrets.token_hex(32)
+    else:
+        SECRET_KEY = _env_secret
     DEBUG = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
     MAX_FILE_SIZE = int(os.environ.get('MAX_UPLOAD_SIZE', '25'))
     PROCESSED_FILES_TTL_HOURS = float(os.environ.get('FILE_TTL_HOURS', '1'))
