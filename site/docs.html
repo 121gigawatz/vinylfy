@@ -473,11 +473,11 @@
                 </p>
                 <p>Via Docker Hub:</p>
                 <pre><code>
-docker run -d -p 8888:8888 --name vinylfy 121gigawatz/vinylfy:latest
+docker run -d -p 8888:8888 -v vinylfy-data:/tmp/vinylfy --name vinylfy 121gigawatz/vinylfy:latest
                 </code></pre>
                 <p>Via GHCR:</p>
                 <pre><code>
-docker run -d -p 8888:8888 --name vinylfy ghcr.io/121gigawatz/vinylfy:latest
+docker run -d -p 8888:8888 -v vinylfy-data:/tmp/vinylfy --name vinylfy ghcr.io/121gigawatz/vinylfy:latest
                 </code></pre>
                 <h2 id="environment">Environment Variables</h2>
                 <p>
@@ -668,11 +668,30 @@ CORS_ORIGINS=*
 version: '3.8'
 
 services:
-    vinylfy:
-        image: 121gigawatz/vinylfy:latest
-        env_file: .env
-        volumes:
-            - ./data:/app/data
+  vinylfy:
+    # Pull pre-built image from Docker Hub
+    image: 121gigawatz/vinylfy:latest
+    container_name: vinylfy
+    ports:
+      - "${PORT:-8888}:8888"
+    
+    # Load configuration from .env file (optional)
+    # env_file: .env
+    
+    # Or set environment variables here to override defaults
+    # environment:
+      # - FLASK_ENV=production
+      # - SECRET_KEY=change-me-in-production
+
+    volumes:
+      # Persistent storage for temp files
+      - vinylfy-data:/tmp/vinylfy
+
+    restart: unless-stopped
+
+volumes:
+  vinylfy-data:
+    driver: local
                 </code></pre>
                 <h2 id="installation">Installation</h2>
                 <p>Navigate to the directory where your docker-compose.yml and .env files are stored. Open up a
