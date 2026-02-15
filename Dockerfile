@@ -9,10 +9,10 @@ WORKDIR /build
 # Install sys dependencies
 # RUN apt-get update && apt-get install -y --no-install-recommends \ ffmpeg \ libsndfile1 \curl \ $$ rm -rf /var/lib/apt/lists/*
 RUN apt-get update && apt-get install -y --no-install-recommends \
-ffmpeg \
-libsndfile1 \
-curl \
-&& rm -rf /var/lib/apt/lists/*
+    ffmpeg \
+    libsndfile1 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
 
 # Copy backend requirements and install
@@ -71,11 +71,11 @@ COPY nginx.conf /etc/nginx/nginx.conf
 RUN chown -R vinylfy:vinylfy /var/log/nginx /var/lib/nginx
 
 # Expose ports
-EXPOSE 80
+EXPOSE 8888
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/api/health || exit 1
+    CMD curl -f http://localhost:8888/api/health || exit 1
 
 # Copy startup script
 COPY start.sh /app/start.sh

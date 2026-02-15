@@ -26,11 +26,13 @@ Vinylfy is a web application that can be run on any local server via Docker. The
 You can deploy Vinylfy with default settings through either Docker Hub or GHCR. Vinylfy will automatically generate a secure secret key for you. However, this key will be regenerated on every restart, so it is recommended to set a custom secret key in production via the environment variable `SECRET_KEY` and Docker Compose.
 
 **Via Docker Hub:**
+
 ```bash
 docker run -d -p 8888:8888 --name vinylfy 121gigawatz/vinylfy:latest
 ```
 
 **Via GHCR:**
+
 ```bash
 docker run -d -p 8888:8888 --name vinylfy ghcr.io/121gigawatz/vinylfy:latest
 ```
@@ -107,6 +109,8 @@ version: '3.8'
 services:
     vinylfy:
         image: 121gigawatz/vinylfy:latest
+        ports:
+            - "${PORT:-8888}:8888"
         env_file: .env
         volumes:
             - ./data:/app/data

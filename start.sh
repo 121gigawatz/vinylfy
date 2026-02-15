@@ -49,7 +49,7 @@ NGINX_PID=$!
 echo "🎵 Vinylfy is running!"
 echo "  Turntable PID: $BACKEND_PID"
 echo "  Needle PID: $NGINX_PID"
-echo "  Vinylfy available at http://localhost"
+echo "  Vinylfy available at http://localhost:8888"
 
 # Wait for any process to exit
 wait -n

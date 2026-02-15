@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: vinylfy
     ports:
-      - "${PORT:-8888}:80"
+      - "${PORT:-8888}:8888"
     environment:
       # Backend config
       - FLASK_ENV=${FLASK_ENV:-production}
@@ -36,7 +36,7 @@ services:
     restart: unless-stopped
 
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8888/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
